@@ -1,0 +1,2 @@
+buy_animal 1
+quit
