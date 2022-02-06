@@ -1,2 +1,7 @@
 buy_animal 1
+buy_animal 2
+roll
+buy_animal 1
+sell 2
+end_turn 1 2 3 4 5
 quit

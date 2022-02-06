@@ -2,10 +2,10 @@
 #define HEADER_ANT
 
 #include "animal.hpp"
+#include "shop.hpp"
+#include "team.hpp"
 
 
-class Team;
-class Shop;
 
 class Ant : public Animal {
     public:

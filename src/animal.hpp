@@ -4,7 +4,11 @@
 #define PACK_STANDARD 1
 #define PACK_DLC1 2
 
+#include <iostream>
 #include <string>
+#include <vector>
+
+#include "item.hpp"
 
 
 class Team;
@@ -12,15 +16,26 @@ class Shop;
 
 class Animal {
     public:
+        static Animal* unserialize(Team* team, std::string animal_str);
         static Animal* create_random_animal(Team* team, Shop* shop, int max_tier);
 
         std::string name;
 
         Animal(std::string name, Team* team, Shop* shop);
-        virtual ~Animal() { };
+        virtual ~Animal();
+
+        std::string disp_stats() const;
+
+        void give_item(Item* it);
 
         void reset_stats();
         int get_xp() const;
+        int get_level() const;
+
+        void attacks(Animal* other);
+        void buff(int buff_attack, int buff_life, bool in_fight);
+        bool is_alive() const;
+        bool is_tmp() const;
 
         virtual void on_buy() { };
         virtual void on_sell() { };
@@ -40,7 +55,7 @@ class Animal {
         virtual void on_friend_sold() { };
         virtual void on_friend_eats_shop() { };
 
-        virtual void draw() const;
+        friend std::ostream& operator<<(std::ostream& os, Animal const& animal);
 
     protected:
         int id;
@@ -50,12 +65,20 @@ class Animal {
         int life;
         int attack;
         int xp;
+        Item* item;
 
+        bool tmp_animal;
         int tmp_life;
         int tmp_attack;
+        Item* tmp_item;
 
         Team* team;
         Shop* shop;
+
+        std::vector<Animal*> get_team_animals() const;
+
+    private:
+        static std::string get_random_name(int max_tier);
 };
 
 

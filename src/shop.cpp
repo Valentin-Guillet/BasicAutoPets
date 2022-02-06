@@ -1,13 +1,17 @@
 
 #include "shop.hpp"
 
+#include <iostream>
 #include <string>
 
 #include "animal.hpp"
 
 
-Shop::Shop(Team* team) : nb_turns(0), max_animals(4), max_objects(2) {
-    roll();
+Shop::Shop(Team* team) : team(team), nb_turns(0), max_animals(4), max_items(2) { }
+
+Shop::~Shop() {
+    for (Animal* animal : animals)
+        delete animal;
 }
 
 Animal* Shop::buy_animal(int index) {
@@ -16,21 +20,22 @@ Animal* Shop::buy_animal(int index) {
     return animal;
 }
 
-Object* Shop::buy_object(int index) {
-    Object* object = objects[index];
-    objects[index] = nullptr;
-    return object;
+Item* Shop::buy_item(int index) {
+    Item* item = items[index];
+    items[index] = nullptr;
+    return item;
 }
 
 void Shop::freeze_animal(int index) {
 
 }
 
-void Shop::freeze_object(int index) {
+void Shop::freeze_item(int index) {
 
 }
 
 void Shop::roll() {
+
     for (Animal* animal : animals)
         delete animal;
     animals.clear();
@@ -40,10 +45,18 @@ void Shop::roll() {
 }
 
 void Shop::draw() const {
+    for (size_t i=0; i<animals.size(); i++) {
+        std::cout << i+1 << ". ";
+        if (animals[i])
+            std::cout << *animals[i];
+        else
+            std::cout << "Empty";
+        std::cout << std::endl;
+    }
 }
 
 
 Animal* Shop::create_animal() {
-    Animal* animal = Animal::create_random_animal(team, this, 0);
+    Animal* animal = Animal::create_random_animal(team, this, 1);
     return animal;
 }

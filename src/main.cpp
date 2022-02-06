@@ -10,9 +10,8 @@ int main(int argc, char** argv) {
     Game* game = new Game();
     game->draw();
 
-    while (act(game)) {
+    while (act(game))
         game->draw();
-    }
 
     delete game;
 

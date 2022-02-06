@@ -15,16 +15,16 @@
   + SELL n
     -> sell team[n]
 
-  + BUY_OBJECT m n
-    -> team[n] += shop_object[m]
+  + BUY_ITEM m n
+    -> team[n] += shop_item[m]
 
   + ROLL
 
   + FREEZE_ANIMAL n
     -> freeze shop_animal[n]
 
-  + FREEZE_OBJECT n
-    -> freeze shop_object[n]
+  + FREEZE_ITEM n
+    -> freeze shop_item[n]
 
   + END_TURN n1 n2 n3 n4 n5
     -> order team
