@@ -6,6 +6,7 @@
 #include <vector>
 
 #include "animal.hpp"
+#include "object.hpp"
 
 
 class Team;
@@ -13,6 +14,7 @@ using TeamList = std::unordered_map<int, std::vector<Team*>>;
 
 class Team {
     friend class Animal;
+    friend class Object;
 
     public:
         static std::pair<int, Team*> unserialize(std::string team_str);
@@ -28,6 +30,7 @@ class Team {
         void add(Animal* animal);
         void upgrade(int index, Animal* other_animal);
         int sell(int index);
+        void equip_item(int index, Object* item);
 
         int fight(Team* other_team);
         void disp_fight(Team const* const other_team) const;

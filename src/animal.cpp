@@ -19,7 +19,7 @@ Animal* Animal::unserialize(Team* team, std::string animal_str) {
     std::istringstream iss(animal_str);
     std::string token;
 
-    std::string name, item_name;
+    std::string name, object_name;
     int life, attack, xp;
     getline(iss, name, ' ');
 
@@ -32,7 +32,7 @@ Animal* Animal::unserialize(Team* team, std::string animal_str) {
     getline(iss, token, ' ');
     xp = std::stoi(token);
 
-    getline(iss, item_name, ' ');
+    getline(iss, object_name, ' ');
 
     Animal* animal = AllAnimals::create_new_animal(name, team, nullptr);
     animal->life = life;
@@ -40,29 +40,29 @@ Animal* Animal::unserialize(Team* team, std::string animal_str) {
     animal->xp = xp;
     animal->reset_stats();
 
-    Item* item = nullptr;
-    if (item_name != "none")
-        item = Item::create_item(item_name);
-    animal->give_item(item);
+    Object* object = nullptr;
+    if (object_name != "none")
+        object = Object::create_new_object(object_name, team, nullptr);
+    animal->give_object(object);
 
     return animal;
 }
 
 Animal::Animal(std::string name, Team* team, Shop* shop) :
-        name(name), team(team), shop(shop), xp(0), item(nullptr), tmp_animal(false) {
+        name(name), team(team), shop(shop), xp(0), object(nullptr), tmp_animal(false) {
     reset_stats();
 }
 
 Animal::~Animal() {
-    delete item;
+    delete object;
 }
 
 std::string Animal::disp_stats() const {
     return "[" + std::to_string(tmp_attack) + "/" + std::to_string(tmp_life) + "]";
 }
 
-void Animal::give_item(Item* it) {
-    item = it;
+void Animal::give_object(Object* obj) {
+    object = obj;
 }
 
 void Animal::reset_stats() {

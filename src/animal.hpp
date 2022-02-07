@@ -1,18 +1,15 @@
 #ifndef HEADER_ANIMAL
 #define HEADER_ANIMAL
 
-#define PACK_STANDARD 1
-#define PACK_DLC1 2
-
 #include <iostream>
 #include <string>
 #include <vector>
 
-#include "item.hpp"
+#include "object.hpp"
 
 
-class Team;
 class Shop;
+class Team;
 
 class Animal {
     public:
@@ -26,7 +23,7 @@ class Animal {
 
         std::string disp_stats() const;
 
-        void give_item(Item* it);
+        void give_object(Object* obj);
 
         void reset_stats();
         int get_xp() const;
@@ -65,12 +62,12 @@ class Animal {
         int life;
         int attack;
         int xp;
-        Item* item;
+        Object* object;
 
         bool tmp_animal;
         int tmp_life;
         int tmp_attack;
-        Item* tmp_item;
+        Object* tmp_object;
 
         Team* team;
         Shop* shop;

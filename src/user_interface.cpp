@@ -45,7 +45,14 @@ bool act(Game* game) {
 
             game->sell(index);
 
-        } else if (action == "buy_item") {
+        } else if (action == "buy_object") {
+            std::string arg;
+            std::cin >> arg;
+            int index = std::stoi(arg) - 1;
+            std::cin >> arg;
+            int index_target = std::stoi(arg) - 1;
+
+            game->buy_object(index, index_target);
 
         } else if (action == "roll") {
             game->roll();

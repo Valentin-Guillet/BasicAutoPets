@@ -98,6 +98,10 @@ int Team::sell(int index) {
     return lvl;
 }
 
+void Team::equip_item(int index, Object* item) {
+    animals[index]->give_object(item);
+}
+
 int Team::fight(Team* other_team) {
     in_fight = true;
     reset_animals();

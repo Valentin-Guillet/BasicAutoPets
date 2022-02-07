@@ -74,8 +74,10 @@ void Game::sell(int index) {
     money += team->sell(index);
 }
 
-void Game::buy_item(int index) {
-    Item* item = shop->buy_item(index);
+void Game::buy_object(int index, int index_target) {
+    Object* object = shop->buy_object(index, index_target);
+    if (object != nullptr)   // Item
+        team->equip_item(index_target, object);
 }
 
 void Game::roll() {
@@ -87,8 +89,8 @@ void Game::freeze_animal(int index) {
     shop->freeze_animal(index);
 }
 
-void Game::freeze_item(int index) {
-    shop->freeze_item(index);
+void Game::freeze_object(int index) {
+    shop->freeze_object(index);
 }
 
 void Game::get_state() const {

@@ -4,7 +4,7 @@
 #include <vector>
 
 #include "animal.hpp"
-#include "item.hpp"
+#include "object.hpp"
 #include "team.hpp"
 
 
@@ -16,9 +16,9 @@ class Shop {
         ~Shop();
 
         Animal* buy_animal(int index);
-        Item* buy_item(int index);
+        Object* buy_object(int index, int index_target);
         void freeze_animal(int index);
-        void freeze_item(int index);
+        void freeze_object(int index);
         void roll();
 
         void draw() const;
@@ -28,14 +28,15 @@ class Shop {
 
         int nb_turns;
         int max_animals;
-        int max_items;
+        int max_objects;
 
         std::vector<Animal*> animals;
-        std::vector<Item*> items;
+        std::vector<Object*> objects;
         std::vector<bool> frozen_animals;
-        std::vector<bool> frozen_item;
+        std::vector<bool> frozen_object;
 
         Animal* create_animal();
+        Object* create_object();
 };
 
 
