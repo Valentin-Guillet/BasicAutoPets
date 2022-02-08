@@ -12,11 +12,13 @@ HEADERS := $(shell find src/ -name *.hpp)
 SOURCES := $(shell find src/ -name *.cpp)
 OBJECTS := $(SOURCES:src/%.cpp=build/%.o)
 
+PETS_SOURCES := $(shell find src/Pets/ -name *.cpp ! -name all_pets.cpp)
+
 
 all: main
 
 main: $(OBJECTS)
-	@ mkdir -p build/Animals/
+	@ mkdir -p build/Pets/
 	@ mkdir -p build/Objects/Foods
 	@ mkdir -p build/Objects/Items
 	@ $(CC) $(CFLAGS) $^ $(LFLAGS) -o $@
@@ -25,14 +27,14 @@ memory_leak: main
 	@ valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes --verbose --log-file=valgrind-out.txt ./main < test_input.txt  && vim valgrind-out.txt && rm valgrind-out.txt
 
 
-build/%.o: src/%.cpp src/Animals/all_animals.hpp src/Objects/all_objects.hpp $(HEADERS)
-	@ mkdir -p build/Animals/
+build/%.o: src/%.cpp $(HEADERS)
+	@ mkdir -p build/Pets/
 	@ mkdir -p build/Objects/Foods
 	@ mkdir -p build/Objects/Items
 	@ $(CC) -c $(CFLAGS) -o $@ $<
 
-src/Animals/all_animals.hpp: src/Animals/*.cpp
-	@ cd src/Animals && ./generate_all_animals_header.sh
+src/Pets/all_pets.hpp: $(PETS_SOURCES)
+	@ cd src/Pets && ./generate_all_pets_header.sh
 
 src/Objects/all_objects.hpp: src/Objects/*/*.cpp
 	@ cd src/Objects && ./generate_all_objects_header.sh
@@ -41,4 +43,5 @@ src/Objects/all_objects.hpp: src/Objects/*/*.cpp
 clean:
 	rm -rf build/
 	rm -f main
-	rm -f src/Animals/all_animals.hpp
+	rm -f src/Pets/all_pets.*
+	rm -f src/Objects/all_objects.*

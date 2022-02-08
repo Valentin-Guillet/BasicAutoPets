@@ -4,23 +4,23 @@
 #include <iostream>
 #include <string>
 
-#include "animal.hpp"
+#include "pet.hpp"
 
 
-Shop::Shop(Team* team) : team(team), nb_turns(0), max_animals(4), max_objects(2) { }
+Shop::Shop(Team* team) : team(team), nb_turns(0), max_pets(4), max_objects(2) { }
 
 Shop::~Shop() {
-    for (Animal* animal : animals)
-        delete animal;
+    for (Pet* pet : pets)
+        delete pet;
 
     for (Object* object : objects)
         delete object;
 }
 
-Animal* Shop::buy_animal(int index) {
-    Animal* animal = animals[index];
-    animals[index] = nullptr;
-    return animal;
+Pet* Shop::buy_pet(int index) {
+    Pet* pet = pets[index];
+    pets[index] = nullptr;
+    return pet;
 }
 
 Object* Shop::buy_object(int index, int index_target) {
@@ -35,7 +35,7 @@ Object* Shop::buy_object(int index, int index_target) {
     return object;
 }
 
-void Shop::freeze_animal(int index) {
+void Shop::freeze_pet(int index) {
 
 }
 
@@ -44,12 +44,12 @@ void Shop::freeze_object(int index) {
 }
 
 void Shop::roll() {
-    for (Animal* animal : animals)
-        delete animal;
-    animals.clear();
+    for (Pet* pet : pets)
+        delete pet;
+    pets.clear();
 
-    for (int i=0; i<max_animals; i++)
-        animals.push_back(create_animal());
+    for (int i=0; i<max_pets; i++)
+        pets.push_back(create_pet());
 
     for (Object* object : objects)
         delete object;
@@ -60,11 +60,11 @@ void Shop::roll() {
 }
 
 void Shop::draw() const {
-    std::cout << "Animals: \n";
-    for (size_t i=0; i<animals.size(); i++) {
+    std::cout << "Pets: \n";
+    for (size_t i=0; i<pets.size(); i++) {
         std::cout << "  " << i+1 << ". ";
-        if (animals[i])
-            std::cout << *animals[i];
+        if (pets[i])
+            std::cout << *pets[i];
         else
             std::cout << "Empty";
         std::cout << std::endl;
@@ -82,9 +82,9 @@ void Shop::draw() const {
 }
 
 
-Animal* Shop::create_animal() {
-    Animal* animal = Animal::create_random_animal(team, this, 1);
-    return animal;
+Pet* Shop::create_pet() {
+    Pet* pet = Pet::create_random_pet(team, this, 1);
+    return pet;
 }
 
 Object* Shop::create_object() {

@@ -5,7 +5,7 @@
 #include <utility>
 #include <vector>
 
-#include "animal.hpp"
+#include "pet.hpp"
 #include "object.hpp"
 
 
@@ -13,7 +13,7 @@ class Team;
 using TeamList = std::unordered_map<int, std::vector<Team*>>;
 
 class Team {
-    friend class Animal;
+    friend class Pet;
     friend class Object;
 
     public:
@@ -24,11 +24,10 @@ class Team {
         ~Team();
 
         void begin_turn();
-        void reset_animals();
         void order(int order[5]);
 
-        void add(Animal* animal);
-        void upgrade(int index, Animal* other_animal);
+        void add(Pet* pet);
+        void upgrade(int index, Pet* other_pet);
         int sell(int index);
         void equip_item(int index, Object* item);
 
@@ -44,10 +43,11 @@ class Team {
 
         bool in_fight = false;
 
-        void _add(Animal* animal);
+        void reset_pets();
+        void _add(Pet* pet);
 
-        std::vector<Animal*> animals;
-        std::vector<Animal*> tmp_animals;
+        std::vector<Pet*> pets;
+        std::vector<Pet*> tmp_pets;
 };
 
 

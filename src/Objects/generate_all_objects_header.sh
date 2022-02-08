@@ -4,7 +4,6 @@ cat > all_objects.hpp << EOF
 #ifndef HEADER_ALL_OBJECTS
 #define HEADER_ALL_OBJECTS
 
-#include <iostream>
 #include <string>
 #include <utility>
 #include <vector>
@@ -44,24 +43,37 @@ done
 cat >> all_objects.hpp << EOF
     };
 
-    Object* create_new_object(std::string name, Team* team, Shop* shop) {
+    Object* create_new_object(std::string name, Team* team, Shop* shop);
+
+};
+
+
+#endif // HEADER_ALL_OBJECTS
+EOF
+
+
+cat > all_objects.cpp << EOF
+
+#include "Objects/all_objects.hpp"
+
+#include <iostream>
+
+
+Object* AllObjects::create_new_object(std::string name, Team* team, Shop* shop) {
 EOF
 
 if_else=""
 for file in Items/*.hpp Foods/*.hpp
 do
     name=$(basename ${file%.hpp})
-    echo -e "        ${if_else}if (name == \"${name,,}\")" >> all_objects.hpp
-    echo -e "            return new $name(team, shop);\n" >> all_objects.hpp
+    echo -e "    ${if_else}if (name == \"${name,,}\")" >> all_objects.cpp
+    echo -e "        return new $name(team, shop);\n" >> all_objects.cpp
     if_else="else "
 done
 
-cat >> all_objects.hpp << EOF
-        std::cerr << "No such object (" << name << "), returning an Apple instead" << std::endl;
-        return new Apple(team, shop);
-    }
-};
+cat >> all_objects.cpp << EOF
+    std::cerr << "No such object (" << name << "), returning an Apple instead" << std::endl;
+    return new Apple(team, shop);
+}
 
-
-#endif // HEADER_ALL_OBJECTS
 EOF

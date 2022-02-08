@@ -57,16 +57,16 @@ int Game::fight() {
     return team->fight(other_team);
 }
 
-void Game::buy_animal(int index) {
-    Animal* animal = shop->buy_animal(index);
-    team->add(animal);
+void Game::buy_pet(int index) {
+    Pet* pet = shop->buy_pet(index);
+    team->add(pet);
     money -= 3;
 }
 
 void Game::upgrade(int index_shop, int index_team) {
-    Animal* animal = shop->buy_animal(index_shop);
-    team->upgrade(index_team, animal);
-    delete animal;
+    Pet* pet = shop->buy_pet(index_shop);
+    team->upgrade(index_team, pet);
+    delete pet;
     money -= 3;
 }
 
@@ -85,8 +85,8 @@ void Game::roll() {
     money--;
 }
 
-void Game::freeze_animal(int index) {
-    shop->freeze_animal(index);
+void Game::freeze_pet(int index) {
+    shop->freeze_pet(index);
 }
 
 void Game::freeze_object(int index) {

@@ -20,10 +20,14 @@ Object* Object::create_random_object(Team* team, Shop* shop, int max_tier) {
 
 
 Object::Object(std::string name, Team* team, Shop* shop, ObjType type) :
-    name(name), team(team), shop(shop), type(type) {
+    name(name), team(team), shop(shop), type(type), attached_pet(nullptr) {
 }
 
 Object::~Object() { };
+
+void Object::set_pet(Pet* pet) {
+    attached_pet = pet;
+}
 
 std::ostream& operator<<(std::ostream& os, Object const& object) {
     os << object.name;
@@ -31,10 +35,10 @@ std::ostream& operator<<(std::ostream& os, Object const& object) {
 }
 
 
-std::vector<Animal*> Object::get_team_animals() const {
+std::vector<Pet*>& Object::get_team_pets() const {
     if (team->is_fighting())
-        return team->tmp_animals;
-    return team->animals;
+        return team->tmp_pets;
+    return team->pets;
 }
 
 std::string Object::get_random_name(int max_tier) {

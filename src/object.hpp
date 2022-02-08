@@ -11,7 +11,7 @@
 
 enum class ObjType { FOOD, ITEM };
 
-class Animal;
+class Pet;
 class Shop;
 class Team;
 
@@ -23,10 +23,13 @@ class Object {
         Object(std::string name, Team* team, Shop* shop, ObjType type);
         virtual ~Object();
 
+        void set_pet(Pet* pet);
+
         std::string name;
         ObjType type;
 
         virtual void on_buy(int index) { };
+        virtual void on_faint() { };
 
         friend std::ostream& operator<<(std::ostream& os, Object const& object);
 
@@ -38,8 +41,9 @@ class Object {
 
         Team* team;
         Shop* shop;
+        Pet* attached_pet;
 
-        std::vector<Animal*> get_team_animals() const;
+        std::vector<Pet*>& get_team_pets() const;
 
     private:
         static std::string get_random_name(int max_tier);

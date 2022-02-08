@@ -1,5 +1,5 @@
-#ifndef HEADER_ANIMAL
-#define HEADER_ANIMAL
+#ifndef HEADER_PET
+#define HEADER_PET
 
 #include <iostream>
 #include <string>
@@ -11,33 +11,36 @@
 class Shop;
 class Team;
 
-class Animal {
+class Pet {
     public:
-        static Animal* unserialize(Team* team, std::string animal_str);
-        static Animal* create_random_animal(Team* team, Shop* shop, int max_tier);
+        static Pet* unserialize(Team* team, std::string pet_str);
+        static Pet* create_random_pet(Team* team, Shop* shop, int max_tier);
 
         std::string name;
+        bool is_tmp;
 
-        Animal(std::string name, Team* team, Shop* shop);
-        virtual ~Animal();
+        Pet(std::string name, Team* team, Shop* shop);
+        virtual ~Pet();
 
         std::string disp_stats() const;
 
         void give_object(Object* obj);
 
         void reset_stats();
+        int get_attack() const;
         int get_xp() const;
         int get_level() const;
+        std::string get_object_name() const;
 
-        void attacks(Animal* other);
+        void attacks(Pet* other);
         void buff(int buff_attack, int buff_life, bool in_fight);
+        void summon(Pet* new_pet);
         bool is_alive() const;
-        bool is_tmp() const;
 
         virtual void on_buy() { };
         virtual void on_sell() { };
         virtual void on_hurt() { };
-        virtual void on_faint() { };
+        virtual void on_faint();
         virtual void on_knockout() { };
         virtual void on_eat() { };
         virtual void on_level_up() { };
@@ -52,7 +55,7 @@ class Animal {
         virtual void on_friend_sold() { };
         virtual void on_friend_eats_shop() { };
 
-        friend std::ostream& operator<<(std::ostream& os, Animal const& animal);
+        friend std::ostream& operator<<(std::ostream& os, Pet const& pet);
 
     protected:
         int id;
@@ -64,7 +67,6 @@ class Animal {
         int xp;
         Object* object;
 
-        bool tmp_animal;
         int tmp_life;
         int tmp_attack;
         Object* tmp_object;
@@ -72,11 +74,11 @@ class Animal {
         Team* team;
         Shop* shop;
 
-        std::vector<Animal*> get_team_animals() const;
+        std::vector<Pet*>& get_team_pets() const;
 
     private:
         static std::string get_random_name(int max_tier);
 };
 
 
-#endif // HEADER_ANIMAL
+#endif // HEADER_PET

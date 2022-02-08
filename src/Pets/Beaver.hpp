@@ -1,12 +1,12 @@
 #ifndef HEADER_BEAVER
 #define HEADER_BEAVER
 
-#include "animal.hpp"
+#include "pet.hpp"
 #include "shop.hpp"
 #include "team.hpp"
 
 
-class Beaver : public Animal {
+class Beaver : public Pet {
     public:
         Beaver(Team* team, Shop* shop);
         ~Beaver() override;

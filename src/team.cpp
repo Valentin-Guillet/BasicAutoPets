@@ -18,10 +18,10 @@ std::pair<int, Team*> Team::unserialize(std::string team_str) {
 
     while (!team_str.empty()) {
         index = team_str.find(')');
-        std::string animal_str = team_str.substr(2, index-2);
+        std::string pet_str = team_str.substr(2, index-2);
         team_str = team_str.substr(index+1);
 
-        new_team->_add(Animal::unserialize(new_team, animal_str));
+        new_team->_add(Pet::unserialize(new_team, pet_str));
     }
 
     return {turn, new_team};
@@ -49,118 +49,119 @@ void Team::clear_team_list() {
 
 
 Team::~Team() {
-    for (Animal* animal : animals)
-        delete animal;
+    for (Pet* pet : pets)
+        delete pet;
 }
 
 void Team::begin_turn() {
-    for (Animal* animal : animals)
-        animal->on_start_turn();
-}
-
-void Team::reset_animals() {
-    for (Animal* animal : tmp_animals) {
-        if (animal->is_tmp())
-            delete animal;
-    }
-
-    tmp_animals = animals;
-    for (Animal* animal : animals)
-        animal->reset_stats();
+    for (Pet* pet : pets)
+        pet->on_start_turn();
 }
 
 void Team::order(int order[5]) {
-    std::vector<Animal*> ordered_animals;
+    std::vector<Pet*> ordered_pets;
     for (size_t i=0; i<5; i++) {
-        if (order[i] < animals.size())
-            ordered_animals.push_back(animals[order[i]]);
+        if (order[i] < pets.size())
+            ordered_pets.push_back(pets[order[i]]);
     }
 
-    animals = ordered_animals;
+    pets = ordered_pets;
 }
 
-void Team::add(Animal* animal) {
-    _add(animal);
+void Team::add(Pet* pet) {
+    _add(pet);
 }
 
-void Team::upgrade(int index, Animal* other_animal) {
+void Team::upgrade(int index, Pet* other_pet) {
 
 }
 
 int Team::sell(int index) {
-    Animal* animal = animals[index];
-    int lvl = animal->get_level();
-    animals.erase(animals.begin() + index);
+    Pet* pet = pets[index];
+    int lvl = pet->get_level();
+    pets.erase(pets.begin() + index);
 
-    animal->on_sell();
-    delete animal;
+    pet->on_sell();
+    delete pet;
 
     return lvl;
 }
 
 void Team::equip_item(int index, Object* item) {
-    animals[index]->give_object(item);
+    pets[index]->give_object(item);
 }
 
 int Team::fight(Team* other_team) {
     in_fight = true;
-    reset_animals();
-    other_team->reset_animals();
+    reset_pets();
+    other_team->reset_pets();
 
-    int ind_this = 0;
-    int ind_other = 0;
-    while (ind_this < tmp_animals.size() && ind_other < other_team->tmp_animals.size()) {
-        animals[ind_this]->attacks(other_team->tmp_animals[ind_other]);
-        other_team->tmp_animals[ind_other]->attacks(animals[ind_this]);
+    while (!tmp_pets.empty() && !other_team->tmp_pets.empty()) {
+        Pet* pet = tmp_pets.front();
+        Pet* other_pet = other_team->tmp_pets.front();
 
-        if (!tmp_animals[ind_this]->is_alive()) {
-            tmp_animals[ind_this]->on_faint();
-            ind_this++;
+        while (pet->is_alive() && other_pet->is_alive()) {
+            if (pet->get_attack() > other_pet->get_attack()) {
+                pet->attacks(other_pet);
+                other_pet->attacks(pet);
+            } else {
+                other_pet->attacks(pet);
+                pet->attacks(other_pet);
+            }
         }
-        if (!other_team->tmp_animals[ind_other]->is_alive()) {
-            other_team->tmp_animals[ind_other]->on_faint();
-            ind_other++;
+
+        if (!pet->is_alive()) {
+            pet->on_faint();
+            tmp_pets.erase(tmp_pets.begin());
+            if (pet->is_tmp)
+                delete pet;
+        }
+        if (!other_pet->is_alive()) {
+            other_pet->on_faint();
+            other_team->tmp_pets.erase(other_team->tmp_pets.begin());
+            if (other_pet->is_tmp)
+                delete other_pet;
         }
 
         disp_fight(other_team);
     }
 
     int output;
-    if (ind_this == tmp_animals.size() && ind_other == other_team->tmp_animals.size())
+    if (tmp_pets.empty() && other_team->tmp_pets.empty())
         output = 0;
-    else if (ind_this == tmp_animals.size())
+    else if (tmp_pets.empty())
         output = -1;
     else
         output = 1;
 
     in_fight = false;
-    reset_animals();
-    other_team->reset_animals();
+    reset_pets();
+    other_team->reset_pets();
     return output;
 }
 
 void Team::disp_fight(Team const* const other_team) const {
-    std::string animals_name;
+    std::string pets_name;
     std::string stats;
 
-    for (int i=animals.size()-1; i>=0; i--) {
-        if (!animals[i]->is_alive()) continue;
+    for (int i=tmp_pets.size()-1; i>=0; i--) {
+        if (!tmp_pets[i]->is_alive()) continue;
 
-        animals_name += utils::pad(animals[i]->name, 10);
-        stats += utils::pad(animals[i]->disp_stats(), 10);
+        pets_name += utils::pad(tmp_pets[i]->name, 10);
+        stats += utils::pad(tmp_pets[i]->disp_stats(), 10);
     }
 
-    animals_name += "  ///  ";
+    pets_name += "  ///  ";
     stats += "  ///  ";
 
-    for (size_t i=0; i<other_team->animals.size(); i++) {
-        if (!other_team->animals[i]->is_alive()) continue;
+    for (size_t i=0; i<other_team->tmp_pets.size(); i++) {
+        if (!other_team->tmp_pets[i]->is_alive()) continue;
 
-        animals_name += utils::pad(other_team->animals[i]->name, 10);
-        stats += utils::pad(other_team->animals[i]->disp_stats(), 10);
+        pets_name += utils::pad(other_team->tmp_pets[i]->name, 10);
+        stats += utils::pad(other_team->tmp_pets[i]->disp_stats(), 10);
     }
 
-    std::cout << animals_name << "\n" << stats << std::endl;
+    std::cout << pets_name << "\n" << stats << std::endl;
 }
 
 bool Team::is_fighting() const {
@@ -168,20 +169,22 @@ bool Team::is_fighting() const {
 }
 
 void Team::draw() const {
-    if (animals.empty()) {
+    if (pets.empty()) {
         std::cout << "Empty" << std::endl;
         return;
     }
 
-    std::string animals_name;
+    std::string pets_name;
     std::string stats;
+    std::string objects;
 
-    for (int i=animals.size()-1; i>=0; i--) {
-        animals_name += utils::pad(animals[i]->name, 10);
-        stats += utils::pad(animals[i]->disp_stats(), 10);
+    for (int i=pets.size()-1; i>=0; i--) {
+        pets_name += utils::pad(pets[i]->name, 10);
+        stats += utils::pad(pets[i]->disp_stats(), 10);
+        objects += utils::pad(pets[i]->get_object_name(), 10);
     }
 
-    std::cout << animals_name << "\n" << stats << std::endl;
+    std::cout << pets_name << "\n" << stats << "\n" << objects << std::endl;
 }
 
 
@@ -195,6 +198,12 @@ void Team::load_teams() {
     }
 }
 
-void Team::_add(Animal* animal) {
-    animals.push_back(animal);
+void Team::reset_pets() {
+    tmp_pets = pets;
+    for (Pet* pet : pets)
+        pet->reset_stats();
+}
+
+void Team::_add(Pet* pet) {
+    pets.push_back(pet);
 }

@@ -3,21 +3,21 @@
 
 #include <vector>
 
-#include "animal.hpp"
+#include "pet.hpp"
 #include "object.hpp"
 #include "team.hpp"
 
 
 class Shop {
-    friend class Animal;
+    friend class Pet;
 
     public:
         Shop(Team* team);
         ~Shop();
 
-        Animal* buy_animal(int index);
+        Pet* buy_pet(int index);
         Object* buy_object(int index, int index_target);
-        void freeze_animal(int index);
+        void freeze_pet(int index);
         void freeze_object(int index);
         void roll();
 
@@ -27,15 +27,15 @@ class Shop {
         Team* team;
 
         int nb_turns;
-        int max_animals;
+        int max_pets;
         int max_objects;
 
-        std::vector<Animal*> animals;
+        std::vector<Pet*> pets;
         std::vector<Object*> objects;
-        std::vector<bool> frozen_animals;
+        std::vector<bool> frozen_pets;
         std::vector<bool> frozen_object;
 
-        Animal* create_animal();
+        Pet* create_pet();
         Object* create_object();
 };
 

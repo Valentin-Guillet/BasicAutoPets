@@ -1,13 +1,13 @@
 #ifndef HEADER_ANT
 #define HEADER_ANT
 
-#include "animal.hpp"
+#include "pet.hpp"
 #include "shop.hpp"
 #include "team.hpp"
 
 
 
-class Ant : public Animal {
+class Ant : public Pet {
     public:
         Ant(Team* team, Shop* shop);
         ~Ant() override;

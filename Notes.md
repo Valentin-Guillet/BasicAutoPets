@@ -1,16 +1,16 @@
 
 - Team:
-  + Animal*[5]
+  + Pet*[5]
 
 - Shop:
-  + Animal*[n]
+  + Pet*[n]
 
 - Actions:
-  + BUY_ANIMAL n
-    -> team += shop_animal[n]
+  + BUY_PET n
+    -> team += shop_pet[n]
 
   + UPGRADE m n
-    -> team[n] += shop_animal[m]
+    -> team[n] += shop_pet[m]
 
   + SELL n
     -> sell team[n]
@@ -20,8 +20,8 @@
 
   + ROLL
 
-  + FREEZE_ANIMAL n
-    -> freeze shop_animal[n]
+  + FREEZE_PET n
+    -> freeze shop_pet[n]
 
   + FREEZE_OBJECT n
     -> freeze shop_object[n]

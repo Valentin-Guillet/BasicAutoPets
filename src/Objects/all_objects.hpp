@@ -1,7 +1,6 @@
 #ifndef HEADER_ALL_OBJECTS
 #define HEADER_ALL_OBJECTS
 
-#include <iostream>
 #include <string>
 #include <utility>
 #include <vector>
@@ -19,16 +18,8 @@ namespace AllObjects {
         {1, "apple"},
     };
 
-    Object* create_new_object(std::string name, Team* team, Shop* shop) {
-        if (name == "honey")
-            return new Honey(team, shop);
+    Object* create_new_object(std::string name, Team* team, Shop* shop);
 
-        else if (name == "apple")
-            return new Apple(team, shop);
-
-        std::cerr << "No such object (" << name << "), returning an Apple instead" << std::endl;
-        return new Apple(team, shop);
-    }
 };
 
 

@@ -6,7 +6,7 @@
 
 
 enum class Action {
-    BUY_ANIMAL, UPGRADE, SELL, BUY_OBJECT, ROLL, FREEZE, END_TURN,
+    BUY_PET, UPGRADE, SELL, BUY_OBJECT, ROLL, FREEZE, END_TURN,
 };
 
 
@@ -20,12 +20,12 @@ class Game {
 
         int fight();
 
-        void buy_animal(int index);
+        void buy_pet(int index);
         void upgrade(int index_shop, int index_team);
         void sell(int index);
         void buy_object(int index, int index_target);
         void roll();
-        void freeze_animal(int index);
+        void freeze_pet(int index);
         void freeze_object(int index);
 
         void get_state() const;

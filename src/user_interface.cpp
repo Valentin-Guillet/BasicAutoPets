@@ -22,12 +22,12 @@ bool act(Game* game) {
 
     std::cout << "Action: " << action << std::endl;
     try {
-        if (action == "buy_animal") {
+        if (action == "buy_pet") {
             std::string arg;
             std::cin >> arg;
             int index = std::stoi(arg) - 1;
 
-            game->buy_animal(index);
+            game->buy_pet(index);
 
         } else if (action == "upgrade") {
             std::string arg;

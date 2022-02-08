@@ -1,7 +1,7 @@
-buy_animal 1
-buy_animal 2
+buy_pet 1
+buy_pet 2
 roll
-buy_animal 1
+buy_pet 1
 sell 2
 buy_object 2 1
 end_turn 1 2 3 4 5
