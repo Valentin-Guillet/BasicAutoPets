@@ -40,6 +40,8 @@ class Game {
 
         Team* team;
         Shop* shop;
+
+        void check_money(std::string action, int amount) const;
 };
 
 

@@ -5,9 +5,10 @@
 #include <string>
 
 #include "pet.hpp"
+#include "utils.hpp"
 
 
-Shop::Shop(Team* team) : team(team), nb_turns(0), max_pets(4), max_objects(2) { }
+Shop::Shop(Team* team) : team(team), turns(0) { }
 
 Shop::~Shop() {
     for (Pet* pet : pets)
@@ -17,22 +18,38 @@ Shop::~Shop() {
         delete object;
 }
 
+int Shop::get_cost_object(int index) const {
+    if (index >= objects.size() || !objects[index])
+        throw InvalidAction("[BUY_OBJECT]: no object at index " + std::to_string(index));
+    return objects[index]->get_cost();
+}
+
+void Shop::begin_turn() {
+    turns++;
+    roll();
+}
+
 Pet* Shop::buy_pet(int index) {
     Pet* pet = pets[index];
+    if (!pet)
+        throw InvalidAction("[BUY_PET]: no animal left in store at index " + std::to_string(index));
+
     pets[index] = nullptr;
     return pet;
 }
 
-Object* Shop::buy_object(int index, int index_target) {
-    Object* object = objects[index];
-    objects[index] = nullptr;
+void Shop::buy_object(int index, int index_target) {
+    if (index >= objects.size() || !objects[index])
+        throw InvalidAction("[BUY_OBJECT]: no object at index " + std::to_string(index));
 
+    Object* object = objects[index];
     if (object->type == ObjType::FOOD) {
         object->on_buy(index_target);
         delete object;
-        return nullptr;
+    } else {
+        team->equip_item(index_target, object);
     }
-    return object;
+    objects[index] = nullptr;
 }
 
 void Shop::freeze_pet(int index) {
@@ -48,14 +65,14 @@ void Shop::roll() {
         delete pet;
     pets.clear();
 
-    for (int i=0; i<max_pets; i++)
+    for (int i=0; i<get_max_pets(); i++)
         pets.push_back(create_pet());
 
     for (Object* object : objects)
         delete object;
     objects.clear();
 
-    for (int i=0; i<max_objects; i++)
+    for (int i=0; i<get_max_objects(); i++)
         objects.push_back(create_object());
 }
 
@@ -90,4 +107,18 @@ Pet* Shop::create_pet() {
 Object* Shop::create_object() {
     Object* object = Object::create_random_object(team, this, 1);
     return object;
+}
+
+int Shop::get_max_pets() const {
+    if (turns < 5)
+        return 3;
+    else if (turns < 9)
+        return 4;
+    return 5;
+}
+
+int Shop::get_max_objects() const {
+    if (turns < 3)
+        return 1;
+    return 2;
 }

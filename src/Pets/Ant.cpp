@@ -20,6 +20,7 @@ Ant::Ant(Team* team, Shop* shop) : Pet("ant", team, shop) {
 Ant::~Ant() { }
 
 void Ant::on_faint() {
+    spdlog::debug("{} fainting !", name);
     Pet::on_faint();
 
     std::vector<Pet*> team_pets = get_team_pets();

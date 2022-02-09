@@ -4,6 +4,9 @@
 #include <iostream>
 #include <string>
 
+#include "object.hpp"
+#include "utils.hpp"
+
 
 static int life_per_turn(int turn) {
     return 3;
@@ -26,7 +29,7 @@ Game::~Game() {
 void Game::begin_turn() {
     money = 10;
     team->begin_turn();
-    shop->roll();
+    shop->begin_turn();
     turn++;
 }
 
@@ -58,12 +61,18 @@ int Game::fight() {
 }
 
 void Game::buy_pet(int index) {
+    check_money("BUY_PET", 3);
+    if (team->get_nb_pets() == 5)
+        throw InvalidAction("[BUY_PET]: already have 5 pets in the team !");
+
     Pet* pet = shop->buy_pet(index);
     team->add(pet);
     money -= 3;
 }
 
 void Game::upgrade(int index_shop, int index_team) {
+    check_money("UPGRADE_PET", 3);
+
     Pet* pet = shop->buy_pet(index_shop);
     team->upgrade(index_team, pet);
     delete pet;
@@ -75,12 +84,16 @@ void Game::sell(int index) {
 }
 
 void Game::buy_object(int index, int index_target) {
-    Object* object = shop->buy_object(index, index_target);
-    if (object != nullptr)   // Item
-        team->equip_item(index_target, object);
+    int cost = shop->get_cost_object(index);
+    check_money("BUY_OBJECT", cost);
+
+    shop->buy_object(index, index_target);
+    money -= cost;
 }
 
 void Game::roll() {
+    check_money("ROLL", 1);
+
     shop->roll();
     money--;
 }
@@ -105,4 +118,14 @@ void Game::draw() const {
     std::cout << "Shop:" << std::endl;
     shop->draw();
     std::cout << std::endl;
+}
+
+
+void Game::check_money(std::string action, int amount) const {
+    if (money >= amount)
+        return;
+
+    std::string msg = "[" + action + "]: not enough money to buy";
+    msg += " (" + std::to_string(money) + " gold left)";
+    throw InvalidAction(msg);
 }

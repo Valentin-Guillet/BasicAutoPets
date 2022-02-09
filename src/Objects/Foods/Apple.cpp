@@ -3,6 +3,8 @@
 
 #include <vector>
 
+#include "utils.hpp"
+
 
 Apple::Apple(Team* team, Shop* shop) : Object("apple", team, shop, ObjType::FOOD) {
     id = 1;
@@ -13,7 +15,8 @@ Apple::Apple(Team* team, Shop* shop) : Object("apple", team, shop, ObjType::FOOD
 Apple::~Apple() { }
 
 void Apple::on_buy(int index) {
-    std::vector<Pet*> team_pets = get_team_pets();
+    spdlog::debug("{} bought !", name);
+    std::vector<Pet*>& team_pets = get_team_pets();
 
     team_pets[index]->buff(1, 1, false);
 }

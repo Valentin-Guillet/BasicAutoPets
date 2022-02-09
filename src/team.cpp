@@ -68,6 +68,10 @@ void Team::order(int order[5]) {
     pets = ordered_pets;
 }
 
+size_t Team::get_nb_pets() const {
+    return pets.size();
+}
+
 void Team::add(Pet* pet) {
     _add(pet);
 }
@@ -77,6 +81,9 @@ void Team::upgrade(int index, Pet* other_pet) {
 }
 
 int Team::sell(int index) {
+    if (index >= pets.size())
+        throw InvalidAction("[SELL_PET]: no pet at index " + std::to_string(index));
+
     Pet* pet = pets[index];
     int lvl = pet->get_level();
     pets.erase(pets.begin() + index);
@@ -88,6 +95,9 @@ int Team::sell(int index) {
 }
 
 void Team::equip_item(int index, Object* item) {
+    if (index >= pets.size())
+        throw InvalidAction("[EQUIP_ITEM]: no pet in team at index " + std::to_string(index));
+
     pets[index]->give_object(item);
 }
 
@@ -192,6 +202,7 @@ void Team::load_teams() {
     std::ifstream team_file("data/saved_teams.txt");
     std::string team_str;
     while (getline(team_file, team_str)) {
+        std::cout << team_str << std::endl;
         auto [turn, new_team] = Team::unserialize(team_str);
         new_team->in_fight = true;
         Team::team_list[turn].push_back(new_team);

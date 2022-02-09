@@ -15,8 +15,11 @@ class Shop {
         Shop(Team* team);
         ~Shop();
 
+        int get_cost_object(int index) const;
+
+        void begin_turn();
         Pet* buy_pet(int index);
-        Object* buy_object(int index, int index_target);
+        void buy_object(int index, int index_target);
         void freeze_pet(int index);
         void freeze_object(int index);
         void roll();
@@ -26,10 +29,7 @@ class Shop {
     private:
         Team* team;
 
-        int nb_turns;
-        int max_pets;
-        int max_objects;
-
+        int turns;
         std::vector<Pet*> pets;
         std::vector<Object*> objects;
         std::vector<bool> frozen_pets;
@@ -37,6 +37,9 @@ class Shop {
 
         Pet* create_pet();
         Object* create_object();
+
+        int get_max_pets() const;
+        int get_max_objects() const;
 };
 
 

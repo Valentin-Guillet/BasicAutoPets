@@ -2,6 +2,7 @@
 #include "Objects/Items/Honey.hpp"
 
 #include "Pets/all_pets.hpp"
+#include "utils.hpp"
 
 
 Honey::Honey(Team* team, Shop* shop) : Object("honey", team, shop, ObjType::ITEM) {
@@ -13,6 +14,7 @@ Honey::Honey(Team* team, Shop* shop) : Object("honey", team, shop, ObjType::ITEM
 Honey::~Honey() { }
 
 void Honey::on_faint() {
+    spdlog::debug("{} summons a bee !", name);
     Pet* bee = AllPets::create_new_pet("bee", team, shop);
     bee->is_tmp = true;
 

@@ -62,6 +62,11 @@ std::string Pet::disp_stats() const {
 }
 
 void Pet::give_object(Object* obj) {
+    if (obj)
+        spdlog::debug("Giving {} to {}", obj->name, name);
+    if (object)
+        delete object;
+
     object = obj;
     if (object)
         object->set_pet(this);
@@ -85,8 +90,7 @@ int Pet::get_level() const {
         return 3;
     else if (xp >= 2)
         return 2;
-    else
-        return 1;
+    return 1;
 }
 
 std::string Pet::get_object_name() const {
@@ -96,25 +100,26 @@ std::string Pet::get_object_name() const {
 }
 
 void Pet::attacks(Pet* other) {
-    std::cout << name << " attacks " << other->name << " for " << tmp_attack << " damages" << std::endl;
+    spdlog::debug("{} attacks {} for {} damages", name, other->name, tmp_attack);
     other->tmp_life -= tmp_attack;
     if (other->is_alive())
         other->on_hurt();
 }
 
 void Pet::buff(int buff_attack, int buff_life, bool in_fight) {
-    std::cout << name << " is getting buffed ! (" << buff_attack << ", " << buff_life << ")" << std::endl;
+    spdlog::debug("{} is getting buffed (+{}/+{})", name, buff_attack, buff_life);
     if (in_fight) {
-        tmp_attack += buff_attack;
-        tmp_life += buff_life;
+        tmp_attack = std::min(tmp_attack + buff_attack, 50);
+        tmp_life  = std::min(tmp_life + buff_life, 50);
     } else {
-        attack += buff_attack;
-        life += buff_life;
+        attack = std::min(attack + buff_attack, 50);
+        life = std::min(life + buff_life, 50);
         reset_stats();
     }
 }
 
 void Pet::summon(Pet* new_pet) {
+    spdlog::debug("New pet summoned: {}", new_pet->name);
     std::vector<Pet*>& curr_team = get_team_pets();
     auto it = std::find(curr_team.begin(), curr_team.end(), this);
     curr_team.insert(it+1, new_pet);

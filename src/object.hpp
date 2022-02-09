@@ -23,10 +23,11 @@ class Object {
         Object(std::string name, Team* team, Shop* shop, ObjType type);
         virtual ~Object();
 
-        void set_pet(Pet* pet);
-
         std::string name;
         ObjType type;
+
+        int get_cost() const;
+        void set_pet(Pet* pet);
 
         virtual void on_buy(int index) { };
         virtual void on_faint() { };
@@ -42,6 +43,8 @@ class Object {
         Team* team;
         Shop* shop;
         Pet* attached_pet;
+
+        int cost;
 
         std::vector<Pet*>& get_team_pets() const;
 

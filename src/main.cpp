@@ -3,9 +3,12 @@
 
 #include "game.hpp"
 #include "user_interface.hpp"
+#include "utils.hpp"
 
 
 int main(int argc, char** argv) {
+
+    spdlog::set_level(spdlog::level::debug);
 
     Game* game = new Game();
     game->draw();

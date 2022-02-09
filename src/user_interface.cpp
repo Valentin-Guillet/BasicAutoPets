@@ -7,6 +7,8 @@
 #include <sstream>
 #include <string>
 
+#include "utils.hpp"
+
 
 static void to_lower(std::string &s) {
     std::transform(s.begin(), s.end(), s.begin(), [](char c) { return std::tolower(c); });
@@ -71,8 +73,13 @@ bool act(Game* game) {
         } else if (action == "quit") {
             return false;
         }
-    } catch (...) {
+
+    } catch (InvalidAction& e) {
+        std::cerr << e.what() << std::endl;
+
+    } catch (std::exception& e) {
         std::cerr << "Error in action " << action << " !" << std::endl;
+        throw e;
     }
 
     return true;

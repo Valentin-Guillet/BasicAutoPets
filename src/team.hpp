@@ -25,6 +25,7 @@ class Team {
 
         void begin_turn();
         void order(int order[5]);
+        size_t get_nb_pets() const;
 
         void add(Pet* pet);
         void upgrade(int index, Pet* other_pet);
