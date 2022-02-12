@@ -24,7 +24,7 @@ class Pet {
 
         std::string disp_stats() const;
 
-        void give_object(Object* obj);
+        void equip_object(Object* obj);
 
         void reset_stats();
         int get_attack() const;
@@ -34,7 +34,6 @@ class Pet {
 
         void attacks(Pet* other);
         void buff(int buff_attack, int buff_life, bool in_fight);
-        void summon(Pet* new_pet);
         bool is_alive() const;
 
         virtual void on_buy() { };
@@ -42,12 +41,12 @@ class Pet {
         virtual void on_hurt() { };
         virtual void on_faint();
         virtual void on_knockout() { };
-        virtual void on_eat() { };
+        virtual void on_object(Object* obj) { };
+        virtual void on_object_bought(int index, Object* obj) { };
         virtual void on_level_up() { };
         virtual void on_start_turn() { };
         virtual void on_end_turn() { };
         virtual void on_start_battle() { };
-        virtual void on_food_bought() { };
         virtual void on_friend_summoned() { };
         virtual void on_before_attack() { };
         virtual void on_friend_ahead_attacks() { };

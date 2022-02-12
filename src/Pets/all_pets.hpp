@@ -10,6 +10,11 @@
 #include "Pets/Ant.hpp"
 #include "Pets/Beaver.hpp"
 #include "Pets/Bee.hpp"
+#include "Pets/Beetle.hpp"
+#include "Pets/Bluebird.hpp"
+#include "Pets/Cricket.hpp"
+#include "Pets/Duck.hpp"
+#include "Pets/ZombieCricket.hpp"
 
 
 namespace AllPets {
@@ -18,6 +23,11 @@ namespace AllPets {
         {1, "ant"},
         {1, "beaver"},
         {-1, "bee"},
+        {1, "beetle"},
+        {1, "bluebird"},
+        {1, "cricket"},
+        {1, "duck"},
+        {-1, "zombiecricket"},
     };
 
     Pet* create_new_pet(std::string name, Team* team, Shop* shop);

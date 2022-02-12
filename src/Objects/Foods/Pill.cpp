@@ -17,10 +17,5 @@ Pill::~Pill() { }
 
 void Pill::on_buy(int index) {
     spdlog::debug("{} bought !", name);
-    std::vector<Pet*>& team_pets = get_team_pets();
-
-    Pet* pet = team_pets[index];
-    team_pets.erase(team_pets.begin() + index);
-    pet->on_faint();
-    delete pet;
+    team->faint(index);
 }

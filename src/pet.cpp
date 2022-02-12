@@ -43,7 +43,7 @@ Pet* Pet::unserialize(Team* team, std::string pet_str) {
     Object* object = nullptr;
     if (object_name != "none")
         object = Object::create_new_object(object_name, team, nullptr);
-    pet->give_object(object);
+    pet->equip_object(object);
 
     return pet;
 }
@@ -61,7 +61,7 @@ std::string Pet::disp_stats() const {
     return "[" + std::to_string(tmp_attack) + "/" + std::to_string(tmp_life) + "]";
 }
 
-void Pet::give_object(Object* obj) {
+void Pet::equip_object(Object* obj) {
     if (obj)
         spdlog::debug("Giving {} to {}", obj->name, name);
     if (object)
@@ -116,13 +116,6 @@ void Pet::buff(int buff_attack, int buff_life, bool in_fight) {
         life = std::min(life + buff_life, 50);
         reset_stats();
     }
-}
-
-void Pet::summon(Pet* new_pet) {
-    spdlog::debug("New pet summoned: {}", new_pet->name);
-    std::vector<Pet*>& curr_team = get_team_pets();
-    auto it = std::find(curr_team.begin(), curr_team.end(), this);
-    curr_team.insert(it+1, new_pet);
 }
 
 bool Pet::is_alive() const {

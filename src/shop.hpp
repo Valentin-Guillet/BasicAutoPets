@@ -1,6 +1,7 @@
 #ifndef HEADER_SHOP
 #define HEADER_SHOP
 
+#include <string>
 #include <vector>
 
 #include "pet.hpp"
@@ -23,6 +24,7 @@ class Shop {
         void freeze_pet(int index);
         void freeze_object(int index);
         void roll();
+        void upgrade(int attack, int life, bool tmp);
 
         void draw() const;
 
@@ -34,9 +36,13 @@ class Shop {
         std::vector<Object*> objects;
         std::vector<bool> frozen_pets;
         std::vector<bool> frozen_object;
+        int buff_attack;
+        int buff_life;
 
         Pet* create_pet();
         Object* create_object();
+        void check_size_pets(std::string action, int index) const;
+        void check_size_objects(std::string action, int index) const;
 
         int get_max_pets() const;
         int get_max_objects() const;

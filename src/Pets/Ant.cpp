@@ -21,19 +21,19 @@ Ant::~Ant() { }
 
 void Ant::on_faint() {
     spdlog::debug("{} fainting !", name);
-    Pet::on_faint();
 
     std::vector<Pet*> team_pets = get_team_pets();
     std::vector<Pet*> living_pets;
 
     std::copy_if(team_pets.begin(), team_pets.end(),
                  std::back_inserter(living_pets),
-                 [](Pet* pet) { return pet->is_alive(); });
+                 [this](Pet* pet) { return pet->is_alive() && pet != this; });
 
-    if (living_pets.empty())
-        return;
+    if (!living_pets.empty()) {
+        Pet* target = utils::choice(living_pets)[0];
+        int lvl = get_level();
+        target->buff(2*lvl, 1*lvl, team->is_fighting());
+    }
 
-    Pet* target = utils::choice(living_pets)[0];
-    int lvl = get_level();
-    target->buff(2*lvl, 1*lvl, team->is_fighting());
+    Pet::on_faint();
 }

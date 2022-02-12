@@ -14,6 +14,21 @@ Pet* AllPets::create_new_pet(std::string name, Team* team, Shop* shop) {
     else if (name == "bee")
         return new Bee(team, shop);
 
+    else if (name == "beetle")
+        return new Beetle(team, shop);
+
+    else if (name == "bluebird")
+        return new Bluebird(team, shop);
+
+    else if (name == "cricket")
+        return new Cricket(team, shop);
+
+    else if (name == "duck")
+        return new Duck(team, shop);
+
+    else if (name == "zombiecricket")
+        return new ZombieCricket(team, shop);
+
     std::cerr << "No such pet (" << name << "), returning an Ant instead" << std::endl;
     return new Ant(team, shop);
 }

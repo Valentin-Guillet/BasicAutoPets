@@ -31,6 +31,7 @@ class Game {
         void get_state() const;
 
         void draw() const;
+        void cheat();
 
     private:
         int money;

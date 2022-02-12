@@ -15,8 +15,9 @@ Honey::~Honey() { }
 
 void Honey::on_faint() {
     spdlog::debug("{} summons a bee !", name);
-    Pet* bee = AllPets::create_new_pet("bee", team, shop);
-    bee->is_tmp = true;
 
-    attached_pet->summon(bee);
+    Pet* bee = AllPets::create_new_pet("bee", team, shop);
+    bee->is_tmp = team->is_fighting();
+
+    team->summon(attached_pet, bee);
 }

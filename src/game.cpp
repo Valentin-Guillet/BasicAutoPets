@@ -35,6 +35,7 @@ void Game::begin_turn() {
 
 bool Game::end_turn(int indices[5]) {
     team->order(indices);
+    team->end_turn();
 
     int victory = fight();
     if (victory == 1)
@@ -118,6 +119,10 @@ void Game::draw() const {
     std::cout << "Shop:" << std::endl;
     shop->draw();
     std::cout << std::endl;
+}
+
+void Game::cheat() {
+    money += 1000;
 }
 
 

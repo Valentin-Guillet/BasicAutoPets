@@ -1,6 +1,7 @@
 #ifndef HEADER_TEAM
 #define HEADER_TEAM
 
+#include <string>
 #include <unordered_map>
 #include <utility>
 #include <vector>
@@ -25,13 +26,15 @@ class Team {
 
         void begin_turn();
         void order(int order[5]);
+        void end_turn();
         size_t get_nb_pets() const;
 
         void add(Pet* pet);
         void upgrade(int index, Pet* other_pet);
         int sell(int index);
-        void equip_item(int index, Object* item);
-
+        void summon(Pet* base_pet, Pet* new_pet);
+        void faint(int index);
+        void give_object(int index, Object* obj);
         int fight(Team* other_team);
         void disp_fight(Team const* const other_team) const;
         bool is_fighting() const;
@@ -44,7 +47,8 @@ class Team {
 
         bool in_fight = false;
 
-        void reset_pets();
+        void check_size(std::string action, int index) const;
+        void reset();
         void _add(Pet* pet);
 
         std::vector<Pet*> pets;

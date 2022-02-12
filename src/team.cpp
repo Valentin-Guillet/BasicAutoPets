@@ -3,7 +3,6 @@
 
 #include <fstream>
 #include <iostream>
-#include <string>
 
 #include "utils.hpp"
 
@@ -68,6 +67,11 @@ void Team::order(int order[5]) {
     pets = ordered_pets;
 }
 
+void Team::end_turn() {
+    for (Pet* pet : pets)
+        pet->on_end_turn();
+}
+
 size_t Team::get_nb_pets() const {
     return pets.size();
 }
@@ -81,8 +85,7 @@ void Team::upgrade(int index, Pet* other_pet) {
 }
 
 int Team::sell(int index) {
-    if (index >= pets.size())
-        throw InvalidAction("[SELL_PET]: no pet at index " + std::to_string(index));
+    check_size("SELL_PET", index);
 
     Pet* pet = pets[index];
     int lvl = pet->get_level();
@@ -94,18 +97,50 @@ int Team::sell(int index) {
     return lvl;
 }
 
-void Team::equip_item(int index, Object* item) {
-    if (index >= pets.size())
-        throw InvalidAction("[EQUIP_ITEM]: no pet in team at index " + std::to_string(index));
+void Team::summon(Pet* base_pet, Pet* new_pet) {
+    spdlog::debug("New pet summoned: {}", new_pet->name);
+    if (!in_fight && pets.size() >= 6) {
+        spdlog::debug("Already 5 pets in team, aborting");
+        delete new_pet;
+        return;
+    }
 
-    pets[index]->give_object(item);
+    std::vector<Pet*>* team_pets;
+    if (in_fight)
+        team_pets = &tmp_pets;
+    else
+        team_pets = &pets;
+    auto it = std::find(team_pets->begin(), team_pets->end(), base_pet);
+    team_pets->insert(it+1, new_pet);
+}
+
+void Team::faint(int index) {
+    Pet* pet = pets[index];
+    pet->on_faint();
+    pets.erase(pets.begin() + index);
+    delete pet;
+}
+
+void Team::give_object(int index, Object* obj) {
+    check_size("GIVE_OBJECT", index);
+
+    if (obj->type == ObjType::ITEM)
+        pets[index]->equip_object(obj);
+
+    pets[index]->on_object(obj);
+    for (size_t i=0; i<pets.size(); i++) {
+        if (i == index) continue;
+        pets[i]->on_object_bought(index, obj);
+    }
 }
 
 int Team::fight(Team* other_team) {
     in_fight = true;
-    reset_pets();
-    other_team->reset_pets();
+    reset();
+    other_team->reset();
 
+    std::cout << "Team before attack:" << std::endl;
+    draw();
     while (!tmp_pets.empty() && !other_team->tmp_pets.empty()) {
         Pet* pet = tmp_pets.front();
         Pet* other_pet = other_team->tmp_pets.front();
@@ -144,9 +179,16 @@ int Team::fight(Team* other_team) {
     else
         output = 1;
 
+    if (output == 0)
+        spdlog::debug("Draw !");
+    else if (output == 1)
+        spdlog::debug("Win !");
+    else
+        spdlog::debug("Loss...");
+
     in_fight = false;
-    reset_pets();
-    other_team->reset_pets();
+    reset();
+    other_team->reset();
     return output;
 }
 
@@ -202,14 +244,23 @@ void Team::load_teams() {
     std::ifstream team_file("data/saved_teams.txt");
     std::string team_str;
     while (getline(team_file, team_str)) {
-        std::cout << team_str << std::endl;
         auto [turn, new_team] = Team::unserialize(team_str);
         new_team->in_fight = true;
         Team::team_list[turn].push_back(new_team);
     }
 }
 
-void Team::reset_pets() {
+void Team::check_size(std::string action, int index) const {
+    if (index < pets.size()) return;
+    throw InvalidAction("[" + action + "]: no pet in team at index " + std::to_string(index));
+}
+
+void Team::reset() {
+    for (Pet* pet : tmp_pets) {
+        if (pet->is_tmp)
+            delete pet;
+    }
+
     tmp_pets = pets;
     for (Pet* pet : pets)
         pet->reset_stats();

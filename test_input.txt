@@ -1,8 +1,12 @@
+cheat
 buy_pet 1
 buy_pet 2
+buy_pet 3
 roll
 buy_pet 1
-sell 2
-buy_object 2 1
+buy_pet 3
+buy_object 1 1
+roll
+buy_object 1 4
 end_turn 1 2 3 4 5
 quit

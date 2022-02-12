@@ -16,42 +16,45 @@ static void to_lower(std::string &s) {
 
 
 bool act(Game* game) {
-    std::string action;
-
+    std::string line;
     std::cout << "What do you want to do ?\n";
-    std::cin >> action;
+    std::getline(std::cin, line);
+    std::istringstream iss(line);
+
+    std::string action;
+    iss >> action;
     to_lower(action);
 
-    std::cout << "Action: " << action << std::endl;
+    std::cout << "Action: " << line << std::endl;
     try {
         if (action == "buy_pet") {
             std::string arg;
-            std::cin >> arg;
+            iss >> arg;
             int index = std::stoi(arg) - 1;
 
             game->buy_pet(index);
 
         } else if (action == "upgrade") {
             std::string arg;
-            std::cin >> arg;
+            iss >> arg;
             int index_shop = std::stoi(arg) - 1;
-            std::cin >> arg;
+            iss >> arg;
             int index_team = std::stoi(arg) - 1;
 
             game->upgrade(index_shop, index_team);
 
         } else if (action == "sell") {
             std::string arg;
-            std::cin >> arg;
+            iss >> arg;
             int index = std::stoi(arg) - 1;
 
             game->sell(index);
 
         } else if (action == "buy_object") {
             std::string arg;
-            std::cin >> arg;
+            iss >> arg;
             int index = std::stoi(arg) - 1;
-            std::cin >> arg;
+            iss >> arg;
             int index_target = std::stoi(arg) - 1;
 
             game->buy_object(index, index_target);
@@ -65,21 +68,24 @@ bool act(Game* game) {
             int indices[5];
             for (size_t i=0; i<5; i++) {
                 std::string arg;
-                std::cin >> arg;
+                iss >> arg;
                 indices[i] = std::stoi(arg) - 1;
             }
             return game->end_turn(indices);
+
+        } else if (action == "cheat") {
+            game->cheat();
 
         } else if (action == "quit") {
             return false;
         }
 
     } catch (InvalidAction& e) {
-        std::cerr << e.what() << std::endl;
+        spdlog::warn(e.what());
 
     } catch (std::exception& e) {
         std::cerr << "Error in action " << action << " !" << std::endl;
-        throw e;
+        std::cerr << "Err: " << e.what() << std::endl;
     }
 
     return true;
