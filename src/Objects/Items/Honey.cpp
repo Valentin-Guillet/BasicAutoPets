@@ -6,8 +6,7 @@
 
 
 Honey::Honey(Team* team, Shop* shop) : Object("honey", team, shop, ObjType::ITEM) {
-    id = 1;
-    pack = PACK_STANDARD | PACK_DLC1;
+    id = 2;
     tier = 1;
 }
 

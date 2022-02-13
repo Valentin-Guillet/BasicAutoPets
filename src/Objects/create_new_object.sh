@@ -10,7 +10,6 @@ cat > $dst/$name.cpp << EOF
 
 $name::$name(Team* team, Shop* shop) : Object("${name,}", team, shop, ObjType::) {
     id = 0;
-    pack = PACK_STANDARD | PACK_DLC1;
     tier = 1;
 }
 

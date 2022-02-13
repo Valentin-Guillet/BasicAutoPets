@@ -1,7 +1,11 @@
 
 # Questions
 
+
 # ToDo
+
+- Tier system
+
 
 # Actions
 

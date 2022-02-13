@@ -33,6 +33,7 @@ class Pet {
         void equip_object(Object* obj);
         void attacks(Pet* other);
         void buff(int buff_attack, int buff_life, bool in_fight);
+        void gain_xp(int amount);
         void combine(Pet* const other);
 
 

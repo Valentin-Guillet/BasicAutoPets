@@ -45,7 +45,7 @@ void Shop::roll() {
     pets = tmp_pets;
     frozen_pets = std::vector<bool>(pets.size(), true);
 
-    for (int i=pets.size(); i<get_max_pets(); i++) {
+    for (size_t i=pets.size(); i<get_max_pets(); i++) {
         pets.push_back(create_pet());
         frozen_pets.push_back(false);
     }
@@ -60,7 +60,7 @@ void Shop::roll() {
     objects = tmp_objs;
     frozen_objects = std::vector<bool>(objects.size(), true);
 
-    for (int i=objects.size(); i<get_max_objects(); i++) {
+    for (size_t i=objects.size(); i<get_max_objects(); i++) {
         objects.push_back(create_object());
         frozen_objects.push_back(false);
     }
@@ -143,7 +143,7 @@ Pet* Shop::create_pet() {
 }
 
 Object* Shop::create_object() {
-    Object* object = Object::create_random_object(team, this, 1);
+    Object* object = Object::create_random_object(team, this, 2);
     return object;
 }
 

@@ -37,7 +37,6 @@ class Object {
     protected:
         int id;
 
-        int pack;
         int tier;
 
         Team* team;

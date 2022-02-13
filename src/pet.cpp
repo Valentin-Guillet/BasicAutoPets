@@ -125,17 +125,21 @@ void Pet::buff(int buff_attack, int buff_life, bool in_fight) {
     }
 }
 
+void Pet::gain_xp(int amount) {
+    spdlog::debug("{} gains {} xp", name, amount);
+    for (int x=0; x<amount && xp<5; x++) {
+        xp++;
+        if (xp == 5 || xp == 2)
+            on_level_up();
+    }
+}
+
 void Pet::combine(Pet* const other) {
     int min_xp = std::min(xp, other->xp);
     int new_attack = std::max(attack, other->attack) + min_xp + 1;
     int new_life = std::max(life, other->life) + min_xp + 1;
     buff(new_attack - attack, new_life - life, false);
-    for (int x=0; x<other->xp+1 && xp<5; x++) {
-        xp++;
-        if (xp == 5 || xp == 2)
-            on_level_up();
-    }
-
+    gain_xp(other->xp+1);
     if (other->object)
         equip_object(other->object);
 }

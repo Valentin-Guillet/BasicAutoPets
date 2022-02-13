@@ -22,6 +22,7 @@ std::pair<int, Team*> Team::unserialize(std::string team_str) {
 
         new_team->_add(Pet::unserialize(new_team, pet_str));
     }
+    new_team->tmp_pets = new_team->pets;
 
     return {turn, new_team};
 }
@@ -92,6 +93,7 @@ void Team::order(int order[5]) {
 void Team::end_turn() {
     for (Pet* pet : pets)
         pet->on_end_turn();
+    tmp_pets = pets;
 }
 
 void Team::add(Pet* pet) {
@@ -164,8 +166,6 @@ void Team::give_object(int index, Object* obj) {
 
 int Team::fight(Team* other_team) {
     in_fight = true;
-    reset();
-    other_team->reset();
 
     std::cout << "Team before attack:" << std::endl;
     draw();
@@ -246,7 +246,7 @@ void Team::disp_fight(Team const* const other_team) const {
 
 void Team::draw() const {
     if (pets.empty()) {
-        std::cout << "Empty" << std::endl;
+        std::cout << "  Empty" << std::endl;
         return;
     }
 

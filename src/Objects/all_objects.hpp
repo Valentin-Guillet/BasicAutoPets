@@ -9,6 +9,7 @@
 
 #include "Objects/Items/Honey.hpp"
 #include "Objects/Foods/Apple.hpp"
+#include "Objects/Foods/Cupcake.hpp"
 #include "Objects/Foods/Pill.hpp"
 
 
@@ -17,7 +18,8 @@ namespace AllObjects {
     std::vector<std::pair<int, std::string>> const OBJECT_LIST = {
         {1, "honey"},
         {1, "apple"},
-        {1, "pill"},
+        {2, "cupcake"},
+        {2, "pill"},
     };
 
     Object* create_new_object(std::string name, Team* team, Shop* shop);
