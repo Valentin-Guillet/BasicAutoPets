@@ -34,14 +34,23 @@ bool act(Game* game) {
 
             game->buy_pet(index);
 
-        } else if (action == "upgrade") {
+        } else if (action == "combine_shop") {
             std::string arg;
             iss >> arg;
             int index_shop = std::stoi(arg) - 1;
             iss >> arg;
             int index_team = std::stoi(arg) - 1;
 
-            game->upgrade(index_shop, index_team);
+            game->combine_shop(index_shop, index_team);
+
+        } else if (action == "combine_team") {
+            std::string arg;
+            iss >> arg;
+            int src_index = std::stoi(arg) - 1;
+            iss >> arg;
+            int dst_index = std::stoi(arg) - 1;
+
+            game->combine_team(src_index, dst_index);
 
         } else if (action == "sell") {
             std::string arg;
@@ -62,7 +71,17 @@ bool act(Game* game) {
         } else if (action == "roll") {
             game->roll();
 
-        } else if (action == "freeze") {
+        } else if (action == "freeze_pet") {
+            std::string arg;
+            iss >> arg;
+            int index = std::stoi(arg) - 1;
+            game->freeze_pet(index);
+
+        } else if (action == "freeze_object") {
+            std::string arg;
+            iss >> arg;
+            int index = std::stoi(arg) - 1;
+            game->freeze_object(index);
 
         } else if (action == "end_turn") {
             int indices[5];
@@ -78,6 +97,8 @@ bool act(Game* game) {
 
         } else if (action == "quit") {
             return false;
+        } else {
+            spdlog::warn("Action {} not recognized", action);
         }
 
     } catch (InvalidAction& e) {

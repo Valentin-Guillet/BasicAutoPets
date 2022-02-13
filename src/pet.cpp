@@ -57,24 +57,10 @@ Pet::~Pet() {
     delete object;
 }
 
-std::string Pet::disp_stats() const {
-    return "[" + std::to_string(tmp_attack) + "/" + std::to_string(tmp_life) + "]";
-}
-
-void Pet::equip_object(Object* obj) {
-    if (obj)
-        spdlog::debug("Giving {} to {}", obj->name, name);
+std::string Pet::get_object_name() const {
     if (object)
-        delete object;
-
-    object = obj;
-    if (object)
-        object->set_pet(this);
-}
-
-void Pet::reset_stats() {
-    tmp_life = life;
-    tmp_attack = attack;
+        return object->name;
+    return "";
 }
 
 int Pet::get_attack() const {
@@ -86,17 +72,35 @@ int Pet::get_xp() const {
 }
 
 int Pet::get_level() const {
-    if (xp == 2)
+    if (xp == 5)
         return 3;
     else if (xp >= 2)
         return 2;
     return 1;
 }
 
-std::string Pet::get_object_name() const {
+bool Pet::is_alive() const {
+    return tmp_life > 0;
+}
+
+std::string Pet::disp_stats() const {
+    return "[" + std::to_string(tmp_attack) + "/" + std::to_string(tmp_life) + "]";
+}
+
+void Pet::reset_stats() {
+    tmp_life = life;
+    tmp_attack = attack;
+}
+
+void Pet::equip_object(Object* obj) {
+    if (obj)
+        spdlog::debug("Giving {} to {}", obj->name, name);
     if (object)
-        return object->name;
-    return "";
+        delete object;
+
+    object = obj;
+    if (object)
+        object->set_pet(this);
 }
 
 void Pet::attacks(Pet* other) {
@@ -112,15 +116,30 @@ void Pet::buff(int buff_attack, int buff_life, bool in_fight) {
         tmp_attack = std::min(tmp_attack + buff_attack, 50);
         tmp_life  = std::min(tmp_life + buff_life, 50);
     } else {
+        int tmp_attack_buff = tmp_attack - attack;
+        int tmp_life_buff = tmp_life - life;
         attack = std::min(attack + buff_attack, 50);
         life = std::min(life + buff_life, 50);
-        reset_stats();
+        tmp_attack = std::min(attack + tmp_attack_buff, 50);
+        tmp_life = std::min(life + tmp_life_buff, 50);
     }
 }
 
-bool Pet::is_alive() const {
-    return tmp_life > 0;
+void Pet::combine(Pet* const other) {
+    int min_xp = std::min(xp, other->xp);
+    int new_attack = std::max(attack, other->attack) + min_xp + 1;
+    int new_life = std::max(life, other->life) + min_xp + 1;
+    buff(new_attack - attack, new_life - life, false);
+    for (int x=0; x<other->xp+1 && xp<5; x++) {
+        xp++;
+        if (xp == 5 || xp == 2)
+            on_level_up();
+    }
+
+    if (other->object)
+        equip_object(other->object);
 }
+
 
 std::ostream& operator<<(std::ostream& os, Pet const& pet) {
     os << pet.name << ": [";

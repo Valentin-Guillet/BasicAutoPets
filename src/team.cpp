@@ -52,6 +52,28 @@ Team::~Team() {
         delete pet;
 }
 
+size_t Team::get_nb_pets() const {
+    return pets.size();
+}
+
+void Team::can_combine(int index, std::string other_pet) const {
+    check_size("COMBINE", index);
+    if (pets[index]->name != other_pet)
+        throw InvalidAction("[COMBINE]: trying to combine different pets");
+}
+
+void Team::can_combine(int src_index, int dst_index) const {
+    check_size("COMBINE", src_index);
+    if (src_index == dst_index)
+        throw InvalidAction("[COMBINE]: same source (" + std::to_string(src_index+1) + ")" + \
+                            " and destination (" + std::to_string(dst_index+1) + ")");
+    can_combine(dst_index, pets[src_index]->name);
+}
+
+bool Team::is_fighting() const {
+    return in_fight;
+}
+
 void Team::begin_turn() {
     for (Pet* pet : pets)
         pet->on_start_turn();
@@ -72,16 +94,22 @@ void Team::end_turn() {
         pet->on_end_turn();
 }
 
-size_t Team::get_nb_pets() const {
-    return pets.size();
-}
-
 void Team::add(Pet* pet) {
     _add(pet);
 }
 
-void Team::upgrade(int index, Pet* other_pet) {
+void Team::combine(int index, Pet* other_pet) {
+    Pet* dst = pets[index];
+    dst->combine(other_pet);
+    delete other_pet;
+}
 
+void Team::combine(int src_index, int dst_index) {
+    can_combine(src_index, dst_index);
+
+    Pet* src = pets[src_index];
+    combine(dst_index, src);
+    pets.erase(pets.begin() + src_index);
 }
 
 int Team::sell(int index) {
@@ -216,10 +244,6 @@ void Team::disp_fight(Team const* const other_team) const {
     std::cout << pets_name << "\n" << stats << std::endl;
 }
 
-bool Team::is_fighting() const {
-    return in_fight;
-}
-
 void Team::draw() const {
     if (pets.empty()) {
         std::cout << "Empty" << std::endl;
@@ -252,7 +276,7 @@ void Team::load_teams() {
 
 void Team::check_size(std::string action, int index) const {
     if (index < pets.size()) return;
-    throw InvalidAction("[" + action + "]: no pet in team at index " + std::to_string(index));
+    throw InvalidAction("[" + action + "]: no pet in team at index " + std::to_string(index+1));
 }
 
 void Team::reset() {

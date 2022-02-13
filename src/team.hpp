@@ -24,20 +24,26 @@ class Team {
 
         ~Team();
 
+        size_t get_nb_pets() const;
+        void can_combine(int index, std::string other_pet) const;
+        void can_combine(int src_index, int dst_index) const;
+        bool is_fighting() const;
+
         void begin_turn();
         void order(int order[5]);
         void end_turn();
-        size_t get_nb_pets() const;
 
         void add(Pet* pet);
-        void upgrade(int index, Pet* other_pet);
+        void combine(int index, Pet* other_pet);
+        void combine(int src_index, int dst_index);
         int sell(int index);
+
         void summon(Pet* base_pet, Pet* new_pet);
         void faint(int index);
+
         void give_object(int index, Object* obj);
         int fight(Team* other_team);
         void disp_fight(Team const* const other_team) const;
-        bool is_fighting() const;
 
         void draw() const;
 

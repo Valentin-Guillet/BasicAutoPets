@@ -22,19 +22,19 @@ class Pet {
         Pet(std::string name, Team* team, Shop* shop);
         virtual ~Pet();
 
-        std::string disp_stats() const;
-
-        void equip_object(Object* obj);
-
-        void reset_stats();
+        std::string get_object_name() const;
         int get_attack() const;
         int get_xp() const;
         int get_level() const;
-        std::string get_object_name() const;
+        bool is_alive() const;
+        std::string disp_stats() const;
 
+        void reset_stats();
+        void equip_object(Object* obj);
         void attacks(Pet* other);
         void buff(int buff_attack, int buff_life, bool in_fight);
-        bool is_alive() const;
+        void combine(Pet* const other);
+
 
         virtual void on_buy() { };
         virtual void on_sell() { };

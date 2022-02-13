@@ -17,13 +17,17 @@ class Shop {
         ~Shop();
 
         int get_cost_object(int index) const;
+        std::string get_pet_name(int index) const;
 
         void begin_turn();
+        void roll();
+
         Pet* buy_pet(int index);
         void buy_object(int index, int index_target);
+
         void freeze_pet(int index);
         void freeze_object(int index);
-        void roll();
+
         void upgrade(int attack, int life, bool tmp);
 
         void draw() const;
@@ -35,7 +39,7 @@ class Shop {
         std::vector<Pet*> pets;
         std::vector<Object*> objects;
         std::vector<bool> frozen_pets;
-        std::vector<bool> frozen_object;
+        std::vector<bool> frozen_objects;
         int buff_attack;
         int buff_life;
 

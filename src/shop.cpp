@@ -19,8 +19,14 @@ Shop::~Shop() {
 
 int Shop::get_cost_object(int index) const {
     if (index >= objects.size() || !objects[index])
-        throw InvalidAction("[BUY_OBJECT]: no object at index " + std::to_string(index));
+        throw InvalidAction("[BUY_OBJECT]: no object at index " + std::to_string(index+1));
     return objects[index]->get_cost();
+}
+
+std::string Shop::get_pet_name(int index) const {
+    if (index >= pets.size() || !pets[index])
+        throw InvalidAction("[COMBINE]: no pet in shop at index " + std::to_string(index+1));
+    return pets[index]->name;
 }
 
 void Shop::begin_turn() {
@@ -28,11 +34,44 @@ void Shop::begin_turn() {
     roll();
 }
 
+void Shop::roll() {
+    std::vector<Pet*> tmp_pets;
+    for (size_t i=0; i<pets.size(); i++) {
+        if (frozen_pets[i])
+            tmp_pets.push_back(pets[i]);
+        else
+            delete pets[i];
+    }
+    pets = tmp_pets;
+    frozen_pets = std::vector<bool>(pets.size(), true);
+
+    for (int i=pets.size(); i<get_max_pets(); i++) {
+        pets.push_back(create_pet());
+        frozen_pets.push_back(false);
+    }
+
+    std::vector<Object*> tmp_objs;
+    for (size_t i=0; i<objects.size(); i++) {
+        if (frozen_objects[i])
+            tmp_objs.push_back(objects[i]);
+        else
+            delete objects[i];
+    }
+    objects = tmp_objs;
+    frozen_objects = std::vector<bool>(objects.size(), true);
+
+    for (int i=objects.size(); i<get_max_objects(); i++) {
+        objects.push_back(create_object());
+        frozen_objects.push_back(false);
+    }
+}
+
 Pet* Shop::buy_pet(int index) {
     check_size_pets("BUY_PET", index);
 
     Pet* pet = pets[index];
     pets[index] = nullptr;
+    frozen_pets[index] = false;
     return pet;
 }
 
@@ -48,30 +87,17 @@ void Shop::buy_object(int index, int index_target) {
         team->give_object(index_target, object);
     }
     objects[index] = nullptr;
+    frozen_objects[index] = false;
 }
 
 void Shop::freeze_pet(int index) {
-
+    check_size_pets("FREEZE_PET", index);
+    frozen_pets[index] = !frozen_pets[index];
 }
 
 void Shop::freeze_object(int index) {
-
-}
-
-void Shop::roll() {
-    for (Pet* pet : pets)
-        delete pet;
-    pets.clear();
-
-    for (int i=0; i<get_max_pets(); i++)
-        pets.push_back(create_pet());
-
-    for (Object* object : objects)
-        delete object;
-    objects.clear();
-
-    for (int i=0; i<get_max_objects(); i++)
-        objects.push_back(create_object());
+    check_size_objects("FREEZE_OBJ", index);
+    frozen_objects[index] = !frozen_objects[index];
 }
 
 void Shop::upgrade(int attack, int life, bool tmp) {
@@ -91,7 +117,7 @@ void Shop::draw() const {
     for (size_t i=0; i<pets.size(); i++) {
         std::cout << "  " << i+1 << ". ";
         if (pets[i])
-            std::cout << *pets[i];
+            std::cout << *pets[i] << (frozen_pets[i] ? "[F]" : "");
         else
             std::cout << "Empty";
         std::cout << std::endl;
@@ -101,7 +127,7 @@ void Shop::draw() const {
     for (size_t i=0; i<objects.size(); i++) {
         std::cout << "  " << i+1 << ". ";
         if (objects[i])
-            std::cout << *objects[i];
+            std::cout << *objects[i] << (frozen_objects[i] ? "[F]" : "");
         else
             std::cout << "Empty";
         std::cout << std::endl;
@@ -123,16 +149,16 @@ Object* Shop::create_object() {
 
 void Shop::check_size_pets(std::string action, int index) const {
     if (index >= pets.size())
-        throw InvalidAction("[" + action + "]: invalid shop index " + std::to_string(index));
+        throw InvalidAction("[" + action + "]: invalid shop index " + std::to_string(index+1));
     if (!pets[index])
-        throw InvalidAction("[" + action + "]: no pet left in shop at index " + std::to_string(index));
+        throw InvalidAction("[" + action + "]: no pet left in shop at index " + std::to_string(index+1));
 }
 
 void Shop::check_size_objects(std::string action, int index) const {
     if (index >= objects.size())
-        throw InvalidAction("[" + action + "]: invalid shop index " + std::to_string(index));
+        throw InvalidAction("[" + action + "]: invalid shop index " + std::to_string(index+1));
     if (!objects[index])
-        throw InvalidAction("[" + action + "]: no object left in shop at index " + std::to_string(index));
+        throw InvalidAction("[" + action + "]: no object left in shop at index " + std::to_string(index+1));
 }
 
 int Shop::get_max_pets() const {

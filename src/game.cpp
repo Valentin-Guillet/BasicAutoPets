@@ -28,8 +28,8 @@ Game::~Game() {
 
 void Game::begin_turn() {
     money = 10;
-    team->begin_turn();
     shop->begin_turn();
+    team->begin_turn();
     turn++;
 }
 
@@ -71,13 +71,18 @@ void Game::buy_pet(int index) {
     money -= 3;
 }
 
-void Game::upgrade(int index_shop, int index_team) {
-    check_money("UPGRADE_PET", 3);
+void Game::combine_shop(int index_shop, int index_team) {
+    check_money("COMBINE_SHOP", 3);
+    std::string shop_pet_name = shop->get_pet_name(index_shop);
+    team->can_combine(index_team, shop_pet_name);
 
     Pet* pet = shop->buy_pet(index_shop);
-    team->upgrade(index_team, pet);
-    delete pet;
+    team->combine(index_team, pet);
     money -= 3;
+}
+
+void Game::combine_team(int src_index, int dst_index) {
+    team->combine(src_index, dst_index);
 }
 
 void Game::sell(int index) {

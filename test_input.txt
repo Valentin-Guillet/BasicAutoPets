@@ -9,4 +9,7 @@ buy_object 1 1
 roll
 buy_object 1 4
 end_turn 1 2 3 4 5
-quit
+end_turn 1 2 3 4 5
+end_turn 1 2 3 4 5
+end_turn 1 2 3 4 5
+end_turn 1 2 3 4 5

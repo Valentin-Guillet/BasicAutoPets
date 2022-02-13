@@ -21,7 +21,8 @@ class Game {
         int fight();
 
         void buy_pet(int index);
-        void upgrade(int index_shop, int index_team);
+        void combine_shop(int index_shop, int index_team);
+        void combine_team(int src_index, int dst_index);
         void sell(int index);
         void buy_object(int index, int index_target);
         void roll();
