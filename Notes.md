@@ -4,7 +4,7 @@
 
 # ToDo
 
-- Tier system
+- Bonus pet when leveling up
 
 
 # Actions

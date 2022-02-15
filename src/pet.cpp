@@ -20,7 +20,7 @@ Pet* Pet::unserialize(Team* team, std::string pet_str) {
     std::string token;
 
     std::string name, object_name;
-    int life, attack, xp;
+    int attack, life, xp;
     getline(iss, name, ' ');
 
     getline(iss, token, ' ');
@@ -35,8 +35,8 @@ Pet* Pet::unserialize(Team* team, std::string pet_str) {
     getline(iss, object_name, ' ');
 
     Pet* pet = AllPets::create_new_pet(name, team, nullptr);
-    pet->life = life;
     pet->attack = attack;
+    pet->life = life;
     pet->xp = xp;
     pet->reset_stats();
 
@@ -88,8 +88,8 @@ std::string Pet::disp_stats() const {
 }
 
 void Pet::reset_stats() {
-    tmp_life = life;
     tmp_attack = attack;
+    tmp_life = life;
 }
 
 void Pet::equip_object(Object* obj) {
@@ -157,6 +157,16 @@ std::ostream& operator<<(std::ostream& os, Pet const& pet) {
 void Pet::on_faint() {
     if (object)
         object->on_faint();
+}
+
+std::string Pet::serialize() const {
+    std::string pet_str = "(";
+    pet_str += name + " ";
+    pet_str += std::to_string(tmp_attack) + " ";
+    pet_str += std::to_string(tmp_life) + " ";
+    pet_str += std::to_string(xp) + " ";
+    pet_str += (object ? object->name : "none") + ")";
+    return pet_str;
 }
 
 

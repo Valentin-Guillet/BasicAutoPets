@@ -2,8 +2,8 @@
 #define HEADER_TEAM
 
 #include <string>
+#include <tuple>
 #include <unordered_map>
-#include <utility>
 #include <vector>
 
 #include "pet.hpp"
@@ -18,10 +18,11 @@ class Team {
     friend class Object;
 
     public:
-        static std::pair<int, Team*> unserialize(std::string team_str);
+        static Team* unserialize(std::string team_str);
         static Team* get_random_team(int turn);
         static void clear_team_list();
 
+        Team();
         ~Team();
 
         size_t get_nb_pets() const;
@@ -44,21 +45,24 @@ class Team {
         void give_object(int index, Object* obj);
         int fight(Team* other_team);
         void disp_fight(Team const* const other_team) const;
+        std::tuple<int, std::string, std::string> get_fight_str(Team* other_team);
 
         void draw() const;
+        std::string serialize(bool tmp=false) const;
 
     private:
         static TeamList team_list;
         static void load_teams();
 
+        int turn;
         bool in_fight = false;
+
+        std::vector<Pet*> pets;
+        std::vector<Pet*> tmp_pets;
 
         void check_size(std::string action, int index) const;
         void reset();
         void _add(Pet* pet);
-
-        std::vector<Pet*> pets;
-        std::vector<Pet*> tmp_pets;
 };
 
 

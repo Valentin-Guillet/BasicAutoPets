@@ -40,7 +40,7 @@ bool Game::end_turn(int indices[5]) {
     int victory = fight();
     if (victory == 1)
         victories++;
-    else
+    else if (victory == -1)
         life -= life_per_turn(turn);
 
     if (life > 0) {

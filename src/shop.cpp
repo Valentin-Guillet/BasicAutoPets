@@ -7,7 +7,7 @@
 #include "utils.hpp"
 
 
-Shop::Shop(Team* team) : team(team), turns(0), buff_life(0), buff_attack(0) { }
+Shop::Shop(Team* team) : team(team), turn(0), buff_life(0), buff_attack(0) { }
 
 Shop::~Shop() {
     for (Pet* pet : pets)
@@ -30,7 +30,7 @@ std::string Shop::get_pet_name(int index) const {
 }
 
 void Shop::begin_turn() {
-    turns++;
+    turn++;
     roll();
 }
 
@@ -136,14 +136,14 @@ void Shop::draw() const {
 
 
 Pet* Shop::create_pet() {
-    Pet* pet = Pet::create_random_pet(team, this, 1);
+    Pet* pet = Pet::create_random_pet(team, this, (turn + 1) / 2);
     if (buff_attack > 0 || buff_life > 0)
         pet->buff(buff_attack, buff_life, false);
     return pet;
 }
 
 Object* Shop::create_object() {
-    Object* object = Object::create_random_object(team, this, 2);
+    Object* object = Object::create_random_object(team, this, (turn + 1) / 2);
     return object;
 }
 
@@ -162,15 +162,15 @@ void Shop::check_size_objects(std::string action, int index) const {
 }
 
 int Shop::get_max_pets() const {
-    if (turns < 5)
+    if (turn < 5)
         return 3;
-    else if (turns < 9)
+    else if (turn < 9)
         return 4;
     return 5;
 }
 
 int Shop::get_max_objects() const {
-    if (turns < 3)
+    if (turn < 3)
         return 1;
     return 2;
 }

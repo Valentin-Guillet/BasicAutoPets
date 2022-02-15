@@ -35,7 +35,7 @@ class Shop {
     private:
         Team* team;
 
-        int turns;
+        int turn;
         std::vector<Pet*> pets;
         std::vector<Object*> objects;
         std::vector<bool> frozen_pets;

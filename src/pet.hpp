@@ -55,6 +55,7 @@ class Pet {
         virtual void on_friend_sold() { };
         virtual void on_friend_eats_shop() { };
 
+        std::string serialize() const;
         friend std::ostream& operator<<(std::ostream& os, Pet const& pet);
 
     protected:
@@ -62,13 +63,13 @@ class Pet {
 
         int pack;
         int tier;
-        int life;
         int attack;
+        int life;
         int xp;
         Object* object;
 
-        int tmp_life;
         int tmp_attack;
+        int tmp_life;
         Object* tmp_object;
 
         Team* team;

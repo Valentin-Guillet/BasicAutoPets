@@ -9,7 +9,7 @@
 
 TeamList Team::team_list;
 
-std::pair<int, Team*> Team::unserialize(std::string team_str) {
+Team* Team::unserialize(std::string team_str) {
     Team* new_team = new Team();
     int index = team_str.find(' ');
     int turn = std::stoi(team_str.substr(0, index));
@@ -23,8 +23,10 @@ std::pair<int, Team*> Team::unserialize(std::string team_str) {
         new_team->_add(Pet::unserialize(new_team, pet_str));
     }
     new_team->tmp_pets = new_team->pets;
+    new_team->turn = turn;
+    new_team->in_fight = true;
 
-    return {turn, new_team};
+    return new_team;
 }
 
 Team* Team::get_random_team(int turn) {
@@ -47,6 +49,8 @@ void Team::clear_team_list() {
     Team::team_list.clear();
 }
 
+
+Team::Team() : turn(0) { }
 
 Team::~Team() {
     for (Pet* pet : pets)
@@ -76,6 +80,7 @@ bool Team::is_fighting() const {
 }
 
 void Team::begin_turn() {
+    turn++;
     for (Pet* pet : pets)
         pet->on_start_turn();
 }
@@ -129,7 +134,7 @@ int Team::sell(int index) {
 
 void Team::summon(Pet* base_pet, Pet* new_pet) {
     spdlog::debug("New pet summoned: {}", new_pet->name);
-    if (!in_fight && pets.size() >= 6) {
+    if (pets.size() >= 6) {
         spdlog::debug("Already 5 pets in team, aborting");
         delete new_pet;
         return;
@@ -185,15 +190,15 @@ int Team::fight(Team* other_team) {
 
         if (!pet->is_alive()) {
             pet->on_faint();
-            tmp_pets.erase(tmp_pets.begin());
             if (pet->is_tmp)
                 delete pet;
+            tmp_pets.erase(tmp_pets.begin());
         }
         if (!other_pet->is_alive()) {
             other_pet->on_faint();
-            other_team->tmp_pets.erase(other_team->tmp_pets.begin());
             if (other_pet->is_tmp)
                 delete other_pet;
+            other_team->tmp_pets.erase(other_team->tmp_pets.begin());
         }
 
         disp_fight(other_team);
@@ -244,6 +249,54 @@ void Team::disp_fight(Team const* const other_team) const {
     std::cout << pets_name << "\n" << stats << std::endl;
 }
 
+std::tuple<int, std::string, std::string> Team::get_fight_str(Team* other_team) {
+    in_fight = true;
+
+    while (!tmp_pets.empty() && !other_team->tmp_pets.empty()) {
+        Pet* pet = tmp_pets.front();
+        Pet* other_pet = other_team->tmp_pets.front();
+
+        while (pet->is_alive() && other_pet->is_alive()) {
+            if (pet->get_attack() > other_pet->get_attack()) {
+                pet->attacks(other_pet);
+                other_pet->attacks(pet);
+            } else {
+                other_pet->attacks(pet);
+                pet->attacks(other_pet);
+            }
+        }
+
+        if (!pet->is_alive()) {
+            pet->on_faint();
+            if (pet->is_tmp)
+                delete pet;
+            tmp_pets.erase(tmp_pets.begin());
+        }
+        if (!other_pet->is_alive()) {
+            other_pet->on_faint();
+            if (other_pet->is_tmp)
+                delete other_pet;
+            other_team->tmp_pets.erase(other_team->tmp_pets.begin());
+        }
+    }
+
+    int output;
+    if (tmp_pets.empty() && other_team->tmp_pets.empty())
+        output = 0;
+    else if (tmp_pets.empty())
+        output = -1;
+    else
+        output = 1;
+
+    std::string team_str1 = serialize(true);
+    std::string team_str2 = other_team->serialize(true);
+
+    in_fight = false;
+    reset();
+    other_team->reset();
+    return {output, team_str1, team_str2};
+}
+
 void Team::draw() const {
     if (pets.empty()) {
         std::cout << "  Empty" << std::endl;
@@ -263,14 +316,27 @@ void Team::draw() const {
     std::cout << pets_name << "\n" << stats << "\n" << objects << std::endl;
 }
 
+std::string Team::serialize(bool tmp) const {
+    std::string team_str = std::to_string(turn) + " ";
+    std::vector<Pet*> pets_list = pets;
+    if (tmp)
+        pets_list = tmp_pets;
+
+    for (Pet* pet : pets_list) {
+        if (!pet->is_alive()) continue;
+        team_str += pet->serialize() + " ";
+    }
+    team_str.pop_back();
+    return team_str;
+}
+
 
 void Team::load_teams() {
     std::ifstream team_file("data/saved_teams.txt");
     std::string team_str;
     while (getline(team_file, team_str)) {
-        auto [turn, new_team] = Team::unserialize(team_str);
-        new_team->in_fight = true;
-        Team::team_list[turn].push_back(new_team);
+        Team* new_team = Team::unserialize(team_str);
+        Team::team_list[new_team->turn].push_back(new_team);
     }
 }
 

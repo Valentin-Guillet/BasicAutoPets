@@ -13,3 +13,4 @@ end_turn 1 2 3 4 5
 end_turn 1 2 3 4 5
 end_turn 1 2 3 4 5
 end_turn 1 2 3 4 5
+quit

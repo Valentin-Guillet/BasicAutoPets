@@ -12,6 +12,9 @@ HEADERS := $(shell find src/ -name *.hpp)
 SOURCES := $(shell find src/ -name *.cpp)
 OBJECTS := $(SOURCES:src/%.cpp=build/%.o)
 
+TEST_OBJ := $(filter-out build/main.o, $(OBJECTS))
+TEST_OBJ += test/main_test_battles.cpp
+
 PETS_SOURCES := $(shell find src/Pets/ -name *.cpp ! -name all_pets.cpp)
 
 
@@ -26,6 +29,10 @@ main: $(OBJECTS)
 memory_leak: main
 	@ valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes --verbose --log-file=valgrind-out.txt ./main < test_input.txt  && vim valgrind-out.txt && rm valgrind-out.txt
 
+test_battles: test/main_test
+
+test/main_test: $(TEST_OBJ)
+	$(CC) $(CFLAGS) $^ $(LFLAGS) -o test/main_test
 
 build/%.o: src/%.cpp $(HEADERS)
 	@ mkdir -p build/Pets/
