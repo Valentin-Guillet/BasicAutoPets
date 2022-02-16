@@ -5,10 +5,7 @@
 #include "team.hpp"
 
 
-enum class Action {
-    BUY_PET, UPGRADE, SELL, BUY_OBJECT, ROLL, FREEZE, END_TURN,
-};
-
+class UserInterface;
 
 class Game {
     public:
@@ -44,6 +41,8 @@ class Game {
         Shop* shop;
 
         void check_money(std::string action, int amount) const;
+
+        friend class UserInterface;
 };
 
 

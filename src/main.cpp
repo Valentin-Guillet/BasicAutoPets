@@ -7,14 +7,16 @@
 
 
 int main(int argc, char** argv) {
-
     spdlog::set_level(spdlog::level::debug);
 
     Game* game = new Game();
-    game->draw();
 
-    while (act(game))
-        game->draw();
+    UserInterface ui(game);
+
+    while (ui.run()) {
+        delete game;
+        game = new Game();
+    }
 
     delete game;
 

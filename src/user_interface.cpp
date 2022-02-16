@@ -4,6 +4,7 @@
 #include <algorithm>
 #include <cctype>
 #include <iostream>
+#include <ncurses.h>
 #include <sstream>
 #include <string>
 
@@ -15,7 +16,34 @@ static void to_lower(std::string &s) {
 }
 
 
-bool act(Game* game) {
+UserInterface::UserInterface(Game* game) : game(game) {
+    initscr();
+    draw_frame();
+}
+
+UserInterface::~UserInterface() {
+    std::cout << "Leaving" << std::endl;
+    endwin();
+}
+
+bool UserInterface::run() {
+    draw_game_state();
+    /* game->draw(); */
+    /* do */
+    /*     game->draw(); */
+    /* while (act()); */
+
+    getch();
+    return play_again();
+}
+
+
+bool UserInterface::play_again() const {
+    std::cout << "Game over ! One day, you will be able to play again here" << std::endl;
+    return false;
+}
+
+bool UserInterface::act() {
     std::string line;
     std::cout << "What do you want to do ?\n";
     std::getline(std::cin, line);
@@ -110,4 +138,37 @@ bool act(Game* game) {
     }
 
     return true;
+}
+
+void UserInterface::draw_frame() const {
+    std::string hborder(COLS-2, '-');
+    hborder = "+" + hborder + "+";
+    mvprintw(0, 0, hborder.c_str());
+    mvprintw(LINES-1, 0, hborder.c_str());
+    for (int j=1; j<LINES-1; j++) {
+        mvaddch(j, 0, '|');
+        mvaddch(j, COLS-1, '|');
+    }
+}
+
+void UserInterface::draw_game_state() const {
+    int padding = (COLS-1 - 4*9) / 4;
+    int inner_padding = (COLS-1 - 4*9) / 6;
+
+    mvprintw(3, padding, "Money : % 2d", game->money);
+    mvprintw(3, padding+9+inner_padding, " Life: % 2d", game->life);
+    mvprintw(3, padding+2*(9+inner_padding), " Wins: % 2d/10", game->victories);
+    mvprintw(3, padding+3*(9+inner_padding), " Turn % 2d", game->victories);
+}
+
+void UserInterface::draw_team() const {
+
+}
+
+void UserInterface::draw_shop() const {
+
+}
+
+void UserInterface::draw_action() const {
+
 }

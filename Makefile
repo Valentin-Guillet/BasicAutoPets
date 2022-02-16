@@ -6,8 +6,9 @@ MAKEFLAGS := --jobs=$(shell nproc)
 CC := g++
 CFLAGS := -std=c++2a -Wall -Wextra -Werror -Wno-unused-parameter
 CFLAGS += -I./src
+LFLAGS := -lncurses
 
-HEADERS := $(shell find src/ -name *.hpp)
+HEADERS := $(shell find src/ -name *.hpp ! -name user_interface.hpp)
 SOURCES := $(shell find src/ -name *.cpp)
 OBJECTS := $(SOURCES:src/%.cpp=build/%.o)
 
@@ -32,6 +33,9 @@ test_battles: test/main_test
 
 test/main_test: $(TEST_OBJ)
 	$(CC) $(CFLAGS) $^ $(LFLAGS) -o test/main_test
+
+build/user_interface.o: src/user_interface.cpp src/user_interface.hpp $(HEADERS)
+	$(CC) -c $(CFLAGS) -o $@ $<
 
 build/%.o: src/%.cpp $(HEADERS)
 	@ mkdir -p build/Pets/
