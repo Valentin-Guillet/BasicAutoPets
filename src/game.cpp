@@ -33,7 +33,7 @@ void Game::begin_turn() {
     turn++;
 }
 
-bool Game::end_turn(int indices[5]) {
+bool Game::end_turn(size_t indices[5]) {
     team->order(indices);
     team->end_turn();
 
@@ -61,7 +61,7 @@ int Game::fight() {
     return team->fight(other_team);
 }
 
-void Game::buy_pet(int index) {
+void Game::buy_pet(size_t index) {
     check_money("BUY_PET", 3);
     if (team->get_nb_pets() == 5)
         throw InvalidAction("[BUY_PET]: already have 5 pets in the team !");
@@ -71,7 +71,7 @@ void Game::buy_pet(int index) {
     money -= 3;
 }
 
-void Game::combine_shop(int index_shop, int index_team) {
+void Game::combine_shop(size_t index_shop, size_t index_team) {
     check_money("COMBINE_SHOP", 3);
     std::string shop_pet_name = shop->get_pet_name(index_shop);
     team->can_combine(index_team, shop_pet_name);
@@ -81,15 +81,15 @@ void Game::combine_shop(int index_shop, int index_team) {
     money -= 3;
 }
 
-void Game::combine_team(int src_index, int dst_index) {
+void Game::combine_team(size_t src_index, size_t dst_index) {
     team->combine(src_index, dst_index);
 }
 
-void Game::sell(int index) {
+void Game::sell(size_t index) {
     money += team->sell(index);
 }
 
-void Game::buy_object(int index, int index_target) {
+void Game::buy_object(size_t index, size_t index_target) {
     int cost = shop->get_cost_object(index);
     check_money("BUY_OBJECT", cost);
 
@@ -104,11 +104,11 @@ void Game::roll() {
     money--;
 }
 
-void Game::freeze_pet(int index) {
+void Game::freeze_pet(size_t index) {
     shop->freeze_pet(index);
 }
 
-void Game::freeze_object(int index) {
+void Game::freeze_object(size_t index) {
     shop->freeze_object(index);
 }
 

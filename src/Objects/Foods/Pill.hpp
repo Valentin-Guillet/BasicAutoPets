@@ -11,7 +11,7 @@ class Pill : public Object {
         Pill(Team* team, Shop* shop);
         ~Pill() override;
 
-        void on_buy(int index) override;
+        void on_buy(size_t index) override;
 };
 
 

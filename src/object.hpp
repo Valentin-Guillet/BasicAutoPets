@@ -29,20 +29,18 @@ class Object {
         int get_cost() const;
         void set_pet(Pet* pet);
 
-        virtual void on_buy(int index) { };
+        virtual void on_buy(size_t index) { };
         virtual void on_faint() { };
 
         friend std::ostream& operator<<(std::ostream& os, Object const& object);
 
     protected:
-        int id;
-
-        int tier;
-
         Team* team;
         Shop* shop;
         Pet* attached_pet;
 
+        int id;
+        int tier;
         int cost;
 
         std::vector<Pet*>& get_team_pets() const;

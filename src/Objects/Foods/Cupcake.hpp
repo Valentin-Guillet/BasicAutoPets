@@ -11,7 +11,7 @@ class Cupcake : public Object {
         Cupcake(Team* team, Shop* shop);
         ~Cupcake() override;
 
-        void on_buy(int index) override;
+        void on_buy(size_t index) override;
 };
 
 

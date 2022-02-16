@@ -14,7 +14,7 @@ class Team;
 class Pet {
     public:
         static Pet* unserialize(Team* team, std::string pet_str);
-        static Pet* create_random_pet(Team* team, Shop* shop, int max_tier);
+        static Pet* create_random_pet(Team* team, Shop* shop, int max_tier, bool strict_tier=false);
 
         std::string name;
         bool is_tmp;
@@ -22,6 +22,7 @@ class Pet {
         Pet(std::string name, Team* team, Shop* shop);
         virtual ~Pet();
 
+        std::string get_repr() const;
         std::string get_object_name() const;
         int get_attack() const;
         int get_xp() const;
@@ -43,7 +44,7 @@ class Pet {
         virtual void on_faint();
         virtual void on_knockout() { };
         virtual void on_object(Object* obj) { };
-        virtual void on_object_bought(int index, Object* obj) { };
+        virtual void on_object_bought(size_t index, Object* obj) { };
         virtual void on_level_up() { };
         virtual void on_start_turn() { };
         virtual void on_end_turn() { };
@@ -59,8 +60,12 @@ class Pet {
         friend std::ostream& operator<<(std::ostream& os, Pet const& pet);
 
     protected:
-        int id;
+        std::string repr;
 
+        Team* team;
+        Shop* shop;
+
+        int id;
         int pack;
         int tier;
         int attack;
@@ -72,13 +77,10 @@ class Pet {
         int tmp_life;
         Object* tmp_object;
 
-        Team* team;
-        Shop* shop;
-
         std::vector<Pet*>& get_team_pets() const;
 
     private:
-        static std::string get_random_name(int max_tier);
+        static std::string get_random_name(int max_tier, bool strict_tier=false);
 };
 
 

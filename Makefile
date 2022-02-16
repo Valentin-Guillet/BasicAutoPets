@@ -4,8 +4,7 @@
 MAKEFLAGS := --jobs=$(shell nproc)
 
 CC := g++
-# CFLAGS := -std=c++2a -Wall -Wextra -Werror -Wno-unused-parameter
-CFLAGS := -std=c++2a
+CFLAGS := -std=c++2a -Wall -Wextra -Werror -Wno-unused-parameter
 CFLAGS += -I./src
 
 HEADERS := $(shell find src/ -name *.hpp)

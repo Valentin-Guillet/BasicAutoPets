@@ -14,7 +14,7 @@ Pill::Pill(Team* team, Shop* shop) : Object("pill", team, shop, ObjType::FOOD) {
 
 Pill::~Pill() { }
 
-void Pill::on_buy(int index) {
+void Pill::on_buy(size_t index) {
     spdlog::debug("{} bought !", name);
     team->faint(index);
 }

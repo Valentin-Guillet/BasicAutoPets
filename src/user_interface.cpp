@@ -84,7 +84,7 @@ bool act(Game* game) {
             game->freeze_object(index);
 
         } else if (action == "end_turn") {
-            int indices[5];
+            size_t indices[5];
             for (size_t i=0; i<5; i++) {
                 std::string arg;
                 iss >> arg;

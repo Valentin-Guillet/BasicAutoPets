@@ -61,13 +61,13 @@ size_t Team::get_nb_pets() const {
     return pets.size();
 }
 
-void Team::can_combine(int index, std::string other_pet) const {
+void Team::can_combine(size_t index, std::string other_pet) const {
     check_size("COMBINE", index);
     if (pets[index]->name != other_pet)
         throw InvalidAction("[COMBINE]: trying to combine different pets");
 }
 
-void Team::can_combine(int src_index, int dst_index) const {
+void Team::can_combine(size_t src_index, size_t dst_index) const {
     check_size("COMBINE", src_index);
     if (src_index == dst_index)
         throw InvalidAction("[COMBINE]: same source (" + std::to_string(src_index+1) + ")" + \
@@ -85,7 +85,7 @@ void Team::begin_turn() {
         pet->on_start_turn();
 }
 
-void Team::order(int order[5]) {
+void Team::order(size_t order[5]) {
     std::vector<Pet*> ordered_pets;
     for (size_t i=0; i<5; i++) {
         if (order[i] < pets.size())
@@ -105,13 +105,13 @@ void Team::add(Pet* pet) {
     _add(pet);
 }
 
-void Team::combine(int index, Pet* other_pet) {
+void Team::combine(size_t index, Pet* other_pet) {
     Pet* dst = pets[index];
     dst->combine(other_pet);
     delete other_pet;
 }
 
-void Team::combine(int src_index, int dst_index) {
+void Team::combine(size_t src_index, size_t dst_index) {
     can_combine(src_index, dst_index);
 
     Pet* src = pets[src_index];
@@ -119,7 +119,7 @@ void Team::combine(int src_index, int dst_index) {
     pets.erase(pets.begin() + src_index);
 }
 
-int Team::sell(int index) {
+int Team::sell(size_t index) {
     check_size("SELL_PET", index);
 
     Pet* pet = pets[index];
@@ -149,14 +149,14 @@ void Team::summon(Pet* base_pet, Pet* new_pet) {
     team_pets->insert(it+1, new_pet);
 }
 
-void Team::faint(int index) {
+void Team::faint(size_t index) {
     Pet* pet = pets[index];
     pet->on_faint();
     pets.erase(pets.begin() + index);
     delete pet;
 }
 
-void Team::give_object(int index, Object* obj) {
+void Team::give_object(size_t index, Object* obj) {
     check_size("GIVE_OBJECT", index);
 
     if (obj->type == ObjType::ITEM)
@@ -340,7 +340,7 @@ void Team::load_teams() {
     }
 }
 
-void Team::check_size(std::string action, int index) const {
+void Team::check_size(std::string action, size_t index) const {
     if (index < pets.size()) return;
     throw InvalidAction("[" + action + "]: no pet in team at index " + std::to_string(index+1));
 }

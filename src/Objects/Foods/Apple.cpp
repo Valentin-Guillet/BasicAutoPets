@@ -13,7 +13,7 @@ Apple::Apple(Team* team, Shop* shop) : Object("apple", team, shop, ObjType::FOOD
 
 Apple::~Apple() { }
 
-void Apple::on_buy(int index) {
+void Apple::on_buy(size_t index) {
     spdlog::debug("{} bought !", name);
     std::vector<Pet*>& team_pets = get_team_pets();
 

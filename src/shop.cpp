@@ -7,7 +7,7 @@
 #include "utils.hpp"
 
 
-Shop::Shop(Team* team) : team(team), turn(0), buff_life(0), buff_attack(0) { }
+Shop::Shop(Team* team) : team(team), turn(0), buff_attack(0), buff_life(0) { }
 
 Shop::~Shop() {
     for (Pet* pet : pets)
@@ -17,13 +17,13 @@ Shop::~Shop() {
         delete object;
 }
 
-int Shop::get_cost_object(int index) const {
+int Shop::get_cost_object(size_t index) const {
     if (index >= objects.size() || !objects[index])
         throw InvalidAction("[BUY_OBJECT]: no object at index " + std::to_string(index+1));
     return objects[index]->get_cost();
 }
 
-std::string Shop::get_pet_name(int index) const {
+std::string Shop::get_pet_name(size_t index) const {
     if (index >= pets.size() || !pets[index])
         throw InvalidAction("[COMBINE]: no pet in shop at index " + std::to_string(index+1));
     return pets[index]->name;
@@ -66,7 +66,22 @@ void Shop::roll() {
     }
 }
 
-Pet* Shop::buy_pet(int index) {
+void Shop::create_bonus_pet() {
+    spdlog::debug("Creating bonus pet! ");
+    if (pets.size() + objects.size() == 7) {
+        spdlog::debug("No empty spot for a bonus pet !");
+        return;
+    }
+
+    int tier = (turn + 1) / 2 + 1;
+    Pet* pet = Pet::create_random_pet(team, this, tier, true);
+    if (buff_attack > 0 || buff_life > 0)
+        pet->buff(buff_attack, buff_life, false);
+    pets.push_back(pet);
+    frozen_pets.push_back(false);
+}
+
+Pet* Shop::buy_pet(size_t index) {
     check_size_pets("BUY_PET", index);
 
     Pet* pet = pets[index];
@@ -75,7 +90,7 @@ Pet* Shop::buy_pet(int index) {
     return pet;
 }
 
-void Shop::buy_object(int index, int index_target) {
+void Shop::buy_object(size_t index, size_t index_target) {
     check_size_objects("BUY_OBJECT", index);
 
     Object* object = objects[index];
@@ -90,12 +105,12 @@ void Shop::buy_object(int index, int index_target) {
     frozen_objects[index] = false;
 }
 
-void Shop::freeze_pet(int index) {
+void Shop::freeze_pet(size_t index) {
     check_size_pets("FREEZE_PET", index);
     frozen_pets[index] = !frozen_pets[index];
 }
 
-void Shop::freeze_object(int index) {
+void Shop::freeze_object(size_t index) {
     check_size_objects("FREEZE_OBJ", index);
     frozen_objects[index] = !frozen_objects[index];
 }
@@ -147,21 +162,21 @@ Object* Shop::create_object() {
     return object;
 }
 
-void Shop::check_size_pets(std::string action, int index) const {
+void Shop::check_size_pets(std::string action, size_t index) const {
     if (index >= pets.size())
         throw InvalidAction("[" + action + "]: invalid shop index " + std::to_string(index+1));
     if (!pets[index])
         throw InvalidAction("[" + action + "]: no pet left in shop at index " + std::to_string(index+1));
 }
 
-void Shop::check_size_objects(std::string action, int index) const {
+void Shop::check_size_objects(std::string action, size_t index) const {
     if (index >= objects.size())
         throw InvalidAction("[" + action + "]: invalid shop index " + std::to_string(index+1));
     if (!objects[index])
         throw InvalidAction("[" + action + "]: no object left in shop at index " + std::to_string(index+1));
 }
 
-int Shop::get_max_pets() const {
+size_t Shop::get_max_pets() const {
     if (turn < 5)
         return 3;
     else if (turn < 9)
@@ -169,8 +184,6 @@ int Shop::get_max_pets() const {
     return 5;
 }
 
-int Shop::get_max_objects() const {
-    if (turn < 3)
-        return 1;
-    return 2;
+size_t Shop::get_max_objects() const {
+    return (turn < 3 ? 1 : 2);
 }

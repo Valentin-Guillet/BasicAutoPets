@@ -11,7 +11,7 @@ class Apple : public Object {
         Apple(Team* team, Shop* shop);
         ~Apple() override;
 
-        void on_buy(int index) override;
+        void on_buy(size_t index) override;
 };
 
 

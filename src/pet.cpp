@@ -10,8 +10,8 @@
 #include "Pets/all_pets.hpp"
 
 
-Pet* Pet::create_random_pet(Team* team, Shop* shop, int max_tier) {
-    std::string name = Pet::get_random_name(max_tier);
+Pet* Pet::create_random_pet(Team* team, Shop* shop, int max_tier, bool strict_tier) {
+    std::string name = Pet::get_random_name(max_tier, strict_tier);
     return AllPets::create_new_pet(name, team, shop);
 }
 
@@ -49,12 +49,16 @@ Pet* Pet::unserialize(Team* team, std::string pet_str) {
 }
 
 Pet::Pet(std::string name, Team* team, Shop* shop) :
-        name(name), team(team), shop(shop), xp(0), object(nullptr), is_tmp(false) {
+        name(name), is_tmp(false), team(team), shop(shop), xp(0), object(nullptr) {
     reset_stats();
 }
 
 Pet::~Pet() {
     delete object;
+}
+
+std::string Pet::get_repr() const {
+    return repr;
 }
 
 std::string Pet::get_object_name() const {
@@ -129,8 +133,10 @@ void Pet::gain_xp(int amount) {
     spdlog::debug("{} gains {} xp", name, amount);
     for (int x=0; x<amount && xp<5; x++) {
         xp++;
-        if (xp == 5 || xp == 2)
+        if (xp == 5 || xp == 2) {
             on_level_up();
+            shop->create_bonus_pet();
+        }
     }
 }
 
@@ -177,14 +183,15 @@ std::vector<Pet*>& Pet::get_team_pets() const {
 }
 
 
-std::string Pet::get_random_name(int max_tier) {
+std::string Pet::get_random_name(int max_tier, bool strict_tier) {
     std::vector<std::pair<int, std::string>> names;
 
+    int min_tier = (strict_tier ? max_tier : 0);
     std::copy_if(AllPets::PET_LIST.begin(),
                  AllPets::PET_LIST.end(),
                  std::back_inserter(names),
-                 [max_tier](std::pair<int, std::string> p) {
-                    return 0 <= p.first && p.first <= max_tier;
+                 [min_tier, max_tier](std::pair<int, std::string> p) {
+                    return min_tier <= p.first && p.first <= max_tier;
                  });
 
     return utils::choice(names)[0].second;

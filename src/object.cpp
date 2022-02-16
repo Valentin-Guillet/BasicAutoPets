@@ -20,7 +20,7 @@ Object* Object::create_random_object(Team* team, Shop* shop, int max_tier) {
 
 
 Object::Object(std::string name, Team* team, Shop* shop, ObjType type) :
-    name(name), team(team), shop(shop), type(type), attached_pet(nullptr), cost(3) {
+    name(name), type(type), team(team), shop(shop), attached_pet(nullptr), cost(3) {
 }
 
 Object::~Object() { };

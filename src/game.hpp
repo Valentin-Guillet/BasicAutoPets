@@ -16,18 +16,18 @@ class Game {
         ~Game();
 
         void begin_turn();
-        bool end_turn(int indices[5]);
+        bool end_turn(size_t indices[5]);
 
         int fight();
 
-        void buy_pet(int index);
-        void combine_shop(int index_shop, int index_team);
-        void combine_team(int src_index, int dst_index);
-        void sell(int index);
-        void buy_object(int index, int index_target);
+        void buy_pet(size_t index);
+        void combine_shop(size_t index_shop, size_t index_team);
+        void combine_team(size_t src_index, size_t dst_index);
+        void sell(size_t index);
+        void buy_object(size_t index, size_t index_target);
         void roll();
-        void freeze_pet(int index);
-        void freeze_object(int index);
+        void freeze_pet(size_t index);
+        void freeze_object(size_t index);
 
         void get_state() const;
 

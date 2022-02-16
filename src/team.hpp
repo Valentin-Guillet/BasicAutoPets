@@ -26,23 +26,23 @@ class Team {
         ~Team();
 
         size_t get_nb_pets() const;
-        void can_combine(int index, std::string other_pet) const;
-        void can_combine(int src_index, int dst_index) const;
+        void can_combine(size_t index, std::string other_pet) const;
+        void can_combine(size_t src_index, size_t dst_index) const;
         bool is_fighting() const;
 
         void begin_turn();
-        void order(int order[5]);
+        void order(size_t order[5]);
         void end_turn();
 
         void add(Pet* pet);
-        void combine(int index, Pet* other_pet);
-        void combine(int src_index, int dst_index);
-        int sell(int index);
+        void combine(size_t index, Pet* other_pet);
+        void combine(size_t src_index, size_t dst_index);
+        int sell(size_t index);
 
         void summon(Pet* base_pet, Pet* new_pet);
-        void faint(int index);
+        void faint(size_t index);
 
-        void give_object(int index, Object* obj);
+        void give_object(size_t index, Object* obj);
         int fight(Team* other_team);
         void disp_fight(Team const* const other_team) const;
         std::tuple<int, std::string, std::string> get_fight_str(Team* other_team);
@@ -60,7 +60,7 @@ class Team {
         std::vector<Pet*> pets;
         std::vector<Pet*> tmp_pets;
 
-        void check_size(std::string action, int index) const;
+        void check_size(std::string action, size_t index) const;
         void reset();
         void _add(Pet* pet);
 };
