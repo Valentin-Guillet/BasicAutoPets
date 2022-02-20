@@ -1,6 +1,7 @@
 
 #include "shop.hpp"
 
+#include <algorithm>
 #include <iostream>
 
 #include "pet.hpp"
@@ -73,7 +74,7 @@ void Shop::create_bonus_pet() {
         return;
     }
 
-    int tier = (turn + 1) / 2 + 1;
+    int tier = std::min(6, (turn + 1) / 2 + 1);
     Pet* pet = Pet::create_random_pet(team, this, tier, true);
     if (buff_attack > 0 || buff_life > 0)
         pet->buff(buff_attack, buff_life, false);
@@ -127,38 +128,16 @@ void Shop::upgrade(int attack, int life, bool tmp) {
     }
 }
 
-void Shop::draw() const {
-    std::cout << "Pets: \n";
-    for (size_t i=0; i<pets.size(); i++) {
-        std::cout << "  " << i+1 << ". ";
-        if (pets[i])
-            std::cout << *pets[i] << (frozen_pets[i] ? "[F]" : "");
-        else
-            std::cout << "Empty";
-        std::cout << std::endl;
-    }
-
-    std::cout << "Objects: \n";
-    for (size_t i=0; i<objects.size(); i++) {
-        std::cout << "  " << i+1 << ". ";
-        if (objects[i])
-            std::cout << *objects[i] << (frozen_objects[i] ? "[F]" : "");
-        else
-            std::cout << "Empty";
-        std::cout << std::endl;
-    }
-}
-
 
 Pet* Shop::create_pet() {
-    Pet* pet = Pet::create_random_pet(team, this, (turn + 1) / 2);
+    Pet* pet = Pet::create_random_pet(team, this, std::min(6, (turn + 1) / 2));
     if (buff_attack > 0 || buff_life > 0)
         pet->buff(buff_attack, buff_life, false);
     return pet;
 }
 
 Object* Shop::create_object() {
-    Object* object = Object::create_random_object(team, this, (turn + 1) / 2);
+    Object* object = Object::create_random_object(team, this, std::min(6, (turn + 1) / 2));
     return object;
 }
 

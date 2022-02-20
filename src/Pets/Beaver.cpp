@@ -7,6 +7,7 @@
 
 
 Beaver::Beaver(Team* team, Shop* shop) : Pet("beaver", team, shop) {
+    repr = "🦫";
     id = 2;
     pack = PACK_STANDARD | PACK_DLC1;
     tier = 1;

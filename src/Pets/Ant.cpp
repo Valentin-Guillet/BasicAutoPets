@@ -9,7 +9,7 @@
 
 
 Ant::Ant(Team* team, Shop* shop) : Pet("ant", team, shop) {
-    repr = "\U0001f41c";
+    repr = "🐜";
     id = 1;
     pack = PACK_STANDARD | PACK_DLC1;
     tier = 1;

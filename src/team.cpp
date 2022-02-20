@@ -173,7 +173,6 @@ int Team::fight(Team* other_team) {
     in_fight = true;
 
     std::cout << "Team before attack:" << std::endl;
-    draw();
     while (!tmp_pets.empty() && !other_team->tmp_pets.empty()) {
         Pet* pet = tmp_pets.front();
         Pet* other_pet = other_team->tmp_pets.front();
@@ -295,25 +294,6 @@ std::tuple<int, std::string, std::string> Team::get_fight_str(Team* other_team) 
     reset();
     other_team->reset();
     return {output, team_str1, team_str2};
-}
-
-void Team::draw() const {
-    if (pets.empty()) {
-        std::cout << "  Empty" << std::endl;
-        return;
-    }
-
-    std::string pets_name;
-    std::string stats;
-    std::string objects;
-
-    for (int i=pets.size()-1; i>=0; i--) {
-        pets_name += utils::pad(pets[i]->name, 10);
-        stats += utils::pad(pets[i]->disp_stats(), 10);
-        objects += utils::pad(pets[i]->get_object_name(), 10);
-    }
-
-    std::cout << pets_name << "\n" << stats << "\n" << objects << std::endl;
 }
 
 std::string Team::serialize(bool tmp) const {

@@ -9,8 +9,11 @@
 #include "team.hpp"
 
 
+class UserInterface;
+
 class Shop {
     friend class Pet;
+    friend class UserInterface;
 
     public:
         Shop(Team* team);
@@ -30,8 +33,6 @@ class Shop {
         void freeze_object(size_t index);
 
         void upgrade(int attack, int life, bool tmp);
-
-        void draw() const;
 
     private:
         Team* team;

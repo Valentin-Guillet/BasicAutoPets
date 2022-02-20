@@ -6,6 +6,7 @@
 
 
 Cricket::Cricket(Team* team, Shop* shop) : Pet("cricket", team, shop) {
+    repr = "🦗";
     id = 5;
     pack = PACK_STANDARD | PACK_DLC1;
     tier = 1;

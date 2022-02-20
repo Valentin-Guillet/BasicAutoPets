@@ -55,9 +55,6 @@ bool Game::end_turn(size_t indices[5]) {
 int Game::fight() {
     Team* other_team = Team::get_random_team(turn);
 
-    std::cout << "Fight ! Other team:" << std::endl;
-    other_team->draw();
-
     return team->fight(other_team);
 }
 
@@ -114,16 +111,6 @@ void Game::freeze_object(size_t index) {
 
 void Game::get_state() const {
 
-}
-
-void Game::draw() const {
-    std::cout << "Turn " << turn << ", HP = " << life << ", " << victories << " wins, ";
-    std::cout << money << " gold\n";
-    std::cout << "Team:" << std::endl;
-    team->draw();
-    std::cout << "Shop:" << std::endl;
-    shop->draw();
-    std::cout << std::endl;
 }
 
 void Game::cheat() {

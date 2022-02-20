@@ -7,6 +7,7 @@
 
 
 Bluebird::Bluebird(Team* team, Shop* shop) : Pet("bluebird", team, shop) {
+    repr = "🐦";
     id = 4;
     pack = PACK_DLC1;
     tier = 1;

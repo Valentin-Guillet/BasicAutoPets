@@ -2,6 +2,7 @@
 #include "Pets/Bee.hpp"
 
 Bee::Bee(Team* team, Shop* shop) : Pet("bee", team, shop) {
+    repr = "🐝";
     id = 0;
     pack = PACK_STANDARD | PACK_DLC1;
     tier = -1;

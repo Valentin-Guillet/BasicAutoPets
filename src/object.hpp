@@ -14,8 +14,11 @@ enum class ObjType { FOOD, ITEM };
 class Pet;
 class Shop;
 class Team;
+class UserInterface;
 
 class Object {
+    friend class UserInterface;
+
     public:
         static Object* create_new_object(std::string name, Team* team, Shop* shop);
         static Object* create_random_object(Team* team, Shop* shop, int max_tier);
@@ -35,6 +38,8 @@ class Object {
         friend std::ostream& operator<<(std::ostream& os, Object const& object);
 
     protected:
+        std::string repr;
+
         Team* team;
         Shop* shop;
         Pet* attached_pet;

@@ -10,12 +10,14 @@
 #include "object.hpp"
 
 
+class UserInterface;
 class Team;
 using TeamList = std::unordered_map<int, std::vector<Team*>>;
 
 class Team {
     friend class Pet;
     friend class Object;
+    friend class UserInterface;
 
     public:
         static Team* unserialize(std::string team_str);
@@ -47,7 +49,6 @@ class Team {
         void disp_fight(Team const* const other_team) const;
         std::tuple<int, std::string, std::string> get_fight_str(Team* other_team);
 
-        void draw() const;
         std::string serialize(bool tmp=false) const;
 
     private:

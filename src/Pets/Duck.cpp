@@ -5,6 +5,7 @@
 
 
 Duck::Duck(Team* team, Shop* shop) : Pet("duck", team, shop) {
+    repr = "🦆";
     id = 6;
     pack = PACK_STANDARD;
     tier = 1;

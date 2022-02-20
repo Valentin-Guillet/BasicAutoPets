@@ -8,6 +8,8 @@
 class UserInterface;
 
 class Game {
+    friend class UserInterface;
+
     public:
         Game();
         ~Game();
@@ -28,7 +30,6 @@ class Game {
 
         void get_state() const;
 
-        void draw() const;
         void cheat();
 
     private:
@@ -41,8 +42,6 @@ class Game {
         Shop* shop;
 
         void check_money(std::string action, int amount) const;
-
-        friend class UserInterface;
 };
 
 

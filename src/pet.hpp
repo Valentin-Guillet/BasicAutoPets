@@ -10,8 +10,11 @@
 
 class Shop;
 class Team;
+class UserInterface;
 
 class Pet {
+    friend class UserInterface;
+
     public:
         static Pet* unserialize(Team* team, std::string pet_str);
         static Pet* create_random_pet(Team* team, Shop* shop, int max_tier, bool strict_tier=false);
@@ -22,8 +25,6 @@ class Pet {
         Pet(std::string name, Team* team, Shop* shop);
         virtual ~Pet();
 
-        std::string get_repr() const;
-        std::string get_object_name() const;
         int get_attack() const;
         int get_xp() const;
         int get_level() const;

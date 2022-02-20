@@ -4,8 +4,6 @@
 
 # ToDo
 
-- Bonus pet when leveling up
-
 
 # Actions
 

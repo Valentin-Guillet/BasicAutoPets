@@ -57,16 +57,6 @@ Pet::~Pet() {
     delete object;
 }
 
-std::string Pet::get_repr() const {
-    return repr;
-}
-
-std::string Pet::get_object_name() const {
-    if (object)
-        return object->name;
-    return "";
-}
-
 int Pet::get_attack() const {
     return tmp_attack;
 }

@@ -6,7 +6,7 @@ MAKEFLAGS := --jobs=$(shell nproc)
 CC := g++
 CFLAGS := -std=c++2a -Wall -Wextra -Werror -Wno-unused-parameter
 CFLAGS += -I./src
-LFLAGS := -lncurses
+LFLAGS := -lncursesw
 
 HEADERS := $(shell find src/ -name *.hpp ! -name user_interface.hpp)
 SOURCES := $(shell find src/ -name *.cpp)
