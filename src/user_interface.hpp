@@ -2,10 +2,14 @@
 #define HEADER_USER_INTERFACE
 
 
+#include <string>
+
 #include "game.hpp"
 #include "object.hpp"
 #include "pet.hpp"
 
+
+enum class UIState { none, buy, sell, freeze, combine_team, combine_shop, order };
 
 class UserInterface {
     public:
@@ -16,9 +20,19 @@ class UserInterface {
 
     private:
         Game* game;
+        UIState state;
+        std::string status;
 
         bool play_again() const;
         bool act();
+
+        bool take_action();
+        void buy();
+        void sell();
+        void freeze();
+        void combine_team();
+        void combine_shop();
+        void order();
 
         void draw_frame() const;
         void draw_game_state() const;
@@ -27,6 +41,7 @@ class UserInterface {
         void draw_team() const;
         void draw_shop() const;
         void draw_action() const;
+        void draw_status() const;
 };
 
 

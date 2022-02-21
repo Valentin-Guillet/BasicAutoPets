@@ -10,6 +10,7 @@ Cupcake::Cupcake(Team* team, Shop* shop) : Object("cupcake", team, shop, ObjType
     repr = "🧁";
     id = 3;
     tier = 2;
+    target_all = false;
 }
 
 Cupcake::~Cupcake() { }

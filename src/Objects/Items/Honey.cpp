@@ -9,6 +9,7 @@ Honey::Honey(Team* team, Shop* shop) : Object("honey", team, shop, ObjType::ITEM
     repr = "🍯";
     id = 2;
     tier = 1;
+    target_all = false;
 }
 
 Honey::~Honey() { }

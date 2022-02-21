@@ -28,6 +28,7 @@ class Object {
 
         std::string name;
         ObjType type;
+        bool target_all;
 
         int get_cost() const;
         void set_pet(Pet* pet);

@@ -2,42 +2,51 @@
 #include "user_interface.hpp"
 
 #include <locale.h>
+#include <ncurses.h>
 
 #include <algorithm>
 #include <cctype>
 #include <iostream>
-#include <ncurses.h>
 #include <sstream>
-#include <string>
+#include <unordered_map>
 
 #include "utils.hpp"
 
 
-/* static void to_lower(std::string &s) { */
-/*     std::transform(s.begin(), s.end(), s.begin(), [](char c) { return std::tolower(c); }); */
-/* } */
+const std::unordered_map<UIState, std::string> MSGS = {
+    {UIState::none, "What do you want to do ?     (B)uy     (S)ell     (F)reeze     (C)ombine team     Co(m)bine shop     (R)oll     (O)rder     (E)nd turn     (Q)uit"},
+    {UIState::buy, "Buying !"},
+    {UIState::sell, "Selling !"},
+    {UIState::freeze, "Freezing !"},
+    {UIState::combine_team, "Combining team !"},
+    {UIState::combine_shop, "Combining shop !"},
+    {UIState::order, "Ordering !"},
+};
 
 
-UserInterface::UserInterface(Game* game) : game(game) {
+UserInterface::UserInterface(Game* game) : game(game), state(UIState::none) {
     setlocale(LC_ALL, "");
     initscr();
     curs_set(0);
     cbreak();
     noecho();
     keypad(stdscr, TRUE);
-    draw_frame();
 }
 
 UserInterface::~UserInterface() {
-    std::cout << "Leaving" << std::endl;
     endwin();
+    std::cout << "Leaving" << std::endl;
 }
 
 bool UserInterface::run() {
     do {
+        clear();
+        draw_frame();
         draw_game_state();
         draw_team();
         draw_shop();
+        draw_action();
+        draw_status();
     } while (act());
 
     return play_again();
@@ -45,115 +54,194 @@ bool UserInterface::run() {
 
 
 bool UserInterface::play_again() const {
-    std::cout << "Game over ! One day, you will be able to play again here" << std::endl;
     return false;
 }
 
 bool UserInterface::act() {
-    std::string actions = "What do you want to do ?   ";
-    actions += "(B)uy     (S)ell     (F)reeze     (C)ombine";
-    actions += "     (R)oll     (O)rder     (E)nd turn     (Q)uit";
-    mvprintw(20, 5, actions.c_str());
-    int c = std::tolower(getch());
-
-    return c != 'q';
-
-    /*
-    std::string line;
-    std::cout << "What do you want to do ?\n";
-    std::getline(std::cin, line);
-    std::istringstream iss(line);
-
-    std::string action;
-    iss >> action;
-    to_lower(action);
-
-    std::cout << "Action: " << line << std::endl;
     try {
-        if (action == "buy_pet") {
-            std::string arg;
-            iss >> arg;
-            int index = std::stoi(arg) - 1;
+        switch (state) {
+            case UIState::none:
+                return take_action();
+            case UIState::buy:
+                buy();
+                break;
+            case UIState::sell:
+                sell();
+                break;
+            case UIState::freeze:
+                freeze();
+                break;
+            case UIState::combine_team:
+                combine_team();
+                break;
+            case UIState::combine_shop:
+                combine_shop();
+                break;
+            case UIState::order:
+                order();
+                break;
+        }
+    } catch (InvalidAction& e) {
+        status = e.what_str();
+    }
+    return true;
+}
 
-            game->buy_pet(index);
+bool UserInterface::take_action() {
+    int c = std::tolower(getch());
+    status = "";
 
-        } else if (action == "combine_shop") {
-            std::string arg;
-            iss >> arg;
-            int index_shop = std::stoi(arg) - 1;
-            iss >> arg;
-            int index_team = std::stoi(arg) - 1;
+    switch (c) {
+        case KEY_RESIZE:
+            clear();
+            draw_frame();
+            draw_game_state();
+            draw_team();
+            draw_shop();
+            draw_action();
+            draw_status();
+            break;
 
-            game->combine_shop(index_shop, index_team);
+        case 'b':
+            state = UIState::buy;
+            break;
 
-        } else if (action == "combine_team") {
-            std::string arg;
-            iss >> arg;
-            int src_index = std::stoi(arg) - 1;
-            iss >> arg;
-            int dst_index = std::stoi(arg) - 1;
+        case 's':
+            state = UIState::sell;
+            break;
 
-            game->combine_team(src_index, dst_index);
+        case 'f':
+            state = UIState::freeze;
+            break;
 
-        } else if (action == "sell") {
-            std::string arg;
-            iss >> arg;
-            int index = std::stoi(arg) - 1;
+        case 'c':
+            state = UIState::combine_team;
+            break;
 
-            game->sell(index);
+        case 'm':
+            state = UIState::combine_shop;
+            break;
 
-        } else if (action == "buy_object") {
-            std::string arg;
-            iss >> arg;
-            int index = std::stoi(arg) - 1;
-            iss >> arg;
-            int index_target = std::stoi(arg) - 1;
-
-            game->buy_object(index, index_target);
-
-        } else if (action == "roll") {
+        case 'r':
+            status = "Rolling...";
             game->roll();
+            break;
 
-        } else if (action == "freeze_pet") {
-            std::string arg;
-            iss >> arg;
-            int index = std::stoi(arg) - 1;
-            game->freeze_pet(index);
+        case 'o':
+            state = UIState::order;
+            break;
 
-        } else if (action == "freeze_object") {
-            std::string arg;
-            iss >> arg;
-            int index = std::stoi(arg) - 1;
-            game->freeze_object(index);
-
-        } else if (action == "end_turn") {
-            size_t indices[5];
-            for (size_t i=0; i<5; i++) {
-                std::string arg;
-                iss >> arg;
-                indices[i] = std::stoi(arg) - 1;
-            }
-            return game->end_turn(indices);
-
-        } else if (action == "cheat") {
-            game->cheat();
-
-        } else if (action == "quit") {
-            return false;
-        } else {
-            spdlog::warn("Action {} not recognized", action);
+        case 'e': {
+            size_t indices[5] = {1, 2, 3, 4, 5};
+            game->end_turn(indices);
+            break;
         }
 
-    } catch (InvalidAction& e) {
-        spdlog::warn(e.what());
-
-    } catch (std::exception& e) {
-        std::cerr << "Error in action " << action << " !" << std::endl;
-        std::cerr << "Err: " << e.what() << std::endl;
+        case 'q':
+            return false;
     }
-    */
 
     return true;
+}
+
+void UserInterface::buy() {
+    state = UIState::none;
+    int c = std::tolower(getch());
+
+    // Buy pet
+    if ('1' <= c && c <= '7') {
+        game->buy_pet(c - '1');
+
+    // Buy object
+    } else if (c == '9' || c == '0') {
+        int nc = (c == '9' ? 0 : 1);
+        Object* obj = game->shop->objects[nc];
+        if (!obj) {
+            status = "[BUY_OBJECT]: No object in shop at index " + std::to_string(nc);
+            return;
+        }
+        if (obj->target_all) {
+            game->buy_object(nc, 0);
+            status = "[BUY_OBJECT]: Bought object " + std::to_string(nc+1);
+        } else {
+            int target = std::tolower(getch());
+            if ('1' <= target && target <= '5') {
+                game->buy_object(nc, target - '1');
+                status = "[BUY_OBJECT]: Given object " + std::to_string(nc+1) + " to " + std::to_string(target-'0');
+            } else {
+                status = "[BUY_OBJECT]: Invalid target for object 0";
+            }
+            return;
+        }
+    }
+}
+
+void UserInterface::sell() {
+    state = UIState::none;
+    int c = std::tolower(getch());
+
+    if (!('1' <= c && c <= '5'))
+        return;
+
+    game->sell(c - '1');
+    status = "[SELL]: Sold " + std::to_string(c - '0');
+}
+
+void UserInterface::freeze() {
+    state = UIState::none;
+    int c = std::tolower(getch());
+
+    if ('1' <= c && c <= '5') {
+        game->freeze_pet(c - '1');
+        status = "[FREEZE]: Frozen pet " + std::to_string(c - '0');
+    } else if (c == '9' || c == '0') {
+        game->freeze_object((c == '9' ? 0 : 1));
+        status = "[FREEZE]: Frozen object " + std::to_string(c == '9' ? 1 : 2);
+    }
+}
+
+void UserInterface::combine_team() {
+    state = UIState::none;
+    int c1 = std::tolower(getch());
+    int c2 = std::tolower(getch());
+
+    if (!('1' <= c1 && c1 <= '5' && '1' <= c2 && c2 <= '5')) {
+        status = "[COMBINE_TEAM]: Invalid pet indices";
+        return;
+    }
+    game->combine_team(c1 - '1', c2 - '1');
+    status = "[COMBINE_TEAM]: Combined pets " + std::to_string(c1 - '0') + " and " + std::to_string(c2 - '0');
+}
+
+void UserInterface::combine_shop() {
+    state = UIState::none;
+    int c1 = std::tolower(getch());
+    int c2 = std::tolower(getch());
+
+    if (!('1' <= c1 && c1 <= '5' && '1' <= c2 && c2 <= '5')) {
+        status = "[COMBINE TEAM]: Invalid pet indices";
+        return;
+    }
+    game->combine_shop(c1 - '1', c2 - '1');
+    status = "[COMBINE_SHOP]: Upgraded pet " + std::to_string(c2 - '0');
+}
+
+void UserInterface::order() {
+    state = UIState::none;
+    int c1 = std::tolower(getch());
+    int c2 = std::tolower(getch());
+
+    if (!('1' <= c1 && c1 <= '5' && '1' <= c2 && c2 <= '5')) {
+        status = "[ORDER]: Invalid order index";
+        return;
+    }
+
+    size_t indices[5] = {0, 1, 2, 3, 4};
+    indices[c1 - '1'] = c2 - '1';
+    indices[c2 - '1'] = c1 - '1';
+
+    game->team->order(indices);
+    status = "[ORDER]: Switching " + std::to_string(c1 - '1') + " and " + std::to_string(c2 - '1');
 }
 
 void UserInterface::draw_frame() const {
@@ -224,6 +312,8 @@ void UserInterface::draw_shop() const {
     for (size_t i=0; i<game->shop->pets.size(); i++) {
         if (game->shop->pets[i])
             draw_pet(game->shop->pets[i], padding, 13, false, game->shop->frozen_pets[i]);
+        else
+            mvprintw(15, padding, "  ___  ");
         padding += 9 + inner_padding;
     }
     padding += (9 + inner_padding) * (5 - game->shop->pets.size());
@@ -231,10 +321,20 @@ void UserInterface::draw_shop() const {
     for (size_t i=0; i<game->shop->objects.size(); i++) {
         if (game->shop->objects[i])
             draw_object(game->shop->objects[i], padding, 14, game->shop->frozen_objects[i]);
+        else
+            mvprintw(15, padding, "  ___  ");
         padding += 9 + inner_padding;
     }
 }
 
 void UserInterface::draw_action() const {
+    std::string empty_msg(COLS-3, ' ');
+    mvprintw(20, 1, empty_msg.c_str());
+    mvprintw(20, 1, MSGS.at(state).c_str());
+}
 
+void UserInterface::draw_status() const {
+    std::string empty_msg(COLS-3, ' ');
+    mvprintw(21, 1, empty_msg.c_str());
+    mvprintw(21, 1, status.c_str());
 }

@@ -31,6 +31,7 @@ class InvalidAction : public std::exception {
         ~InvalidAction();
 
         const char* what() const throw();
+        const std::string what_str() const throw();
 
     private:
         std::string msg;

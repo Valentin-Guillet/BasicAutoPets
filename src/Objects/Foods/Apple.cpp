@@ -10,6 +10,7 @@ Apple::Apple(Team* team, Shop* shop) : Object("apple", team, shop, ObjType::FOOD
     repr = "🍎";
     id = 1;
     tier = 1;
+    target_all = false;
 }
 
 Apple::~Apple() { }

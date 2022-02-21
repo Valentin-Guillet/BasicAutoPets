@@ -11,6 +11,7 @@ Pill::Pill(Team* team, Shop* shop) : Object("pill", team, shop, ObjType::FOOD) {
     id = 5;
     tier = 2;
     cost = 1;
+    target_all = false;
 }
 
 Pill::~Pill() { }

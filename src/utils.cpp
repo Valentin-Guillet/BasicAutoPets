@@ -19,3 +19,7 @@ InvalidAction::~InvalidAction() { }
 const char* InvalidAction::what() const throw() {
     return msg.c_str();
 }
+
+const std::string InvalidAction::what_str() const throw() {
+    return msg;
+}
