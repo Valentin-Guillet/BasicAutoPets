@@ -9,7 +9,7 @@
 #include "pet.hpp"
 
 
-enum class UIState { none, buy, sell, freeze, combine_team, combine_shop, order };
+enum class UIState { none, buy, sell, freeze, combine_team, combine_shop, order, fighting };
 
 class UserInterface {
     public:
@@ -33,6 +33,7 @@ class UserInterface {
         void combine_team();
         void combine_shop();
         void order();
+        void fight();
 
         void draw_frame() const;
         void draw_game_state() const;
@@ -41,6 +42,7 @@ class UserInterface {
         void draw_team() const;
         void draw_shop() const;
         void draw_action() const;
+        void draw_fight() const;
         void draw_status() const;
 };
 

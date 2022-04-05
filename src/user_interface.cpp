@@ -80,6 +80,9 @@ bool UserInterface::act() {
             case UIState::order:
                 order();
                 break;
+            case UIState::fighting:
+                fight();
+                break;
         }
     } catch (InvalidAction& e) {
         status = e.what_str();
@@ -132,6 +135,7 @@ bool UserInterface::take_action() {
             break;
 
         case 'e': {
+            state = UIState::fighting;
             size_t indices[5] = {1, 2, 3, 4, 5};
             game->end_turn(indices);
             break;
@@ -160,31 +164,48 @@ void UserInterface::buy() {
             status = "[BUY_OBJECT]: No object in shop at index " + std::to_string(nc);
             return;
         }
+
+        std::string obj_name = obj->name;
         if (obj->target_all) {
             game->buy_object(nc, 0);
-            status = "[BUY_OBJECT]: Bought object " + std::to_string(nc+1);
+            status = "[BUY_OBJECT]: Bought " + obj_name;
         } else {
+            status = "[BUY_OBJECT]: Buying " + obj_name + " for pet ...";
+            draw_status();
+
             int target = std::tolower(getch());
-            if ('1' <= target && target <= '5') {
-                game->buy_object(nc, target - '1');
-                status = "[BUY_OBJECT]: Given object " + std::to_string(nc+1) + " to " + std::to_string(target-'0');
-            } else {
-                status = "[BUY_OBJECT]: Invalid target for object 0";
+            if (!('1' <= target && target <= '5')) {
+                status = "[BUY_OBJECT]: Invalid target for " + obj_name;
+                return;
             }
-            return;
+
+            std::string target_name;
+            if ((target - '1') < (int)game->team->pets.size())
+                target_name = game->team->pets[target - '1']->name;
+
+            game->buy_object(nc, target - '1');
+            if (!target_name.empty())
+                status = "[BUY_OBJECT]: Giving " + obj_name + " to " + target_name;
         }
     }
 }
 
 void UserInterface::sell() {
     state = UIState::none;
+    status = "[SELL]: Selling pet ...";
     int c = std::tolower(getch());
-
-    if (!('1' <= c && c <= '5'))
+    if (!('1' <= c && c <= '5')) {
+        status = "[SELL]: Invalid pet index";
         return;
+    }
+
+    std::string pet_name;
+    if ((c - '1') < (int)game->team->pets.size())
+        pet_name = game->team->pets[c - '1']->name;
 
     game->sell(c - '1');
-    status = "[SELL]: Sold " + std::to_string(c - '0');
+    if (!pet_name.empty())
+        status = "[SELL]: Sold " + pet_name + " (index " + std::to_string(c - '0') + ")";
 }
 
 void UserInterface::freeze() {
@@ -202,46 +223,80 @@ void UserInterface::freeze() {
 
 void UserInterface::combine_team() {
     state = UIState::none;
-    int c1 = std::tolower(getch());
-    int c2 = std::tolower(getch());
+    status = "[COMBINE_TEAM]: Combining pets ... and ...";
+    draw_status();
 
-    if (!('1' <= c1 && c1 <= '5' && '1' <= c2 && c2 <= '5')) {
-        status = "[COMBINE_TEAM]: Invalid pet indices";
+    int c1 = std::tolower(getch());
+    if (!('1' <= c1 && c1 <= '5')) {
+        status = "[COMBINE_TEAM]: Invalid pet index";
         return;
     }
+    status = "[COMBINE_TEAM]: Combining pets " + std::to_string(c1 - '0') + " and ...";
+    draw_status();
+
+    int c2 = std::tolower(getch());
+    if (!('1' <= c2 && c2 <= '5')) {
+        status = "[COMBINE_TEAM]: Invalid pet index";
+        return;
+    }
+    status = "[COMBINE_TEAM]: Combining pets " + std::to_string(c1 - '0') + " and " + std::to_string(c2 - '0');
+
     game->combine_team(c1 - '1', c2 - '1');
-    status = "[COMBINE_TEAM]: Combined pets " + std::to_string(c1 - '0') + " and " + std::to_string(c2 - '0');
 }
 
 void UserInterface::combine_shop() {
     state = UIState::none;
-    int c1 = std::tolower(getch());
-    int c2 = std::tolower(getch());
+    status = "[COMBINE_SHOP]: Combining shop pet ... with team pet ...";
+    draw_status();
 
-    if (!('1' <= c1 && c1 <= '5' && '1' <= c2 && c2 <= '5')) {
-        status = "[COMBINE TEAM]: Invalid pet indices";
+    int c1 = std::tolower(getch());
+    if (!('1' <= c1 && c1 <= '5')) {
+        status = "[COMBINE_SHOP]: Invalid pet index";
         return;
     }
+    status = "[COMBINE_SHOP]: Combining shop pet " + std::to_string(c1 - '0') + " with team pet ...";
+    draw_status();
+
+    int c2 = std::tolower(getch());
+    if (!('1' <= c2 && c2 <= '5')) {
+        status = "[COMBINE_SHOP]: Invalid pet index";
+        return;
+    }
+    status = "[COMBINE_SHOP]: Combining shop pet " + std::to_string(c1 - '0') + " with team pet " + std::to_string(c2 - '0');
+
     game->combine_shop(c1 - '1', c2 - '1');
-    status = "[COMBINE_SHOP]: Upgraded pet " + std::to_string(c2 - '0');
 }
 
 void UserInterface::order() {
     state = UIState::none;
-    int c1 = std::tolower(getch());
-    int c2 = std::tolower(getch());
+    status = "[ORDER]: Switching ... and ...";
+    draw_status();
 
-    if (!('1' <= c1 && c1 <= '5' && '1' <= c2 && c2 <= '5')) {
+    int c1 = std::tolower(getch());
+    if (!('1' <= c1 && c1 <= '5')) {
         status = "[ORDER]: Invalid order index";
         return;
     }
+    status = "[ORDER]: Switching " + std::to_string(c1 - '0') + " and ...";
+    draw_status();
+
+    int c2 = std::tolower(getch());
+    if (!('1' <= c2 && c2 <= '5')) {
+        status = "[ORDER]: Invalid order index";
+        return;
+    }
+    status = "[ORDER]: Switching " + std::to_string(c1 - '0') + " and " + std::to_string(c2 - '0');
 
     size_t indices[5] = {0, 1, 2, 3, 4};
     indices[c1 - '1'] = c2 - '1';
     indices[c2 - '1'] = c1 - '1';
 
     game->team->order(indices);
-    status = "[ORDER]: Switching " + std::to_string(c1 - '1') + " and " + std::to_string(c2 - '1');
+}
+
+void UserInterface::fight() {
+    clear();
+    draw_frame();
 }
 
 void UserInterface::draw_frame() const {

@@ -122,7 +122,7 @@ void Game::check_money(std::string action, int amount) const {
     if (money >= amount)
         return;
 
-    std::string msg = "[" + action + "]: not enough money to buy";
+    std::string msg = "[" + action + "]: not enough money to do this action";
     msg += " (" + std::to_string(money) + " gold left)";
     throw InvalidAction(msg);
 }
