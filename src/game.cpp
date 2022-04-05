@@ -31,6 +31,8 @@ void Game::begin_turn() {
     shop->begin_turn();
     team->begin_turn();
     turn++;
+
+    adv_team = Team::get_random_team(turn);
 }
 
 bool Game::end_turn(size_t indices[5]) {
@@ -43,19 +45,35 @@ bool Game::end_turn(size_t indices[5]) {
     else if (victory == -1)
         life -= life_per_turn(turn);
 
-    if (life > 0) {
+    if (life > 0)
         begin_turn();
-        return true;
-    } else {
+    else
         std::cout << "You lost ! Game over" << std::endl;
-        return false;
-    }
+    return life > 0;
 }
 
 int Game::fight() {
     Team* other_team = Team::get_random_team(turn);
 
     return team->fight(other_team);
+}
+
+bool Game::fight_step() {
+    int end_fight = team->fight_step(adv_team);
+
+    if (end_fight != -1) {
+        if (end_fight == 1)
+            victories++;
+        else if (end_fight == 2)
+            life -= life_per_turn(turn);
+
+        team->reset();
+        adv_team->reset();
+
+        if (life > 0)
+            begin_turn();
+    }
+    return end_fight != -1;
 }
 
 void Game::buy_pet(size_t index) {

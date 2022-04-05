@@ -101,6 +101,17 @@ void Team::end_turn() {
     tmp_pets = pets;
 }
 
+void Team::reset() {
+    for (Pet* pet : tmp_pets) {
+        if (pet->is_tmp)
+            delete pet;
+    }
+
+    tmp_pets = pets;
+    for (Pet* pet : pets)
+        pet->reset_stats();
+}
+
 void Team::add(Pet* pet) {
     _add(pet);
 }
@@ -224,6 +235,10 @@ int Team::fight(Team* other_team) {
     return output;
 }
 
+int Team::fight_step(Team* adv_team) {
+    return -1;
+}
+
 void Team::disp_fight(Team const* const other_team) const {
     std::string pets_name;
     std::string stats;
@@ -323,17 +338,6 @@ void Team::load_teams() {
 void Team::check_size(std::string action, size_t index) const {
     if (index < pets.size()) return;
     throw InvalidAction("[" + action + "]: no pet in team at index " + std::to_string(index+1));
-}
-
-void Team::reset() {
-    for (Pet* pet : tmp_pets) {
-        if (pet->is_tmp)
-            delete pet;
-    }
-
-    tmp_pets = pets;
-    for (Pet* pet : pets)
-        pet->reset_stats();
 }
 
 void Team::_add(Pet* pet) {

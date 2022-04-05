@@ -6,8 +6,10 @@
 
 #include <algorithm>
 #include <cctype>
+#include <chrono>
 #include <iostream>
 #include <sstream>
+#include <thread>
 #include <unordered_map>
 
 #include "utils.hpp"
@@ -21,6 +23,7 @@ const std::unordered_map<UIState, std::string> MSGS = {
     {UIState::combine_team, "Combining team !"},
     {UIState::combine_shop, "Combining shop !"},
     {UIState::order, "Ordering !"},
+    {UIState::fighting, "Fight !     (A)uto-play     (P)lay     (S)kip"},
 };
 
 
@@ -31,6 +34,7 @@ UserInterface::UserInterface(Game* game) : game(game), state(UIState::none) {
     cbreak();
     noecho();
     keypad(stdscr, TRUE);
+    game->cheat();
 }
 
 UserInterface::~UserInterface() {
@@ -58,6 +62,7 @@ bool UserInterface::play_again() const {
 }
 
 bool UserInterface::act() {
+    bool continue_game = true;
     try {
         switch (state) {
             case UIState::none:
@@ -81,13 +86,13 @@ bool UserInterface::act() {
                 order();
                 break;
             case UIState::fighting:
-                fight();
+                continue_game = fight();
                 break;
         }
     } catch (InvalidAction& e) {
         status = e.what_str();
     }
-    return true;
+    return continue_game;
 }
 
 bool UserInterface::take_action() {
@@ -134,12 +139,10 @@ bool UserInterface::take_action() {
             state = UIState::order;
             break;
 
-        case 'e': {
+        case 'e':
             state = UIState::fighting;
-            size_t indices[5] = {1, 2, 3, 4, 5};
-            game->end_turn(indices);
+            game->team->end_turn();
             break;
-        }
 
         case 'q':
             return false;
@@ -294,16 +297,51 @@ void UserInterface::order() {
     game->team->order(indices);
 }
 
-void UserInterface::fight() {
+bool UserInterface::fight() {
     clear();
     draw_frame();
+    draw_action();
+
+    draw_fight();
+    char c;
+    bool invalid;
+    do {
+        c = std::tolower(getch());
+        invalid = (c != 'a' && c != 'p' && c != 'n' && c != 's' && c != 'q');
+        if (invalid) {
+            status = "Invalid action !";
+            draw_status();
+        }
+    } while (invalid);
+
+    while (!game->fight_step()) {
+        if (c == 's' || c == 'q') continue;
+        draw_fight();
+        if (c == 'a') {
+            std::this_thread::sleep_for(std::chrono::milliseconds(500));
+        } else if (c == 'p' || c == 'n') {
+            do {
+                c = std::tolower(getch());
+                invalid = (c != 'a' && c != 'p' && c != 'n' && c != 's' && c != 'q');
+                if (invalid) {
+                    status = "Invalid action !";
+                    draw_status();
+                }
+            } while (invalid);
+        }
+    }
+    status = "";
+
+    state = UIState::none;
+    return (game->life > 0 && game->victories < 10);
 }
+
 
 void UserInterface::draw_frame() const {
     std::string hborder(COLS-2, '-');
     hborder = "+" + hborder + "+";
-    mvprintw(0, 0, hborder.c_str());
-    mvprintw(LINES-1, 0, hborder.c_str());
+    mvaddstr(0, 0, hborder.c_str());
+    mvaddstr(LINES-1, 0, hborder.c_str());
     for (int j=1; j<LINES-1; j++) {
         mvaddch(j, 0, '|');
         mvaddch(j, COLS-1, '|');
@@ -324,16 +362,27 @@ void UserInterface::draw_pet(Pet* pet, int x, int y, bool draw_xp, bool frozen) 
     if (pet->object)
         mvaddstr(y, x+2, pet->object->repr.c_str());
     mvaddstr(y+1, x+3, pet->repr.c_str());
-    mvprintw(y+2, x, " %02d / %02d", pet->attack, pet->life);
+    if (pet->attack != pet->tmp_attack)
+        attron(A_UNDERLINE);
+    mvprintw(y+2, x+1, "%02d", pet->tmp_attack);
+    attroff(A_UNDERLINE);
+
+    mvaddch(y+2, x+5, '/');
+
+    if (pet->life != pet->tmp_life)
+        attron(A_UNDERLINE);
+    mvprintw(y+2, x+7, "%02d", pet->tmp_life);
+    attroff(A_UNDERLINE);
+
     int lvl = pet->get_level();
     if (draw_xp) {
         int xp = pet->get_xp();
         if (lvl == 1)
-            mvprintw(y+3, x, "Lvl 1 %d / 2", xp);
+            mvprintw(y+3, x, "Lvl 1 %d/2", xp);
         else if (lvl == 2)
-            mvprintw(y+3, x, "Lvl 2 %d / 3", xp - 2);
+            mvprintw(y+3, x, "Lvl 2 %d/3", xp - 2);
         else
-            mvprintw(y+3, x, "Lvl 3 0 / 0");
+            mvaddstr(y+3, x, "Lvl 3 0/0");
     }
     if (frozen)
         mvaddstr(y+4, x+4, "🧊");
@@ -355,7 +404,7 @@ void UserInterface::draw_team() const {
         padding += 9 + inner_padding;
     }
     for (size_t i=game->team->pets.size(); i<5; i++) {
-        mvprintw(8, padding, "  Empty  ");
+        mvaddstr(8, padding, "  Empty  ");
         padding += 9 + inner_padding;
     }
 }
@@ -368,7 +417,7 @@ void UserInterface::draw_shop() const {
         if (game->shop->pets[i])
             draw_pet(game->shop->pets[i], padding, 13, false, game->shop->frozen_pets[i]);
         else
-            mvprintw(15, padding, "  ___  ");
+            mvaddstr(15, padding, "  ___  ");
         padding += 9 + inner_padding;
     }
     padding += (9 + inner_padding) * (5 - game->shop->pets.size());
@@ -377,19 +426,37 @@ void UserInterface::draw_shop() const {
         if (game->shop->objects[i])
             draw_object(game->shop->objects[i], padding, 14, game->shop->frozen_objects[i]);
         else
-            mvprintw(15, padding, "  ___  ");
+            mvaddstr(15, padding, "  ___  ");
         padding += 9 + inner_padding;
     }
 }
 
 void UserInterface::draw_action() const {
     std::string empty_msg(COLS-3, ' ');
-    mvprintw(20, 1, empty_msg.c_str());
-    mvprintw(20, 1, MSGS.at(state).c_str());
+    mvaddstr(20, 1, empty_msg.c_str());
+    mvaddstr(20, 1, MSGS.at(state).c_str());
+}
+
+void UserInterface::draw_fight() const {
+    int middle = COLS / 2;
+    int padding = (middle - 5*9) / 6;
+
+    for (int i=0; i<4; i++)
+        mvaddch(6+i, middle, '|');
+
+    for (size_t ind=0; ind<game->team->tmp_pets.size(); ind++) {
+        int x = middle - padding*2*(ind+1);
+        draw_pet(game->team->tmp_pets[ind], x, 6, true, false);
+    }
+
+    for (size_t ind=0; ind<game->adv_team->tmp_pets.size(); ind++) {
+        int x = middle + padding*(2*ind+1);
+        draw_pet(game->adv_team->tmp_pets[ind], x, 6, true, false);
+    }
 }
 
 void UserInterface::draw_status() const {
     std::string empty_msg(COLS-3, ' ');
-    mvprintw(21, 1, empty_msg.c_str());
-    mvprintw(21, 1, status.c_str());
+    mvaddstr(21, 1, empty_msg.c_str());
+    mvaddstr(21, 1, status.c_str());
 }

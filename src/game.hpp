@@ -18,6 +18,7 @@ class Game {
         bool end_turn(size_t indices[5]);
 
         int fight();
+        bool fight_step();
 
         void buy_pet(size_t index);
         void combine_shop(size_t index_shop, size_t index_team);
@@ -40,6 +41,9 @@ class Game {
 
         Team* team;
         Shop* shop;
+
+        bool in_fight;
+        Team* adv_team;
 
         void check_money(std::string action, int amount) const;
 };

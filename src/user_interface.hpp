@@ -33,7 +33,7 @@ class UserInterface {
         void combine_team();
         void combine_shop();
         void order();
-        void fight();
+        bool fight();
 
         void draw_frame() const;
         void draw_game_state() const;

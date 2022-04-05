@@ -35,6 +35,7 @@ class Team {
         void begin_turn();
         void order(size_t order[5]);
         void end_turn();
+        void reset();
 
         void add(Pet* pet);
         void combine(size_t index, Pet* other_pet);
@@ -46,6 +47,7 @@ class Team {
 
         void give_object(size_t index, Object* obj);
         int fight(Team* other_team);
+        int fight_step(Team* adv_team);
         void disp_fight(Team const* const other_team) const;
         std::tuple<int, std::string, std::string> get_fight_str(Team* other_team);
 
@@ -62,7 +64,6 @@ class Team {
         std::vector<Pet*> tmp_pets;
 
         void check_size(std::string action, size_t index) const;
-        void reset();
         void _add(Pet* pet);
 };
 
