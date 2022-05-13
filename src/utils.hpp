@@ -7,8 +7,6 @@
 #include <string>
 #include <vector>
 
-#include <spdlog/spdlog.h>
-
 
 namespace utils {
 
@@ -20,6 +18,7 @@ namespace utils {
         return elts;
     }
 
+    extern std::vector<std::string> vector_logs;
 
     std::string pad(std::string str, size_t const num, char const padding_char=' ');
 };

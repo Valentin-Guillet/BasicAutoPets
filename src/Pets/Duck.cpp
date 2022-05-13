@@ -17,7 +17,7 @@ Duck::Duck(Team* team, Shop* shop) : Pet("duck", team, shop) {
 Duck::~Duck() { }
 
 void Duck::on_sell() {
-    spdlog::debug("{} sold, buffing shop !", name);
+    utils::vector_logs.push_back(name + " sold, buffing shop !");
 
     int lvl = get_level();
     shop->upgrade(0, lvl, true);

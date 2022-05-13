@@ -17,7 +17,7 @@ Beetle::Beetle(Team* team, Shop* shop) : Pet("beetle", team, shop) {
 Beetle::~Beetle() { }
 
 void Beetle::on_object(Object* object) {
-    spdlog::debug("{} fed, buffing shop !", name);
+    utils::vector_logs.push_back(name + " fed, buffing shop !");
     int lvl = get_level();
     shop->upgrade(0, lvl, true);
 }

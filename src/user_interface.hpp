@@ -37,13 +37,14 @@ class UserInterface {
 
         void draw_frame() const;
         void draw_game_state() const;
-        void draw_pet(Pet* pet, int x, int y, bool draw_xp, bool frozen=false) const;
+        void draw_pet(Pet* pet, int x, int y, bool draw_xp, bool in_shop, bool frozen=false) const;
         void draw_object(Object* pet, int x, int y, bool frozen=false) const;
         void draw_team() const;
         void draw_shop() const;
         void draw_action() const;
         void draw_fight() const;
         void draw_status() const;
+        void draw_log() const;
 };
 
 

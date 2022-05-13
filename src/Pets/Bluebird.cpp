@@ -19,7 +19,7 @@ Bluebird::Bluebird(Team* team, Shop* shop) : Pet("bluebird", team, shop) {
 Bluebird::~Bluebird() { }
 
 void Bluebird::on_end_turn() {
-    spdlog::debug("End of turn, {} buff !", name);
+    utils::vector_logs.push_back("End of turn, " + name + " buff !");
     std::vector<Pet*> team_pets = get_team_pets();
 
     int lvl = get_level();

@@ -144,9 +144,9 @@ int Team::sell(size_t index) {
 }
 
 void Team::summon(Pet* base_pet, Pet* new_pet) {
-    spdlog::debug("New pet summoned: {}", new_pet->name);
+    utils::vector_logs.push_back("New pet summoned: " + new_pet->name);
     if (pets.size() >= 6) {
-        spdlog::debug("Already 5 pets in team, aborting");
+        utils::vector_logs.push_back("Already 5 pets in team, aborting");
         delete new_pet;
         return;
     }
@@ -223,11 +223,11 @@ int Team::fight(Team* other_team) {
         output = 1;
 
     if (output == 0)
-        spdlog::debug("Draw !");
+        utils::vector_logs.push_back("Draw !");
     else if (output == 1)
-        spdlog::debug("Win !");
+        utils::vector_logs.push_back("Win !");
     else
-        spdlog::debug("Loss...");
+        utils::vector_logs.push_back("Loss...");
 
     in_fight = false;
     reset();
@@ -236,7 +236,52 @@ int Team::fight(Team* other_team) {
 }
 
 int Team::fight_step(Team* adv_team) {
-    return -1;
+    utils::vector_logs.push_back("Another step");
+    in_fight = true;
+
+    Pet* pet = tmp_pets.front();
+    Pet* adv_pet = adv_team->tmp_pets.front();
+
+    if (pet->get_attack() > adv_pet->get_attack()) {
+        pet->attacks(adv_pet);
+        adv_pet->attacks(pet);
+    } else {
+        adv_pet->attacks(pet);
+        pet->attacks(adv_pet);
+    }
+
+    if (!pet->is_alive()) {
+        pet->on_faint();
+        if (pet->is_tmp)
+            delete pet;
+        tmp_pets.erase(tmp_pets.begin());
+    }
+    if (!adv_pet->is_alive()) {
+        adv_pet->on_faint();
+        if (adv_pet->is_tmp)
+            delete adv_pet;
+        adv_team->tmp_pets.erase(adv_team->tmp_pets.begin());
+    }
+
+    int output;
+    if (tmp_pets.empty() && adv_team->tmp_pets.empty())
+        output = 0;
+    else if (adv_team->tmp_pets.empty())
+        output = 1;
+    else if (tmp_pets.empty())
+        output = 2;
+    else
+        output = -1;
+
+    if (output == 0)
+        utils::vector_logs.push_back("Draw !");
+    else if (output == 1)
+        utils::vector_logs.push_back("Win !");
+    else if (output == 2)
+        utils::vector_logs.push_back("Loss...");
+
+    in_fight = (output == -1);
+    return output;
 }
 
 void Team::disp_fight(Team const* const other_team) const {

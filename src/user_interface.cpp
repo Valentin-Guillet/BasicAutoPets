@@ -51,6 +51,7 @@ bool UserInterface::run() {
         draw_shop();
         draw_action();
         draw_status();
+        draw_log();
     } while (act());
 
     return play_again();
@@ -317,8 +318,10 @@ bool UserInterface::fight() {
     while (!game->fight_step()) {
         if (c == 's' || c == 'q') continue;
         draw_fight();
+        draw_log();
         if (c == 'a') {
-            std::this_thread::sleep_for(std::chrono::milliseconds(500));
+            std::this_thread::sleep_for(std::chrono::milliseconds(750));
+            refresh();
         } else if (c == 'p' || c == 'n') {
             do {
                 c = std::tolower(getch());
@@ -358,18 +361,18 @@ void UserInterface::draw_game_state() const {
     mvprintw(3, padding+3*(9+inner_padding), " Turn % 2d", game->turn);
 }
 
-void UserInterface::draw_pet(Pet* pet, int x, int y, bool draw_xp, bool frozen) const {
+void UserInterface::draw_pet(Pet* pet, int x, int y, bool draw_xp, bool in_shop, bool frozen) const {
     if (pet->object)
         mvaddstr(y, x+2, pet->object->repr.c_str());
     mvaddstr(y+1, x+3, pet->repr.c_str());
-    if (pet->attack != pet->tmp_attack)
+    if (in_shop && pet->attack != pet->tmp_attack)
         attron(A_UNDERLINE);
     mvprintw(y+2, x+1, "%02d", pet->tmp_attack);
     attroff(A_UNDERLINE);
 
     mvaddch(y+2, x+5, '/');
 
-    if (pet->life != pet->tmp_life)
+    if (in_shop && pet->life != pet->tmp_life)
         attron(A_UNDERLINE);
     mvprintw(y+2, x+7, "%02d", pet->tmp_life);
     attroff(A_UNDERLINE);
@@ -400,7 +403,7 @@ void UserInterface::draw_team() const {
     int inner_padding = (COLS-1 - 4*9) / 10;
 
     for (Pet* pet : game->team->pets) {
-        draw_pet(pet, padding, 7, true);
+        draw_pet(pet, padding, 7, true, true);
         padding += 9 + inner_padding;
     }
     for (size_t i=game->team->pets.size(); i<5; i++) {
@@ -415,7 +418,7 @@ void UserInterface::draw_shop() const {
 
     for (size_t i=0; i<game->shop->pets.size(); i++) {
         if (game->shop->pets[i])
-            draw_pet(game->shop->pets[i], padding, 13, false, game->shop->frozen_pets[i]);
+            draw_pet(game->shop->pets[i], padding, 13, false, true, game->shop->frozen_pets[i]);
         else
             mvaddstr(15, padding, "  ___  ");
         padding += 9 + inner_padding;
@@ -438,6 +441,11 @@ void UserInterface::draw_action() const {
 }
 
 void UserInterface::draw_fight() const {
+    // Clear previous pets
+    std::string empty_line(COLS-3, ' ');
+    for (int line=6; line<11; line++)
+        mvaddstr(line, 1, empty_line.c_str());
+
     int middle = COLS / 2;
     int padding = (middle - 5*9) / 6;
 
@@ -446,12 +454,12 @@ void UserInterface::draw_fight() const {
 
     for (size_t ind=0; ind<game->team->tmp_pets.size(); ind++) {
         int x = middle - padding*2*(ind+1);
-        draw_pet(game->team->tmp_pets[ind], x, 6, true, false);
+        draw_pet(game->team->tmp_pets[ind], x, 6, true, false, false);
     }
 
     for (size_t ind=0; ind<game->adv_team->tmp_pets.size(); ind++) {
         int x = middle + padding*(2*ind+1);
-        draw_pet(game->adv_team->tmp_pets[ind], x, 6, true, false);
+        draw_pet(game->adv_team->tmp_pets[ind], x, 6, true, false, false);
     }
 }
 
@@ -459,4 +467,10 @@ void UserInterface::draw_status() const {
     std::string empty_msg(COLS-3, ' ');
     mvaddstr(21, 1, empty_msg.c_str());
     mvaddstr(21, 1, status.c_str());
+}
+
+void UserInterface::draw_log() const {
+    for (size_t i=0; i<utils::vector_logs.size(); i++)
+        mvaddstr(22+i, 3, utils::vector_logs[i].c_str());
+    utils::vector_logs.clear();
 }

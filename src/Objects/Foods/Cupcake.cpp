@@ -16,7 +16,7 @@ Cupcake::Cupcake(Team* team, Shop* shop) : Object("cupcake", team, shop, ObjType
 Cupcake::~Cupcake() { }
 
 void Cupcake::on_buy(size_t index) {
-    spdlog::debug("{} bought !", name);
+    utils::vector_logs.push_back(name + " bought !");
     std::vector<Pet*>& team_pets = get_team_pets();
 
     team_pets[index]->buff(3, 3, true);

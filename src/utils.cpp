@@ -11,6 +11,8 @@ std::string utils::pad(std::string str, size_t const num, char const padding_cha
     return str;
 }
 
+std::vector<std::string> utils::vector_logs;
+
 
 InvalidAction::InvalidAction(std::string msg) : msg(msg) { }
 

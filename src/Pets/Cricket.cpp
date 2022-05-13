@@ -18,7 +18,7 @@ Cricket::Cricket(Team* team, Shop* shop) : Pet("cricket", team, shop) {
 Cricket::~Cricket() { }
 
 void Cricket::on_faint() {
-    spdlog::debug("{} fainting !", name);
+    utils::vector_logs.push_back(name + " fainting !");
 
     int lvl = get_level();
     Pet* zombie = new ZombieCricket(team, shop, lvl);

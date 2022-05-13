@@ -23,7 +23,6 @@ int main(int argc, char** argv) {
     Team* team2 = Team::unserialize(argv[index++]);
 
     if (debug) {
-        spdlog::set_level(spdlog::level::debug);
         team1->fight(team2);
     } else {
         auto [won, team_str1, team_str2] = team1->get_fight_str(team2);

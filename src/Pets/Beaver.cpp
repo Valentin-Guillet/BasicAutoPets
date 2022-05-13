@@ -19,7 +19,7 @@ Beaver::Beaver(Team* team, Shop* shop) : Pet("beaver", team, shop) {
 Beaver::~Beaver() { }
 
 void Beaver::on_sell() {
-    spdlog::debug("{} sold !", name);
+    utils::vector_logs.push_back(name + " sold !");
     std::vector<Pet*> team_pets = get_team_pets();
 
     int lvl = get_level();

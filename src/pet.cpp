@@ -88,7 +88,7 @@ void Pet::reset_stats() {
 
 void Pet::equip_object(Object* obj) {
     if (obj)
-        spdlog::debug("Giving {} to {}", obj->name, name);
+        utils::vector_logs.push_back("Giving " + obj->name + " to " + name);
     if (object)
         delete object;
 
@@ -98,14 +98,14 @@ void Pet::equip_object(Object* obj) {
 }
 
 void Pet::attacks(Pet* other) {
-    spdlog::debug("{} attacks {} for {} damages", name, other->name, tmp_attack);
+    utils::vector_logs.push_back(name + " attacks " + other->name + " for " + std::to_string(tmp_attack) + " damages");
     other->tmp_life -= tmp_attack;
     if (other->is_alive())
         other->on_hurt();
 }
 
 void Pet::buff(int buff_attack, int buff_life, bool in_fight) {
-    spdlog::debug("{} is getting buffed (+{}/+{})", name, buff_attack, buff_life);
+    utils::vector_logs.push_back(name + " is getting buffed (+" + std::to_string(buff_attack) + "/+" + std::to_string(buff_life) + ")");
     if (in_fight) {
         tmp_attack = std::min(tmp_attack + buff_attack, 50);
         tmp_life  = std::min(tmp_life + buff_life, 50);
@@ -120,7 +120,7 @@ void Pet::buff(int buff_attack, int buff_life, bool in_fight) {
 }
 
 void Pet::gain_xp(int amount) {
-    spdlog::debug("{} gains {} xp", name, amount);
+    utils::vector_logs.push_back(name + " gains " + std::to_string(amount) + " xp");
     for (int x=0; x<amount && xp<5; x++) {
         xp++;
         if (xp == 5 || xp == 2) {

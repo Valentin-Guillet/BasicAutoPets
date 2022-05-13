@@ -68,9 +68,9 @@ void Shop::roll() {
 }
 
 void Shop::create_bonus_pet() {
-    spdlog::debug("Creating bonus pet! ");
+    utils::vector_logs.push_back("Creating bonus pet! ");
     if (pets.size() + objects.size() == 7) {
-        spdlog::debug("No empty spot for a bonus pet !");
+        utils::vector_logs.push_back("No empty spot for a bonus pet !");
         return;
     }
 
@@ -118,7 +118,7 @@ void Shop::freeze_object(size_t index) {
 }
 
 void Shop::upgrade(int attack, int life, bool tmp) {
-    spdlog::debug("Upgrading shop by +{}/+{}", attack, life);
+    utils::vector_logs.push_back("Upgrading shop by +" + std::to_string(attack) + "/+" + std::to_string(life));
     for (Pet* pet : pets) {
         if (!pet) continue;
         pet->buff(attack, life, false);
