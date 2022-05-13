@@ -1,7 +1,7 @@
 
 #include "Pets/ZombieCricket.hpp"
 
-ZombieCricket::ZombieCricket(Team* team, Shop* shop, int lvl) : Pet("zombiecricket", team, shop) {
+ZombieCricket::ZombieCricket(Team* team, Shop* shop, int lvl) : Pet("ZombieCricket", team, shop) {
     repr = "🦗";
     id = 0;
     pack = PACK_STANDARD | PACK_DLC1;

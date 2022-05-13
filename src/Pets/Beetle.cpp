@@ -4,7 +4,7 @@
 #include "utils.hpp"
 
 
-Beetle::Beetle(Team* team, Shop* shop) : Pet("beetle", team, shop) {
+Beetle::Beetle(Team* team, Shop* shop) : Pet("Beetle", team, shop) {
     repr = "Beetle";
     id = 3;
     pack = PACK_DLC1;

@@ -11,6 +11,7 @@
 #include <sstream>
 #include <thread>
 #include <unordered_map>
+#include <unordered_set>
 
 #include "utils.hpp"
 
@@ -51,7 +52,7 @@ bool UserInterface::run() {
         draw_shop();
         draw_action();
         draw_status();
-        draw_log();
+        draw_logs();
     } while (act());
 
     return play_again();
@@ -304,39 +305,58 @@ bool UserInterface::fight() {
     draw_action();
 
     draw_fight();
-    char c;
+    int c = get_fighting_action();
+
+    while (!game->fight_step()) {
+
+        if (c == 's' || c == 'q') continue;
+        draw_fight();
+        draw_logs();
+        if (c == 'a') {
+            std::this_thread::sleep_for(std::chrono::milliseconds(750));
+            refresh();
+        } else if (c == 'p' || c == 'n') {
+            c = get_fighting_action();
+        }
+    }
+    refresh();
+    if (c != 's' && c != 'q') {
+        draw_logs();
+        status = "";
+        getch();
+    }
+
+    state = UIState::none;
+    return (game->life > 0 && game->victories < 10);
+}
+
+
+int UserInterface::get_fighting_action() {
+    int c;
     bool invalid;
+    std::unordered_set<int> valid_actions = {'a', 'p', 'n', 's', 'q'};
     do {
         c = std::tolower(getch());
-        invalid = (c != 'a' && c != 'p' && c != 'n' && c != 's' && c != 'q');
+        if (c == KEY_RESIZE) {
+            clear();
+            draw_frame();
+            draw_action();
+            draw_fight();
+            draw_status();
+            draw_logs(false);
+            continue;
+        }
+
+        invalid = (valid_actions.count(c) == 0);
         if (invalid) {
             status = "Invalid action !";
             draw_status();
         }
     } while (invalid);
-
-    while (!game->fight_step()) {
-        if (c == 's' || c == 'q') continue;
-        draw_fight();
-        draw_log();
-        if (c == 'a') {
-            std::this_thread::sleep_for(std::chrono::milliseconds(750));
-            refresh();
-        } else if (c == 'p' || c == 'n') {
-            do {
-                c = std::tolower(getch());
-                invalid = (c != 'a' && c != 'p' && c != 'n' && c != 's' && c != 'q');
-                if (invalid) {
-                    status = "Invalid action !";
-                    draw_status();
-                }
-            } while (invalid);
-        }
-    }
     status = "";
+    draw_status();
 
-    state = UIState::none;
-    return (game->life > 0 && game->victories < 10);
+    return c;
 }
 
 
@@ -469,8 +489,19 @@ void UserInterface::draw_status() const {
     mvaddstr(21, 1, status.c_str());
 }
 
-void UserInterface::draw_log() const {
-    for (size_t i=0; i<utils::vector_logs.size(); i++)
-        mvaddstr(22+i, 3, utils::vector_logs[i].c_str());
-    utils::vector_logs.clear();
+void UserInterface::draw_logs(bool clear) const {
+    // Clean logs
+    if (clear) {
+        std::string empty_line(COLS-3, ' ');
+        for (int line=22; line<LINES-1; line++)
+            mvaddstr(line, 1, empty_line.c_str());
+    }
+
+    for (size_t i=0; i<utils::vector_logs.size(); i++) {
+        std::string msg = "  | " + utils::vector_logs[i];
+        mvaddstr(22+i, 3, msg.c_str());
+    }
+
+    if (clear)
+        utils::vector_logs.clear();
 }

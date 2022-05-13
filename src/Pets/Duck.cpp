@@ -4,7 +4,7 @@
 #include "utils.hpp"
 
 
-Duck::Duck(Team* team, Shop* shop) : Pet("duck", team, shop) {
+Duck::Duck(Team* team, Shop* shop) : Pet("Duck", team, shop) {
     repr = "🦆";
     id = 6;
     pack = PACK_STANDARD;

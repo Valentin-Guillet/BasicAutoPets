@@ -5,7 +5,7 @@
 #include "utils.hpp"
 
 
-Cricket::Cricket(Team* team, Shop* shop) : Pet("cricket", team, shop) {
+Cricket::Cricket(Team* team, Shop* shop) : Pet("Cricket", team, shop) {
     repr = "🦗";
     id = 5;
     pack = PACK_STANDARD | PACK_DLC1;

@@ -8,7 +8,7 @@
 #include "utils.hpp"
 
 
-Ant::Ant(Team* team, Shop* shop) : Pet("ant", team, shop) {
+Ant::Ant(Team* team, Shop* shop) : Pet("Ant", team, shop) {
     repr = "🐜";
     id = 1;
     pack = PACK_STANDARD | PACK_DLC1;

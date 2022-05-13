@@ -35,6 +35,8 @@ class UserInterface {
         void order();
         bool fight();
 
+        int get_fighting_action();
+
         void draw_frame() const;
         void draw_game_state() const;
         void draw_pet(Pet* pet, int x, int y, bool draw_xp, bool in_shop, bool frozen=false) const;
@@ -44,7 +46,7 @@ class UserInterface {
         void draw_action() const;
         void draw_fight() const;
         void draw_status() const;
-        void draw_log() const;
+        void draw_logs(bool clear=true) const;
 };
 
 

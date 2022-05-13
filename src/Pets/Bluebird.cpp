@@ -6,7 +6,7 @@
 #include "utils.hpp"
 
 
-Bluebird::Bluebird(Team* team, Shop* shop) : Pet("bluebird", team, shop) {
+Bluebird::Bluebird(Team* team, Shop* shop) : Pet("Bluebird", team, shop) {
     repr = "🐦";
     id = 4;
     pack = PACK_DLC1;

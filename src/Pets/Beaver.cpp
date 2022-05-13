@@ -6,7 +6,7 @@
 #include "utils.hpp"
 
 
-Beaver::Beaver(Team* team, Shop* shop) : Pet("beaver", team, shop) {
+Beaver::Beaver(Team* team, Shop* shop) : Pet("Beaver", team, shop) {
     repr = "Beaver";
     id = 2;
     pack = PACK_STANDARD | PACK_DLC1;
