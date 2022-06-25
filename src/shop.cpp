@@ -96,9 +96,9 @@ void Shop::buy_object(size_t index, size_t index_target) {
 
     Object* object = objects[index];
     if (object->type == ObjType::FOOD) {
+        object->on_buy(index_target);
         if (!object->target_all)
             team->give_object(index_target, object);
-        object->on_buy(index_target);
         delete object;
     } else {
         team->give_object(index_target, object);

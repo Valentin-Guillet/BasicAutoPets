@@ -184,7 +184,6 @@ void Team::give_object(size_t index, Object* obj) {
 
     pets[index]->on_object(obj);
     for (size_t i=0; i<pets.size(); i++) {
-        if (i == index) continue;
         pets[i]->on_object_bought(index, obj);
     }
 }

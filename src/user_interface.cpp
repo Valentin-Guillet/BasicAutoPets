@@ -144,6 +144,7 @@ bool UserInterface::take_action() {
         case 'e':
             state = UIState::fighting;
             game->team->end_turn();
+            draw_team();
             utils::vector_logs.push_back("Press a key to continue...");
             draw_logs();
             getch();
