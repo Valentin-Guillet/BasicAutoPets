@@ -6,7 +6,7 @@
 #include "utils.hpp"
 
 
-Apple::Apple(Team* team, Shop* shop) : Object("apple", team, shop, ObjType::FOOD) {
+Apple::Apple(Team* team, Shop* shop) : Object("Apple", team, shop, ObjType::FOOD) {
     repr = "🍎";
     id = 1;
     tier = 1;

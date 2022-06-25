@@ -6,7 +6,7 @@
 #include "utils.hpp"
 
 
-Pill::Pill(Team* team, Shop* shop) : Object("pill", team, shop, ObjType::FOOD) {
+Pill::Pill(Team* team, Shop* shop) : Object("Pill", team, shop, ObjType::FOOD) {
     repr = "💊";
     id = 5;
     tier = 2;

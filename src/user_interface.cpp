@@ -436,12 +436,12 @@ void UserInterface::draw_team() const {
     int padding = (COLS-1 - 4*9) / 3.5;
     int inner_padding = (COLS-1 - 4*9) / 10;
 
-    for (Pet* pet : game->team->pets) {
-        draw_pet(pet, padding, 7, true, true);
-        padding += 9 + inner_padding;
-    }
     for (size_t i=game->team->pets.size(); i<5; i++) {
         mvaddstr(8, padding, "  Empty  ");
+        padding += 9 + inner_padding;
+    }
+    for (int i=game->team->pets.size()-1; i>=0; i--) {
+        draw_pet(game->team->pets[i], padding, 7, true, true);
         padding += 9 + inner_padding;
     }
 }

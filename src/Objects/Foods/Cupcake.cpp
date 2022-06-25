@@ -6,7 +6,7 @@
 #include "utils.hpp"
 
 
-Cupcake::Cupcake(Team* team, Shop* shop) : Object("cupcake", team, shop, ObjType::FOOD) {
+Cupcake::Cupcake(Team* team, Shop* shop) : Object("Cupcake", team, shop, ObjType::FOOD) {
     repr = "🧁";
     id = 3;
     tier = 2;
