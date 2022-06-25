@@ -63,6 +63,9 @@ class Team {
         std::vector<Pet*> pets;
         std::vector<Pet*> tmp_pets;
 
+        int check_end_of_battle(Team* adv_team) const;
+        std::vector<Pet*> order_pets(Team* adv_team) const;
+
         void check_size(std::string action, size_t index) const;
         void _add(Pet* pet);
 };

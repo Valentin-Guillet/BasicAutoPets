@@ -1,6 +1,7 @@
 
 #include "team.hpp"
 
+#include <algorithm>
 #include <fstream>
 #include <iostream>
 
@@ -236,8 +237,20 @@ int Team::fight(Team* other_team) {
 }
 
 int Team::fight_step(Team* adv_team) {
+    // Start of battle
+    if (!in_fight) {
+        utils::vector_logs.push_back("Starting fight !");
+
+        std::vector<Pet*> ordered_pets = order_pets(adv_team);
+        for (Pet* pet : ordered_pets)
+            pet->on_start_battle();
+
+        int output = check_end_of_battle(adv_team);
+        in_fight = (output == -1);
+        return output;
+    }
+
     utils::vector_logs.push_back("Another step");
-    in_fight = true;
 
     Pet* pet = tmp_pets.front();
     Pet* adv_pet = adv_team->tmp_pets.front();
@@ -263,23 +276,7 @@ int Team::fight_step(Team* adv_team) {
         adv_team->tmp_pets.erase(adv_team->tmp_pets.begin());
     }
 
-    int output;
-    if (tmp_pets.empty() && adv_team->tmp_pets.empty())
-        output = 0;
-    else if (adv_team->tmp_pets.empty())
-        output = 1;
-    else if (tmp_pets.empty())
-        output = 2;
-    else
-        output = -1;
-
-    if (output == 0)
-        utils::vector_logs.push_back("Draw !");
-    else if (output == 1)
-        utils::vector_logs.push_back("Win !");
-    else if (output == 2)
-        utils::vector_logs.push_back("Loss...");
-
+    int output = check_end_of_battle(adv_team);
     in_fight = (output == -1);
     return output;
 }
@@ -378,6 +375,54 @@ void Team::load_teams() {
         Team* new_team = Team::unserialize(team_str);
         Team::team_list[new_team->turn].push_back(new_team);
     }
+}
+
+int Team::check_end_of_battle(Team* adv_team) const {
+    int output;
+    if (tmp_pets.empty() && adv_team->tmp_pets.empty())
+        output = 0;
+    else if (adv_team->tmp_pets.empty())
+        output = 1;
+    else if (tmp_pets.empty())
+        output = 2;
+    else
+        output = -1;
+
+    if (output == 0)
+        utils::vector_logs.push_back("Draw !");
+    else if (output == 1)
+        utils::vector_logs.push_back("Win !");
+    else if (output == 2)
+        utils::vector_logs.push_back("Loss...");
+
+    return output;
+}
+
+std::vector<Pet*> Team::order_pets(Team* adv_team) const {
+    std::vector<Pet*> ordered_pets;
+    while (ordered_pets.size() < tmp_pets.size() + adv_team->tmp_pets.size()) {
+        Pet* curr_pet;
+        int max_attack = 0;
+        for (Pet* pet : tmp_pets) {
+            bool done = (std::find(ordered_pets.begin(), ordered_pets.end(), pet) != ordered_pets.end());
+            if (!done && pet->get_attack() > max_attack) {
+                max_attack = pet->get_attack();
+                curr_pet = pet;
+            }
+        }
+
+        for (Pet* pet : adv_team->tmp_pets) {
+            bool done = (std::find(ordered_pets.begin(), ordered_pets.end(), pet) != ordered_pets.end());
+            if (!done && pet->get_attack() > max_attack) {
+                max_attack = pet->get_attack();
+                curr_pet = pet;
+            }
+        }
+
+        ordered_pets.push_back(curr_pet);
+    }
+
+    return ordered_pets;
 }
 
 void Team::check_size(std::string action, size_t index) const {
