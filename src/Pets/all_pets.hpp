@@ -18,6 +18,7 @@
 #include "Pets/Horse.hpp"
 #include "Pets/LadyBug.hpp"
 #include "Pets/Mosquito.hpp"
+#include "Pets/Otter.hpp"
 #include "Pets/ZombieCricket.hpp"
 
 
@@ -35,6 +36,7 @@ namespace AllPets {
         {1, "horse"},
         {1, "ladybug"},
         {1, "mosquito"},
+        {1, "otter"},
         {-1, "zombiecricket"},
     };
 

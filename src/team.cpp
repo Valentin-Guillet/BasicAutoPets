@@ -135,14 +135,17 @@ void Team::reset() {
 }
 
 void Team::add(Pet* new_pet) {
+    new_pet->on_buy();
     for (Pet* pet : pets)
         pet->on_friend_bought(new_pet);
     _add(new_pet);
 }
 
-void Team::combine(size_t index, Pet* other_pet) {
+void Team::combine(size_t index, Pet* other_pet, bool activate_on_buy) {
     Pet* dst = pets[index];
     dst->combine(other_pet);
+    if (activate_on_buy)
+        dst->on_buy();
     delete other_pet;
 }
 
@@ -150,7 +153,7 @@ void Team::combine(size_t src_index, size_t dst_index) {
     can_combine(src_index, dst_index);
 
     Pet* src = pets[src_index];
-    combine(dst_index, src);
+    combine(dst_index, src, false);
     pets.erase(pets.begin() + src_index);
 }
 
