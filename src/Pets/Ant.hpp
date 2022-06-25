@@ -6,7 +6,6 @@
 #include "team.hpp"
 
 
-
 class Ant : public Pet {
     public:
         Ant(Team* team, Shop* shop);

@@ -6,7 +6,8 @@ cat > $name.cpp << EOF
 
 #include "Pets/$name.hpp"
 
-$name::$name(Team* team, Shop* shop) : Pet("${name,}", team, shop) {
+
+$name::$name(Team* team, Shop* shop) : Pet("${name^}", team, shop) {
     id = 0;
     pack = PACK_STANDARD | PACK_DLC1;
     tier = 1;

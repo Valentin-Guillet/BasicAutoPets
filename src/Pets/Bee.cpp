@@ -1,6 +1,7 @@
 
 #include "Pets/Bee.hpp"
 
+
 Bee::Bee(Team* team, Shop* shop) : Pet("Bee", team, shop) {
     repr = "🐝";
     id = 0;
