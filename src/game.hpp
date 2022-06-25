@@ -1,6 +1,8 @@
 #ifndef HEADER_GAME
 #define HEADER_GAME
 
+#include <string>
+
 #include "shop.hpp"
 #include "team.hpp"
 
@@ -30,7 +32,11 @@ class Game {
         void freeze_pet(size_t index);
         void freeze_object(size_t index);
 
-        void get_state() const;
+        std::string serialize() const;
+        void unserialize(std::string game_str);
+
+        void save_state() const;
+        void load_state();
 
         void cheat();
 

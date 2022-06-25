@@ -16,6 +16,8 @@ class Shop {
     friend class UserInterface;
 
     public:
+        static Shop* unserialize(Team* team, std::string shop_str);
+
         Shop(Team* team);
         ~Shop();
 
@@ -33,6 +35,8 @@ class Shop {
         void freeze_object(size_t index);
 
         void upgrade(int attack, int life, bool tmp);
+
+        std::string serialize() const;
 
     private:
         Team* team;

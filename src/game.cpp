@@ -1,8 +1,9 @@
 
 #include "game.hpp"
 
+#include <fstream>
 #include <iostream>
-#include <string>
+#include <sstream>
 
 #include "object.hpp"
 #include "utils.hpp"
@@ -127,8 +128,69 @@ void Game::freeze_object(size_t index) {
     shop->freeze_object(index);
 }
 
-void Game::get_state() const {
+std::string Game::serialize() const {
+    std::string state = std::to_string(turn) + " ";
+    state += std::to_string(life) + " ";
+    state += std::to_string(victories) + " ";
+    state += std::to_string(money) + "\n";
+    state += team->serialize() + "\n";
+    state += shop->serialize();
+    return state;
+}
 
+void Game::unserialize(std::string game_str) {
+    std::stringstream stream(game_str);
+    std::string line;
+
+    std::getline(stream, line, '\n');
+    int index = line.find(' ');
+    turn = std::stoi(line.substr(0, index));
+    line = line.substr(index+1);
+
+    index = line.find(' ');
+    life = std::stoi(line.substr(0, index));
+    line = line.substr(index+1);
+
+    index = line.find(' ');
+    victories = std::stoi(line.substr(0, index));
+    line = line.substr(index+1);
+
+    index = line.find(' ');
+    money = std::stoi(line.substr(0, index));
+
+    delete team;
+    std::getline(stream, line, '\n');
+    team = Team::unserialize(line);
+
+    delete shop;
+    std::getline(stream, line, '\n');
+    shop = Shop::unserialize(team, line);
+}
+
+void Game::save_state() const {
+    std::string state = serialize();
+    std::ofstream file("data/game_save");
+    if (!file) {
+        std::cout << "Couldn't save file" << std::endl;
+        return;
+    }
+
+    file << state;
+    file.close();
+}
+
+void Game::load_state() {
+    std::ifstream file("data/game_save");
+    if (!file) {
+        std::cout << "Couldn't load file" << std::endl;
+        return;
+    }
+    std::stringstream buffer;
+    buffer << file.rdbuf();
+    std::string state = buffer.str();
+    file.close();
+
+    unserialize(state);
 }
 
 void Game::cheat() {

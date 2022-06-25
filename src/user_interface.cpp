@@ -150,6 +150,20 @@ bool UserInterface::take_action() {
             getch();
             break;
 
+        case 'd':
+            game->save_state();
+            status = "Saving current game state...";
+            draw_status();
+            break;
+
+        case 'l':
+            game->load_state();
+            status = "Loading game state";
+            draw_status();
+            draw_logs(false);
+            refresh();
+            break;
+
         case 'q':
             return false;
     }

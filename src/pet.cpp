@@ -34,6 +34,9 @@ Pet* Pet::unserialize(Team* team, std::string pet_str) {
 
     getline(iss, object_name, ' ');
 
+    name = utils::to_lower(name);
+    object_name = utils::to_lower(object_name);
+
     Pet* pet = AllPets::create_new_pet(name, team, nullptr);
     pet->attack = attack;
     pet->life = life;

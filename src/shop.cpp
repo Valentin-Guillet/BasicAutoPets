@@ -8,6 +8,59 @@
 #include "utils.hpp"
 
 
+Shop* Shop::unserialize(Team* team, std::string shop_str) {
+    Shop* new_shop = new Shop(team);
+
+    int index = shop_str.find(' ');
+    new_shop->turn = std::stoi(shop_str.substr(0, index));
+    shop_str = shop_str.substr(index);
+
+    index = shop_str.find('/');
+    std::string pets_str = shop_str.substr(0, index-1);
+    shop_str = shop_str.substr(index+2);
+    while (!pets_str.empty()) {
+        index = pets_str.find(')');
+        std::string pet_str = pets_str.substr(2, index-2);
+        pets_str = pets_str.substr(index+1);
+
+        new_shop->pets.push_back(Pet::unserialize(team, pet_str));
+    }
+
+    index = shop_str.find('/');
+    std::string frozen_pets_str = shop_str.substr(0, index-1);
+    shop_str = shop_str.substr(index+2);
+    for (size_t i=0; i<new_shop->pets.size(); i++)
+        new_shop->frozen_pets.push_back(frozen_pets_str[i] == '1');
+
+    index = shop_str.find('/');
+    std::string objects_str = shop_str.substr(0, index-1);
+    shop_str = shop_str.substr(index+2);
+    while (!objects_str.empty()) {
+        index = objects_str.find(' ');
+        std::string obj_str;
+        if (index == -1) {
+            obj_str = objects_str;
+            objects_str.clear();
+        } else {
+            obj_str = objects_str.substr(0, index);
+            objects_str = objects_str.substr(index+1);
+        }
+        new_shop->objects.push_back(Object::create_new_object(obj_str, team, new_shop));
+    }
+
+    index = shop_str.find('/');
+    std::string frozen_objs_str = shop_str.substr(0, index-1);
+    shop_str = shop_str.substr(index+2);
+    for (size_t i=0; i<new_shop->objects.size(); i++)
+        new_shop->frozen_objects.push_back(frozen_objs_str[i] == '1');
+
+    index = shop_str.find(' ');
+    new_shop->buff_attack = std::stoi(shop_str.substr(0, index));
+    new_shop->buff_life = std::stoi(shop_str.substr(index+1));
+
+    return new_shop;
+}
+
 Shop::Shop(Team* team) : team(team), turn(0), buff_attack(0), buff_life(0) { }
 
 Shop::~Shop() {
@@ -127,6 +180,32 @@ void Shop::upgrade(int attack, int life, bool tmp) {
         buff_attack += attack;
         buff_life += life;
     }
+}
+
+std::string Shop::serialize() const {
+    std::string shop_str = std::to_string(turn) + " ";
+
+    for (Pet* pet : pets) {
+        if (pet)
+            shop_str += pet->serialize() + " ";
+    }
+
+    shop_str += "/ ";
+    for (bool frozen : frozen_pets)
+        shop_str += (frozen ? "1" : "0");
+
+    shop_str += " / ";
+    for (Object* obj : objects) {
+        if (obj)
+            shop_str += obj->name + " ";
+    }
+
+    shop_str += "/ ";
+    for (bool frozen : frozen_objects)
+        shop_str += (frozen ? "1" : "0");
+
+    shop_str += " / " + std::to_string(buff_attack) + " " + std::to_string(buff_life);
+    return shop_str;
 }
 
 

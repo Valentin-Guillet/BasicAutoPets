@@ -10,6 +10,7 @@
 
 
 Object* Object::create_new_object(std::string name, Team* team, Shop* shop) {
+    name = utils::to_lower(name);
     return AllObjects::create_new_object(name, team, shop);
 }
 

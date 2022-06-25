@@ -28,8 +28,14 @@ TeamList Team::team_list;
 Team* Team::unserialize(std::string team_str) {
     Team* new_team = new Team();
     int index = team_str.find(' ');
-    int turn = std::stoi(team_str.substr(0, index));
-    team_str = team_str.substr(index);
+
+    if (index == -1) {
+        new_team->turn = std::stoi(team_str);
+        team_str.clear();
+    } else {
+        new_team->turn = std::stoi(team_str.substr(0, index));
+        team_str = team_str.substr(index);
+    }
 
     while (!team_str.empty()) {
         index = team_str.find(')');
@@ -39,8 +45,7 @@ Team* Team::unserialize(std::string team_str) {
         new_team->_add(Pet::unserialize(new_team, pet_str));
     }
     new_team->tmp_pets = new_team->pets;
-    new_team->turn = turn;
-    new_team->in_fight = true;
+    new_team->in_fight = false;
 
     return new_team;
 }
@@ -407,6 +412,7 @@ void Team::load_teams() {
     std::string team_str;
     while (getline(team_file, team_str)) {
         Team* new_team = Team::unserialize(team_str);
+        new_team->in_fight = true;
         Team::team_list[new_team->turn].push_back(new_team);
     }
 }
