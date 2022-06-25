@@ -104,9 +104,9 @@ void Pet::attacks(Pet* other) {
         other->on_hurt();
 }
 
-void Pet::buff(int buff_attack, int buff_life, bool in_fight) {
+void Pet::buff(int buff_attack, int buff_life, bool is_tmp) {
     utils::vector_logs.push_back(name + " is getting buffed (+" + std::to_string(buff_attack) + "/+" + std::to_string(buff_life) + ")");
-    if (in_fight) {
+    if (is_tmp) {
         tmp_attack = std::min(tmp_attack + buff_attack, 50);
         tmp_life  = std::min(tmp_life + buff_life, 50);
     } else {
@@ -148,6 +148,10 @@ std::ostream& operator<<(std::ostream& os, Pet const& pet) {
     if (pet.object)
         os << " with " << pet.object->name;
     return os;
+}
+
+void Pet::on_friend_bought(Pet* new_pet) {
+    on_friend_summoned(new_pet);
 }
 
 void Pet::on_faint() {

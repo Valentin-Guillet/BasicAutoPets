@@ -144,6 +144,9 @@ bool UserInterface::take_action() {
         case 'e':
             state = UIState::fighting;
             game->team->end_turn();
+            utils::vector_logs.push_back("Press a key to continue...");
+            draw_logs();
+            getch();
             break;
 
         case 'q':
@@ -307,9 +310,13 @@ bool UserInterface::fight() {
     draw_fight();
     int c = get_fighting_action();
 
-    while (!game->fight_step()) {
+    int battle_status = game->fight_step();
+    while (battle_status == -1) {
+        if (c == 's' || c == 'q') {
+            battle_status = game->fight_step();
+            continue;
+        }
 
-        if (c == 's' || c == 'q') continue;
         draw_fight();
         draw_logs();
         if (c == 'a') {
@@ -318,13 +325,20 @@ bool UserInterface::fight() {
         } else if (c == 'p' || c == 'n') {
             c = get_fighting_action();
         }
+        battle_status = game->fight_step();
     }
+
+    draw_fight();
+    if (c == 'a')
+        std::this_thread::sleep_for(std::chrono::milliseconds(750));
     refresh();
-    if (c != 's' && c != 'q') {
-        draw_logs();
-        status = "";
-        getch();
-    }
+
+    utils::vector_logs.push_back("Press a key to continue...");
+    draw_logs();
+    status = "";
+    getch();
+
+    game->reset_turn(battle_status);
 
     state = UIState::none;
     return (game->life > 0 && game->victories < 10);

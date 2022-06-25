@@ -113,8 +113,10 @@ void Team::reset() {
         pet->reset_stats();
 }
 
-void Team::add(Pet* pet) {
-    _add(pet);
+void Team::add(Pet* new_pet) {
+    for (Pet* pet : pets)
+        pet->on_friend_bought(new_pet);
+    _add(new_pet);
 }
 
 void Team::combine(size_t index, Pet* other_pet) {
@@ -159,6 +161,12 @@ void Team::summon(Pet* base_pet, Pet* new_pet) {
         team_pets = &pets;
     auto it = std::find(team_pets->begin(), team_pets->end(), base_pet);
     team_pets->insert(it+1, new_pet);
+
+    for (Pet* pet : *team_pets) {
+        if (pet == new_pet)
+            continue;
+        pet->on_friend_summoned(new_pet);
+    }
 }
 
 void Team::faint(size_t index) {

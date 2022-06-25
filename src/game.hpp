@@ -18,7 +18,8 @@ class Game {
         bool end_turn(size_t indices[5]);
 
         int fight();
-        bool fight_step();
+        int fight_step();
+        void reset_turn(int status);
 
         void buy_pet(size_t index);
         void combine_shop(size_t index_shop, size_t index_team);

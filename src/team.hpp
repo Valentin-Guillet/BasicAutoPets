@@ -37,7 +37,7 @@ class Team {
         void end_turn();
         void reset();
 
-        void add(Pet* pet);
+        void add(Pet* new_pet);
         void combine(size_t index, Pet* other_pet);
         void combine(size_t src_index, size_t dst_index);
         int sell(size_t index);

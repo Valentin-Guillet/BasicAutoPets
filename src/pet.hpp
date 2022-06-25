@@ -34,7 +34,7 @@ class Pet {
         void reset_stats();
         void equip_object(Object* obj);
         void attacks(Pet* other);
-        void buff(int buff_attack, int buff_life, bool in_fight);
+        void buff(int buff_attack, int buff_life, bool is_tmp);
         void gain_xp(int amount);
         void combine(Pet* const other);
 
@@ -50,10 +50,11 @@ class Pet {
         virtual void on_start_turn() { };
         virtual void on_end_turn() { };
         virtual void on_start_battle() { };
-        virtual void on_friend_summoned() { };
+        virtual void on_friend_summoned(Pet* new_pet) { };
         virtual void on_before_attack() { };
         virtual void on_friend_ahead_attacks() { };
         virtual void on_friend_ahead_faints() { };
+        virtual void on_friend_bought(Pet* new_pet);
         virtual void on_friend_sold() { };
         virtual void on_friend_eats_shop() { };
 

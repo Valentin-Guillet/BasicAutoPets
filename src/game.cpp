@@ -58,22 +58,22 @@ int Game::fight() {
     return team->fight(other_team);
 }
 
-bool Game::fight_step() {
-    int end_fight = team->fight_step(adv_team);
+int Game::fight_step() {
+    return team->fight_step(adv_team);
+}
 
-    if (end_fight != -1) {
-        if (end_fight == 1)
-            victories++;
-        else if (end_fight == 2)
-            life -= life_per_turn(turn);
+void Game::reset_turn(int status) {
+    if (status == 1)
+        victories++;
 
-        team->reset();
-        adv_team->reset();
+    else if (status == 2)
+        life -= life_per_turn(turn);
 
-        if (life > 0)
-            begin_turn();
-    }
-    return end_fight != -1;
+    team->reset();
+    adv_team->reset();
+
+    if (life > 0)
+        begin_turn();
 }
 
 void Game::buy_pet(size_t index) {
