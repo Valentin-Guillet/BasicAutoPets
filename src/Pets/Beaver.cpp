@@ -20,7 +20,7 @@ Beaver::~Beaver() { }
 
 void Beaver::on_sell() {
     utils::vector_logs.push_back(name + " sold !");
-    std::vector<Pet*> team_pets = get_team_pets();
+    std::vector<Pet*> team_pets = team->get_pets();
 
     int lvl = get_level();
     std::vector<Pet*> targets = utils::choice(team_pets, 2);

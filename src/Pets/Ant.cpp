@@ -23,7 +23,7 @@ Ant::~Ant() { }
 void Ant::on_faint() {
     utils::vector_logs.push_back(name + " fainting !");
 
-    std::vector<Pet*> team_pets = get_team_pets();
+    std::vector<Pet*> team_pets = team->get_pets();
     std::vector<Pet*> living_pets;
 
     std::copy_if(team_pets.begin(), team_pets.end(),

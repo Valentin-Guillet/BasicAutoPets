@@ -8,6 +8,21 @@
 #include "utils.hpp"
 
 
+static void clear_dead_pets(std::vector<Pet*>& pets) {
+    for (auto it=pets.begin(); it!=pets.end(); ) {
+        Pet* pet = *it;
+        if (!pet->is_alive()) {
+            pet->on_faint();
+            if (pet->is_tmp)
+                delete pet;
+            it = pets.erase(it);
+        } else {
+            it++;
+        }
+    }
+}
+
+
 TeamList Team::team_list;
 
 Team* Team::unserialize(std::string team_str) {
@@ -78,6 +93,12 @@ void Team::can_combine(size_t src_index, size_t dst_index) const {
 
 bool Team::is_fighting() const {
     return in_fight;
+}
+
+std::vector<Pet*>& Team::get_pets() {
+    if (in_fight)
+        return tmp_pets;
+    return pets;
 }
 
 void Team::begin_turn() {
@@ -250,7 +271,10 @@ int Team::fight_step(Team* adv_team) {
 
         std::vector<Pet*> ordered_pets = order_pets(adv_team);
         for (Pet* pet : ordered_pets)
-            pet->on_start_battle();
+            pet->on_start_battle(adv_team);
+
+        clear_dead_pets(tmp_pets);
+        clear_dead_pets(adv_team->tmp_pets);
 
         int output = check_end_of_battle(adv_team);
         in_fight = (output == -1);

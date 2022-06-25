@@ -35,6 +35,9 @@ Pet* AllPets::create_new_pet(std::string name, Team* team, Shop* shop) {
     else if (name == "ladybug")
         return new LadyBug(team, shop);
 
+    else if (name == "mosquito")
+        return new Mosquito(team, shop);
+
     else if (name == "zombiecricket")
         return new ZombieCricket(team, shop);
 

@@ -15,8 +15,6 @@ class Team;
 using TeamList = std::unordered_map<int, std::vector<Team*>>;
 
 class Team {
-    friend class Pet;
-    friend class Object;
     friend class UserInterface;
 
     public:
@@ -31,6 +29,7 @@ class Team {
         void can_combine(size_t index, std::string other_pet) const;
         void can_combine(size_t src_index, size_t dst_index) const;
         bool is_fighting() const;
+        std::vector<Pet*>& get_pets();
 
         void begin_turn();
         void order(size_t order[5]);

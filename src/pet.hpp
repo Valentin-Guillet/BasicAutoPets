@@ -33,7 +33,7 @@ class Pet {
 
         void reset_stats();
         void equip_object(Object* obj);
-        void attacks(Pet* other);
+        void attacks(Pet* other, int value=0);
         void buff(int buff_attack, int buff_life, bool is_tmp);
         void gain_xp(int amount);
         void combine(Pet* const other);
@@ -49,7 +49,7 @@ class Pet {
         virtual void on_level_up() { };
         virtual void on_start_turn() { };
         virtual void on_end_turn() { };
-        virtual void on_start_battle() { };
+        virtual void on_start_battle(Team* adv_team) { };
         virtual void on_friend_summoned(Pet* new_pet) { };
         virtual void on_before_attack() { };
         virtual void on_friend_ahead_attacks() { };
@@ -78,8 +78,6 @@ class Pet {
         int tmp_attack;
         int tmp_life;
         Object* tmp_object;
-
-        std::vector<Pet*>& get_team_pets() const;
 
     private:
         static std::string get_random_name(int max_tier, bool strict_tier=false);

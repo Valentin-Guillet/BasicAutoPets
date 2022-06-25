@@ -20,7 +20,7 @@ void Fish::on_level_up() {
     utils::vector_logs.push_back(name + " level up, buffing other pets !");
 
     int lvl = get_level();
-    for (Pet* pet : get_team_pets()) {
+    for (Pet* pet : team->get_pets()) {
         if (pet == this)
             continue;
         pet->buff(lvl-1, lvl-1, false);

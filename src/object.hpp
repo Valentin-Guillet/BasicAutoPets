@@ -49,8 +49,6 @@ class Object {
         int tier;
         int cost;
 
-        std::vector<Pet*>& get_team_pets() const;
-
     private:
         static std::string get_random_name(int max_tier);
 };

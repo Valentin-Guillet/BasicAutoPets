@@ -39,12 +39,6 @@ std::ostream& operator<<(std::ostream& os, Object const& object) {
 }
 
 
-std::vector<Pet*>& Object::get_team_pets() const {
-    if (team->is_fighting())
-        return team->tmp_pets;
-    return team->pets;
-}
-
 std::string Object::get_random_name(int max_tier) {
     std::vector<std::pair<int, std::string>> names;
 

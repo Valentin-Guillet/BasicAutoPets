@@ -2,6 +2,12 @@
 
 name="${1^}"
 
+if [ -f "$name.cpp" ]
+then
+    echo "File $name.cpp already exists, aborting..."
+    exit 1
+fi
+
 cat > $name.cpp << EOF
 
 #include "Pets/$name.hpp"

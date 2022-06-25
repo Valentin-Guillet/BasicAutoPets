@@ -97,9 +97,12 @@ void Pet::equip_object(Object* obj) {
         object->set_pet(this);
 }
 
-void Pet::attacks(Pet* other) {
-    utils::vector_logs.push_back(name + " attacks " + other->name + " for " + std::to_string(tmp_attack) + " damages");
-    other->tmp_life -= tmp_attack;
+void Pet::attacks(Pet* other, int value) {
+    if (value == 0)
+        value = tmp_attack;
+
+    utils::vector_logs.push_back(name + " attacks " + other->name + " for " + std::to_string(value) + " damages");
+    other->tmp_life -= value;
     if (other->is_alive())
         other->on_hurt();
 }
@@ -124,6 +127,7 @@ void Pet::gain_xp(int amount) {
     for (int x=0; x<amount && xp<5; x++) {
         xp++;
         if (xp == 5 || xp == 2) {
+            utils::vector_logs.push_back(name + " levels up !");
             on_level_up();
             shop->create_bonus_pet();
         }
@@ -167,13 +171,6 @@ std::string Pet::serialize() const {
     pet_str += std::to_string(xp) + " ";
     pet_str += (object ? object->name : "none") + ")";
     return pet_str;
-}
-
-
-std::vector<Pet*>& Pet::get_team_pets() const {
-    if (team->is_fighting())
-        return team->tmp_pets;
-    return team->pets;
 }
 
 
