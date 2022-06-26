@@ -27,7 +27,7 @@ main: $(OBJECTS)
 	$(CC) $(CFLAGS) $^ $(LFLAGS) -o $@
 
 memory_leak: main
-	@ valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes --verbose --log-file=valgrind-out.txt ./main < test_input.txt  && vim valgrind-out.txt && rm valgrind-out.txt
+	@ valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes --verbose --log-file=valgrind-out.txt ./main -c && vim valgrind-out.txt && rm valgrind-out.txt
 
 test_battles: test/main_test
 
@@ -41,6 +41,7 @@ build/%.o: src/%.cpp $(HEADERS)
 	@ mkdir -p build/Pets/
 	@ mkdir -p build/Objects/Foods
 	@ mkdir -p build/Objects/Items
+	@ mkdir -p build/UI/
 	$(CC) -c $(CFLAGS) -o $@ $<
 
 src/Pets/all_pets.hpp: $(PETS_SOURCES)

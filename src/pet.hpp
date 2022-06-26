@@ -10,7 +10,6 @@
 
 class Shop;
 class Team;
-class UserInterface;
 
 class Pet {
     friend class UserInterface;

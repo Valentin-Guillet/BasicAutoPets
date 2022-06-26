@@ -14,7 +14,6 @@ enum class ObjType { FOOD, ITEM };
 class Pet;
 class Shop;
 class Team;
-class UserInterface;
 
 class Object {
     friend class UserInterface;

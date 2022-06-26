@@ -9,8 +9,6 @@
 #include "team.hpp"
 
 
-class UserInterface;
-
 class Shop {
     friend class Pet;
     friend class UserInterface;

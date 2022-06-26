@@ -1,9 +1,9 @@
-#ifndef HEADER_USER_INTERFACE
-#define HEADER_USER_INTERFACE
-
+#ifndef HEADER_UI_GUI
+#define HEADER_UI_GUI
 
 #include <string>
 
+#include "UI/abstract_ui.hpp"
 #include "game.hpp"
 #include "object.hpp"
 #include "pet.hpp"
@@ -11,15 +11,14 @@
 
 enum class UIState { none, buy, sell, freeze, combine_team, combine_shop, order, fighting };
 
-class UserInterface {
+class GUI : public UserInterface {
     public:
-        UserInterface(Game* game);
-        ~UserInterface();
+        GUI(Game* game);
+        ~GUI();
 
-        bool run();
+        bool run() override;
 
     private:
-        Game* game;
         UIState state;
         std::string status;
 
@@ -33,14 +32,14 @@ class UserInterface {
         void combine_team();
         void combine_shop();
         void order();
-        bool fight();
+        void fight();
 
         int get_fighting_action();
 
         void draw_frame() const;
         void draw_game_state() const;
-        void draw_pet(Pet* pet, int x, int y, bool draw_xp, bool in_shop, bool frozen=false) const;
-        void draw_object(Object* pet, int x, int y, bool frozen=false) const;
+        void draw_pet(Pet const* pet, int x, int y, bool draw_xp, bool in_shop, bool frozen=false) const;
+        void draw_object(Object const* obj, int x, int y, bool frozen=false) const;
         void draw_team() const;
         void draw_shop() const;
         void draw_action() const;
@@ -50,5 +49,4 @@ class UserInterface {
 };
 
 
-
-#endif // HEADER_USER_INTERFACE
+#endif // HEADER_UI_GUI

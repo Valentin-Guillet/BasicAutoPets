@@ -7,8 +7,6 @@
 #include "team.hpp"
 
 
-class UserInterface;
-
 class Game {
     friend class UserInterface;
 
@@ -17,9 +15,11 @@ class Game {
         ~Game();
 
         void begin_turn();
-        bool end_turn(size_t indices[5]);
+        void order(size_t indices[5]);
+        void end_turn();
+        bool fight();
+        bool is_over() const;
 
-        int fight();
         int fight_step();
         void reset_turn(int status);
 
@@ -54,7 +54,6 @@ class Game {
 
         void check_money(std::string action, int amount) const;
 };
-
 
 
 #endif // HEADER_GAME

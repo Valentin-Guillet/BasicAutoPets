@@ -1,5 +1,5 @@
 
-#include "user_interface.hpp"
+#include "UI/gui.hpp"
 
 #include <locale.h>
 #include <ncurses.h>
@@ -28,7 +28,7 @@ const std::unordered_map<UIState, std::string> MSGS = {
 };
 
 
-UserInterface::UserInterface(Game* game) : game(game), state(UIState::none) {
+GUI::GUI(Game* game) : UserInterface(game), state(UIState::none) {
     setlocale(LC_ALL, "");
     initscr();
     curs_set(0);
@@ -38,12 +38,12 @@ UserInterface::UserInterface(Game* game) : game(game), state(UIState::none) {
     game->cheat();
 }
 
-UserInterface::~UserInterface() {
+GUI::~GUI() {
     endwin();
-    std::cout << "Leaving" << std::endl;
+    std::cout << "Deleting GUI" << std::endl;
 }
 
-bool UserInterface::run() {
+bool GUI::run() {
     do {
         clear();
         draw_frame();
@@ -59,11 +59,11 @@ bool UserInterface::run() {
 }
 
 
-bool UserInterface::play_again() const {
+bool GUI::play_again() const {
     return false;
 }
 
-bool UserInterface::act() {
+bool GUI::act() {
     bool continue_game = true;
     try {
         switch (state) {
@@ -88,7 +88,8 @@ bool UserInterface::act() {
                 order();
                 break;
             case UIState::fighting:
-                continue_game = fight();
+                fight();
+                continue_game = game->is_over();
                 break;
         }
     } catch (InvalidAction& e) {
@@ -97,7 +98,7 @@ bool UserInterface::act() {
     return continue_game;
 }
 
-bool UserInterface::take_action() {
+bool GUI::take_action() {
     int c = std::tolower(getch());
     status = "";
 
@@ -143,7 +144,7 @@ bool UserInterface::take_action() {
 
         case 'e':
             state = UIState::fighting;
-            game->team->end_turn();
+            game->end_turn();
             draw_team();
             utils::vector_logs.push_back("Press a key to continue...");
             draw_logs();
@@ -171,7 +172,7 @@ bool UserInterface::take_action() {
     return true;
 }
 
-void UserInterface::buy() {
+void GUI::buy() {
     state = UIState::none;
     int c = std::tolower(getch());
 
@@ -181,8 +182,8 @@ void UserInterface::buy() {
 
     // Buy object
     } else if (c == '9' || c == '0') {
-        int nc = (c == '9' ? 0 : 1);
-        Object* obj = game->shop->objects[nc];
+        size_t nc = (c == '9' ? 0 : 1);
+        Object* obj = shop_get_object(nc);
         if (!obj) {
             status = "[BUY_OBJECT]: No object in shop at index " + std::to_string(nc);
             return;
@@ -196,42 +197,38 @@ void UserInterface::buy() {
             status = "[BUY_OBJECT]: Buying " + obj_name + " for pet ...";
             draw_status();
 
-            int target = std::tolower(getch());
+            size_t target = std::tolower(getch());
             if (!('1' <= target && target <= '5')) {
                 status = "[BUY_OBJECT]: Invalid target for " + obj_name;
                 return;
             }
+            target = (target - '1');
+            game->buy_object(nc, target);
 
-            std::string target_name;
-            if ((target - '1') < (int)game->team->pets.size())
-                target_name = game->team->pets[target - '1']->name;
-
-            game->buy_object(nc, target - '1');
+            std::string target_name = team_get_pet_name(target);
             if (!target_name.empty())
                 status = "[BUY_OBJECT]: Giving " + obj_name + " to " + target_name;
         }
     }
 }
 
-void UserInterface::sell() {
+void GUI::sell() {
     state = UIState::none;
     status = "[SELL]: Selling pet ...";
-    int c = std::tolower(getch());
+    size_t c = std::tolower(getch());
     if (!('1' <= c && c <= '5')) {
         status = "[SELL]: Invalid pet index";
         return;
     }
+    c = (c - '1');
+    game->sell(c);
 
-    std::string pet_name;
-    if ((c - '1') < (int)game->team->pets.size())
-        pet_name = game->team->pets[c - '1']->name;
-
-    game->sell(c - '1');
+    std::string pet_name = team_get_pet_name(c);
     if (!pet_name.empty())
-        status = "[SELL]: Sold " + pet_name + " (index " + std::to_string(c - '0') + ")";
+        status = "[SELL]: Sold " + pet_name + " (index " + std::to_string(c+1) + ")";
 }
 
-void UserInterface::freeze() {
+void GUI::freeze() {
     state = UIState::none;
     int c = std::tolower(getch());
 
@@ -244,7 +241,7 @@ void UserInterface::freeze() {
     }
 }
 
-void UserInterface::combine_team() {
+void GUI::combine_team() {
     state = UIState::none;
     status = "[COMBINE_TEAM]: Combining pets ... and ...";
     draw_status();
@@ -267,7 +264,7 @@ void UserInterface::combine_team() {
     game->combine_team(c1 - '1', c2 - '1');
 }
 
-void UserInterface::combine_shop() {
+void GUI::combine_shop() {
     state = UIState::none;
     status = "[COMBINE_SHOP]: Combining shop pet ... with team pet ...";
     draw_status();
@@ -290,7 +287,7 @@ void UserInterface::combine_shop() {
     game->combine_shop(c1 - '1', c2 - '1');
 }
 
-void UserInterface::order() {
+void GUI::order() {
     state = UIState::none;
     status = "[ORDER]: Switching ... and ...";
     draw_status();
@@ -314,10 +311,10 @@ void UserInterface::order() {
     indices[c1 - '1'] = c2 - '1';
     indices[c2 - '1'] = c1 - '1';
 
-    game->team->order(indices);
+    game->order(indices);
 }
 
-bool UserInterface::fight() {
+void GUI::fight() {
     clear();
     draw_frame();
     draw_action();
@@ -356,11 +353,10 @@ bool UserInterface::fight() {
     game->reset_turn(battle_status);
 
     state = UIState::none;
-    return (game->life > 0 && game->victories < 10);
 }
 
 
-int UserInterface::get_fighting_action() {
+int GUI::get_fighting_action() {
     int c;
     bool invalid;
     std::unordered_set<int> valid_actions = {'a', 'p', 'n', 's', 'q'};
@@ -389,7 +385,7 @@ int UserInterface::get_fighting_action() {
 }
 
 
-void UserInterface::draw_frame() const {
+void GUI::draw_frame() const {
     std::string hborder(COLS-2, '-');
     hborder = "+" + hborder + "+";
     mvaddstr(0, 0, hborder.c_str());
@@ -400,30 +396,31 @@ void UserInterface::draw_frame() const {
     }
 }
 
-void UserInterface::draw_game_state() const {
+void GUI::draw_game_state() const {
     int padding = (COLS-1 - 4*9) / 4;
     int inner_padding = (COLS-1 - 4*9) / 6;
 
-    mvprintw(3, padding, "Money : % 2d", game->money);
-    mvprintw(3, padding+9+inner_padding, " Life: % 2d", game->life);
-    mvprintw(3, padding+2*(9+inner_padding), " Wins: % 2d/10", game->victories);
-    mvprintw(3, padding+3*(9+inner_padding), " Turn % 2d", game->turn);
+    mvprintw(3, padding, "Money : % 2d", get_money());
+    mvprintw(3, padding+9+inner_padding, " Life: % 2d", get_life());
+    mvprintw(3, padding+2*(9+inner_padding), " Wins: % 2d/10", get_victories());
+    mvprintw(3, padding+3*(9+inner_padding), " Turn % 2d", get_turn());
 }
 
-void UserInterface::draw_pet(Pet* pet, int x, int y, bool draw_xp, bool in_shop, bool frozen) const {
-    if (pet->object)
-        mvaddstr(y, x+2, pet->object->repr.c_str());
-    mvaddstr(y+1, x+3, pet->repr.c_str());
-    if (in_shop && pet->attack != pet->tmp_attack)
+void GUI::draw_pet(Pet const* pet, int x, int y, bool draw_xp, bool in_shop, bool frozen) const {
+    std::string object_name = get_object_name(pet);
+    if (!object_name.empty())
+        mvaddstr(y, x+2, object_name.c_str());
+    mvaddstr(y+1, x+3, get_name(pet).c_str());
+    if (in_shop && has_attack_buff(pet))
         attron(A_UNDERLINE);
-    mvprintw(y+2, x+1, "%02d", pet->tmp_attack);
+    mvprintw(y+2, x+1, "%02d", get_attack(pet));
     attroff(A_UNDERLINE);
 
     mvaddch(y+2, x+5, '/');
 
-    if (in_shop && pet->life != pet->tmp_life)
+    if (in_shop && has_life_buff(pet))
         attron(A_UNDERLINE);
-    mvprintw(y+2, x+7, "%02d", pet->tmp_life);
+    mvprintw(y+2, x+7, "%02d", get_life(pet));
     attroff(A_UNDERLINE);
 
     int lvl = pet->get_level();
@@ -440,56 +437,60 @@ void UserInterface::draw_pet(Pet* pet, int x, int y, bool draw_xp, bool in_shop,
         mvaddstr(y+4, x+4, "🧊");
 }
 
-void UserInterface::draw_object(Object* obj, int x, int y, bool frozen) const {
-    mvaddstr(y, x+3, obj->repr.c_str());
-    mvprintw(y+1, x, "Cost: %d", obj->cost);
+void GUI::draw_object(Object const* obj, int x, int y, bool frozen) const {
+    mvaddstr(y, x+3, get_name(obj).c_str());
+    mvprintw(y+1, x, "Cost: %d", get_cost(obj));
     if (frozen)
         mvaddstr(y+2, x+3, "🧊");
 }
 
-void UserInterface::draw_team() const {
+void GUI::draw_team() const {
     int padding = (COLS-1 - 4*9) / 3.5;
     int inner_padding = (COLS-1 - 4*9) / 10;
 
-    for (size_t i=game->team->pets.size(); i<5; i++) {
-        mvaddstr(8, padding, "  Empty  ");
-        padding += 9 + inner_padding;
-    }
-    for (int i=game->team->pets.size()-1; i>=0; i--) {
-        draw_pet(game->team->pets[i], padding, 7, true, true);
+    for (int i=4; i>=0; i--) {
+        Pet const* pet = get_team_pet(i);
+        if (pet)
+            draw_pet(pet, padding, 7, true, true);
+        else
+            mvaddstr(8, padding, "  Empty  ");
         padding += 9 + inner_padding;
     }
 }
 
-void UserInterface::draw_shop() const {
+void GUI::draw_shop() const {
     int padding = (COLS-1 - 4*9) / 6;
     int inner_padding = (COLS-1 - 4*9) / 9;
 
-    for (size_t i=0; i<game->shop->pets.size(); i++) {
-        if (game->shop->pets[i])
-            draw_pet(game->shop->pets[i], padding, 13, false, true, game->shop->frozen_pets[i]);
+    size_t nb_pets = nb_pets_in_shop();
+    for (size_t i=0; i<nb_pets; i++) {
+        Pet const* pet = get_shop_pet(i);
+        if (pet)
+            draw_pet(pet, padding, 13, false, true, is_pet_frozen(i));
         else
             mvaddstr(15, padding, "  ___  ");
         padding += 9 + inner_padding;
     }
-    padding += (9 + inner_padding) * (5 - game->shop->pets.size());
+    padding += (9 + inner_padding) * (5 - nb_pets);
 
-    for (size_t i=0; i<game->shop->objects.size(); i++) {
-        if (game->shop->objects[i])
-            draw_object(game->shop->objects[i], padding, 14, game->shop->frozen_objects[i]);
+    size_t nb_objs = nb_objs_in_shop();
+    for (size_t i=0; i<nb_objs; i++) {
+        Object const* obj = get_shop_object(i);
+        if (obj)
+            draw_object(obj, padding, 14, is_obj_frozen(i));
         else
             mvaddstr(15, padding, "  ___  ");
         padding += 9 + inner_padding;
     }
 }
 
-void UserInterface::draw_action() const {
+void GUI::draw_action() const {
     std::string empty_msg(COLS-3, ' ');
     mvaddstr(20, 1, empty_msg.c_str());
     mvaddstr(20, 1, MSGS.at(state).c_str());
 }
 
-void UserInterface::draw_fight() const {
+void GUI::draw_fight() const {
     // Clear previous pets
     std::string empty_line(COLS-3, ' ');
     for (int line=6; line<11; line++)
@@ -501,24 +502,28 @@ void UserInterface::draw_fight() const {
     for (int i=0; i<4; i++)
         mvaddch(6+i, middle, '|');
 
-    for (size_t ind=0; ind<game->team->tmp_pets.size(); ind++) {
-        int x = middle - padding*2*(ind+1);
-        draw_pet(game->team->tmp_pets[ind], x, 6, true, false, false);
+    for (size_t i=0; i<5; i++) {
+        int x = middle - padding*2*(i+1);
+        Pet const* pet = get_team_pet(i);
+        if (pet)
+            draw_pet(pet, x, 6, true, false, false);
     }
 
-    for (size_t ind=0; ind<game->adv_team->tmp_pets.size(); ind++) {
-        int x = middle + padding*(2*ind+1);
-        draw_pet(game->adv_team->tmp_pets[ind], x, 6, true, false, false);
+    for (size_t i=0; i<5; i++) {
+        int x = middle + padding*(2*i+1);
+        Pet const* pet = get_adv_pet(i);
+        if (pet)
+            draw_pet(pet, x, 6, true, false, false);
     }
 }
 
-void UserInterface::draw_status() const {
+void GUI::draw_status() const {
     std::string empty_msg(COLS-3, ' ');
     mvaddstr(21, 1, empty_msg.c_str());
     mvaddstr(21, 1, status.c_str());
 }
 
-void UserInterface::draw_logs(bool clear) const {
+void GUI::draw_logs(bool clear) const {
     // Clean logs
     if (clear) {
         std::string empty_line(COLS-3, ' ');

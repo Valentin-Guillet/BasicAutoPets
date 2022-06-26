@@ -59,6 +59,7 @@ Team* Team::get_random_team(int turn) {
         opp_turn--;
 
     Team* opp_team = utils::choice(team_list[opp_turn])[0];
+    opp_team->in_fight = true;
     return opp_team;
 }
 
@@ -129,6 +130,8 @@ void Team::end_turn() {
 }
 
 void Team::reset() {
+    in_fight = false;
+
     for (Pet* pet : tmp_pets) {
         if (pet->is_tmp)
             delete pet;
@@ -275,6 +278,7 @@ int Team::fight(Team* other_team) {
 int Team::fight_step(Team* adv_team) {
     // Start of battle
     if (!in_fight) {
+        in_fight = true;
         utils::vector_logs.push_back("Starting fight !");
 
         std::vector<Pet*> ordered_pets = order_pets(adv_team);
@@ -285,7 +289,6 @@ int Team::fight_step(Team* adv_team) {
         clear_dead_pets(adv_team->tmp_pets);
 
         int output = check_end_of_battle(adv_team);
-        in_fight = (output == -1);
         return output;
     }
 
@@ -316,7 +319,6 @@ int Team::fight_step(Team* adv_team) {
     }
 
     int output = check_end_of_battle(adv_team);
-    in_fight = (output == -1);
     return output;
 }
 

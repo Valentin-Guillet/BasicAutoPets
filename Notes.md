@@ -6,6 +6,9 @@
 
 # ToDo
 
+- Textual UI
+  + Test memory leak
+- Implement UI play_again()
 - Nb of life lost wrt turns
 
 # Order

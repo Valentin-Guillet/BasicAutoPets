@@ -10,7 +10,6 @@
 #include "object.hpp"
 
 
-class UserInterface;
 class Team;
 using TeamList = std::unordered_map<int, std::vector<Team*>>;
 

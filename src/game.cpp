@@ -36,27 +36,28 @@ void Game::begin_turn() {
     adv_team = Team::get_random_team(turn);
 }
 
-bool Game::end_turn(size_t indices[5]) {
+void Game::order(size_t indices[5]) {
     team->order(indices);
-    team->end_turn();
+}
 
-    int victory = fight();
+void Game::end_turn() {
+    team->end_turn();
+}
+
+bool Game::fight() {
+    Team* other_team = Team::get_random_team(turn);
+
+    int victory = team->fight(other_team);
     if (victory == 1)
         victories++;
     else if (victory == -1)
         life -= life_per_turn(turn);
 
-    if (life > 0)
-        begin_turn();
-    else
-        std::cout << "You lost ! Game over" << std::endl;
     return life > 0;
 }
 
-int Game::fight() {
-    Team* other_team = Team::get_random_team(turn);
-
-    return team->fight(other_team);
+bool Game::is_over() const {
+    return (life > 0 && victories < 10);
 }
 
 int Game::fight_step() {
