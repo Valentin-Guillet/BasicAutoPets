@@ -5,7 +5,7 @@
 
 
 Beetle::Beetle(Team* team, Shop* shop) : Pet("Beetle", team, shop) {
-    repr = "Beetle";
+    repr = "🪲";
     id = 3;
     pack = PACK_DLC1;
     tier = 1;
