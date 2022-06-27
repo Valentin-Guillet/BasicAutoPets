@@ -34,17 +34,15 @@ class UserInterface {
         bool is_obj_frozen(size_t index) const;
 
         std::string get_name(Pet const* pet) const;
-        std::string get_object_name(Pet const* pet) const;
+        std::string get_repr(Pet const* pet) const;
+        std::string get_object_repr(Pet const* pet) const;
         bool has_attack_buff(Pet const* pet) const;
         bool has_life_buff(Pet const* pet) const;
         int get_attack(Pet const* pet) const;
         int get_life(Pet const* pet) const;
 
-        std::string get_name(Object const* obj) const;
+        std::string get_repr(Object const* obj) const;
         int get_cost(Object const* obj) const;
-
-        std::string team_get_pet_name(size_t index) const;
-        Object* shop_get_object(size_t index) const;
 };
 
 

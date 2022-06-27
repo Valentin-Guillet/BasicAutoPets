@@ -66,10 +66,14 @@ bool UserInterface::is_obj_frozen(size_t index) const {
 }
 
 std::string UserInterface::get_name(Pet const* pet) const {
+    return pet->name;
+}
+
+std::string UserInterface::get_repr(Pet const* pet) const {
     return pet->repr;
 }
 
-std::string UserInterface::get_object_name(Pet const* pet) const {
+std::string UserInterface::get_object_repr(Pet const* pet) const {
     if (pet->object)
         return pet->object->repr;
     return "";
@@ -91,20 +95,10 @@ int UserInterface::get_life(Pet const* pet) const {
     return pet->tmp_life;
 }
 
-std::string UserInterface::get_name(Object const* obj) const {
+std::string UserInterface::get_repr(Object const* obj) const {
     return obj->repr;
 }
 
 int UserInterface::get_cost(Object const* obj) const {
     return obj->cost;
-}
-
-std::string UserInterface::team_get_pet_name(size_t index) const {
-    if (index < game->team->pets.size())
-        return game->team->pets[index]->name;
-    return "";
-}
-
-Object* UserInterface::shop_get_object(size_t index) const {
-    return game->shop->objects[index];
 }

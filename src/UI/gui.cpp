@@ -183,7 +183,7 @@ void GUI::buy() {
     // Buy object
     } else if (c == '9' || c == '0') {
         size_t nc = (c == '9' ? 0 : 1);
-        Object* obj = shop_get_object(nc);
+        Object const* obj = get_shop_object(nc);
         if (!obj) {
             status = "[BUY_OBJECT]: No object in shop at index " + std::to_string(nc);
             return;
@@ -205,7 +205,7 @@ void GUI::buy() {
             target = (target - '1');
             game->buy_object(nc, target);
 
-            std::string target_name = team_get_pet_name(target);
+            std::string target_name = get_name(get_team_pet(target));
             if (!target_name.empty())
                 status = "[BUY_OBJECT]: Giving " + obj_name + " to " + target_name;
         }
@@ -221,9 +221,9 @@ void GUI::sell() {
         return;
     }
     c = (c - '1');
+    std::string pet_name = get_name(get_team_pet(c));
     game->sell(c);
 
-    std::string pet_name = team_get_pet_name(c);
     if (!pet_name.empty())
         status = "[SELL]: Sold " + pet_name + " (index " + std::to_string(c+1) + ")";
 }
@@ -407,10 +407,10 @@ void GUI::draw_game_state() const {
 }
 
 void GUI::draw_pet(Pet const* pet, int x, int y, bool draw_xp, bool in_shop, bool frozen) const {
-    std::string object_name = get_object_name(pet);
+    std::string object_name = get_object_repr(pet);
     if (!object_name.empty())
         mvaddstr(y, x+2, object_name.c_str());
-    mvaddstr(y+1, x+3, get_name(pet).c_str());
+    mvaddstr(y+1, x+3, get_repr(pet).c_str());
     if (in_shop && has_attack_buff(pet))
         attron(A_UNDERLINE);
     mvprintw(y+2, x+1, "%02d", get_attack(pet));
@@ -438,7 +438,7 @@ void GUI::draw_pet(Pet const* pet, int x, int y, bool draw_xp, bool in_shop, boo
 }
 
 void GUI::draw_object(Object const* obj, int x, int y, bool frozen) const {
-    mvaddstr(y, x+3, get_name(obj).c_str());
+    mvaddstr(y, x+3, get_repr(obj).c_str());
     mvprintw(y+1, x, "Cost: %d", get_cost(obj));
     if (frozen)
         mvaddstr(y+2, x+3, "🧊");
@@ -527,13 +527,13 @@ void GUI::draw_logs(bool clear) const {
     // Clean logs
     if (clear) {
         std::string empty_line(COLS-3, ' ');
-        for (int line=22; line<LINES-1; line++)
+        for (int line=23; line<LINES-1; line++)
             mvaddstr(line, 1, empty_line.c_str());
     }
 
     for (size_t i=0; i<utils::vector_logs.size(); i++) {
         std::string msg = "  | " + utils::vector_logs[i];
-        mvaddstr(22+i, 3, msg.c_str());
+        mvaddstr(23+i, 3, msg.c_str());
     }
 
     if (clear)
