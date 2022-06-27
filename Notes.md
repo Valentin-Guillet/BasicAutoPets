@@ -7,7 +7,10 @@
 # ToDo
 
 - Textual UI
+  + Update teamview before "Press a key to continue..." right before fight
+  + Empty action means repeat previous action
   + Test memory leak
+- Honey: write from which pet it spawns
 - Implement UI play_again()
 - Nb of life lost wrt turns
 

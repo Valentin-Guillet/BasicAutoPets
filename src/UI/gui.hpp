@@ -36,16 +36,16 @@ class GUI : public UserInterface {
 
         int get_fighting_action();
 
-        void draw_frame() const;
-        void draw_game_state() const;
-        void draw_pet(Pet const* pet, int x, int y, bool draw_xp, bool in_shop, bool frozen=false) const;
-        void draw_object(Object const* obj, int x, int y, bool frozen=false) const;
-        void draw_team() const;
-        void draw_shop() const;
-        void draw_action() const;
-        void draw_fight() const;
-        void draw_status() const;
-        void draw_logs(bool clear=true) const;
+        void disp_frame() const;
+        void disp_game_state() const;
+        void disp_pet(Pet const* pet, int x, int y, bool disp_xp, bool in_shop, bool frozen=false) const;
+        void disp_object(Object const* obj, int x, int y, bool frozen=false) const;
+        void disp_team() const;
+        void disp_shop() const;
+        void disp_action() const;
+        void disp_fight() const;
+        void disp_status() const;
+        void disp_logs(bool clear=true) const;
 };
 
 
