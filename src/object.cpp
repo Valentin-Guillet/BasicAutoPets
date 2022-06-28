@@ -46,7 +46,9 @@ std::string Object::get_random_name(int max_tier) {
     std::copy_if(AllObjects::OBJECT_LIST.begin(),
                  AllObjects::OBJECT_LIST.end(),
                  std::back_inserter(names),
-                 [max_tier](std::pair<int, std::string> p){ return p.first <= max_tier; });
+                 [max_tier](std::pair<int, std::string> p) {
+                    return p.first != -1 && p.first <= max_tier;
+                    });
 
     return utils::choice(names)[0].second;
 }

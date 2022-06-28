@@ -31,12 +31,12 @@ class Pet {
         std::string disp_stats() const;
 
         void reset_stats();
-        void equip_object(Object* obj);
-        void attacks(Pet* other, int value=0);
+        void equip_object(Object* obj, bool is_tmp);
+        void attacks(Pet* adv_pet) const;
+        void take_damage(int value);
         void buff(int buff_attack, int buff_life, bool is_tmp);
         void gain_xp(int amount);
         void combine(Pet* const other);
-
 
         virtual void on_buy() { };
         virtual void on_sell() { };

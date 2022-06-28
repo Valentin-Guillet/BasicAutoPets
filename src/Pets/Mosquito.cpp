@@ -1,6 +1,8 @@
 
 #include "Pets/Mosquito.hpp"
 
+#include <string>
+
 #include "utils.hpp"
 
 
@@ -29,5 +31,5 @@ void Mosquito::on_start_battle(Team* adv_team) {
 
     std::vector<Pet*> targets = utils::choice(living_pets, lvl);
     for (Pet* target : targets)
-        attacks(target, 1);
+        target->take_damage(1);
 }

@@ -19,7 +19,7 @@ static int life_per_turn(int turn) {
 
 
 Game::Game() : life(10), victories(0), turn(0) {
-    team = new Team();
+    team = new Team(this);
     shop = new Shop(team);
     begin_turn();
 };
@@ -37,7 +37,7 @@ void Game::reset() {
 
     delete team;
     delete shop;
-    team = new Team();
+    team = new Team(this);
     shop = new Shop(team);
 
     begin_turn();
@@ -59,18 +59,6 @@ void Game::order(size_t indices[5]) {
 
 void Game::end_turn() {
     team->end_turn();
-}
-
-bool Game::fight() {
-    Team* other_team = Team::get_random_team(turn);
-
-    int victory = team->fight(other_team);
-    if (victory == 1)
-        victories++;
-    else if (victory == -1)
-        life -= life_per_turn(turn);
-
-    return life > 0;
 }
 
 bool Game::is_over() const {
@@ -146,6 +134,10 @@ void Game::freeze_object(size_t index) {
     shop->freeze_object(index);
 }
 
+void Game::earn_money(int amount) {
+    money += amount;
+}
+
 std::string Game::serialize() const {
     std::string state = std::to_string(turn) + " ";
     state += std::to_string(life) + " ";
@@ -176,13 +168,14 @@ void Game::unserialize(std::string game_str) {
     index = line.find(' ');
     money = std::stoi(line.substr(0, index));
 
+    std::string turn_str = std::to_string(turn) + " ";
     delete team;
     std::getline(stream, line, '\n');
-    team = Team::unserialize(line);
+    team = Team::unserialize(this, turn_str + line);
 
     delete shop;
     std::getline(stream, line, '\n');
-    shop = Shop::unserialize(team, line);
+    shop = Shop::unserialize(team, turn_str + line);
 }
 
 void Game::save_state() const {

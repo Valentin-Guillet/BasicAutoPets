@@ -19,7 +19,6 @@ class Game {
         void begin_turn();
         void order(size_t indices[5]);
         void end_turn();
-        bool fight();
         bool is_over() const;
 
         int fight_step();
@@ -33,6 +32,7 @@ class Game {
         void roll();
         void freeze_pet(size_t index);
         void freeze_object(size_t index);
+        void earn_money(int amount);
 
         std::string serialize() const;
         void unserialize(std::string game_str);

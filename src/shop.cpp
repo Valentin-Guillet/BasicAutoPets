@@ -183,7 +183,7 @@ void Shop::upgrade(int attack, int life, bool tmp) {
 }
 
 std::string Shop::serialize() const {
-    std::string shop_str = std::to_string(turn) + " ";
+    std::string shop_str;
 
     for (Pet* pet : pets) {
         if (pet)

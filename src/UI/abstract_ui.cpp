@@ -74,8 +74,8 @@ std::string UserInterface::get_repr(Pet const* pet) const {
 }
 
 std::string UserInterface::get_object_repr(Pet const* pet) const {
-    if (pet->object)
-        return pet->object->repr;
+    if (pet->tmp_object)
+        return pet->tmp_object->repr;
     return "";
 }
 

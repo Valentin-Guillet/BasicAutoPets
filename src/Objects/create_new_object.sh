@@ -8,7 +8,7 @@ cat > $dst/$name.cpp << EOF
 #include "Objects/$name.hpp"
 
 
-$name::$name(Team* team, Shop* shop) : Object("${name,}", team, shop, ObjType::) {
+$name::$name(Team* team, Shop* shop) : Object("${name^}", team, shop, ObjType::) {
     id = 0;
     tier = 1;
 }

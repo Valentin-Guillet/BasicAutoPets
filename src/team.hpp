@@ -10,6 +10,7 @@
 #include "object.hpp"
 
 
+class Game;
 class Team;
 using TeamList = std::unordered_map<int, std::vector<Team*>>;
 
@@ -17,11 +18,11 @@ class Team {
     friend class UserInterface;
 
     public:
-        static Team* unserialize(std::string team_str);
+        static Team* unserialize(Game* game, std::string team_str);
         static Team* get_random_team(int turn);
         static void clear_team_list();
 
-        Team();
+        Team(Game* game);
         ~Team();
 
         size_t get_nb_pets() const;
@@ -44,7 +45,7 @@ class Team {
         void faint(size_t index);
 
         void give_object(size_t index, Object* obj);
-        int fight(Team* other_team);
+        void earn_money(int amount) const;
         int fight_step(Team* adv_team);
         void disp_fight(Team const* const other_team) const;
         std::tuple<int, std::string, std::string> get_fight_str(Team* other_team);
@@ -54,6 +55,8 @@ class Team {
     private:
         static TeamList team_list;
         static void load_teams();
+
+        Game* game;
 
         int turn;
         bool in_fight = false;

@@ -8,6 +8,9 @@ Object* AllObjects::create_new_object(std::string name, Team* team, Shop* shop) 
     if (name == "honey")
         return new Honey(team, shop);
 
+    else if (name == "weak")
+        return new Weak(team, shop);
+
     else if (name == "apple")
         return new Apple(team, shop);
 

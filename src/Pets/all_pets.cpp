@@ -8,6 +8,9 @@ Pet* AllPets::create_new_pet(std::string name, Team* team, Shop* shop) {
     if (name == "ant")
         return new Ant(team, shop);
 
+    else if (name == "bat")
+        return new Bat(team, shop);
+
     else if (name == "beaver")
         return new Beaver(team, shop);
 
@@ -40,6 +43,9 @@ Pet* AllPets::create_new_pet(std::string name, Team* team, Shop* shop) {
 
     else if (name == "otter")
         return new Otter(team, shop);
+
+    else if (name == "pig")
+        return new Pig(team, shop);
 
     else if (name == "zombiecricket")
         return new ZombieCricket(team, shop);

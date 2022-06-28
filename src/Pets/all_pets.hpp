@@ -8,6 +8,7 @@
 #include "pet.hpp"
 
 #include "Pets/Ant.hpp"
+#include "Pets/Bat.hpp"
 #include "Pets/Beaver.hpp"
 #include "Pets/Bee.hpp"
 #include "Pets/Beetle.hpp"
@@ -19,6 +20,7 @@
 #include "Pets/LadyBug.hpp"
 #include "Pets/Mosquito.hpp"
 #include "Pets/Otter.hpp"
+#include "Pets/Pig.hpp"
 #include "Pets/ZombieCricket.hpp"
 
 
@@ -26,6 +28,7 @@ namespace AllPets {
 
     std::vector<std::pair<int, std::string>> const PET_LIST = {
         {1, "ant"},
+        {2, "bat"},
         {1, "beaver"},
         {-1, "bee"},
         {1, "beetle"},
@@ -37,6 +40,7 @@ namespace AllPets {
         {1, "ladybug"},
         {1, "mosquito"},
         {1, "otter"},
+        {1, "pig"},
         {-1, "zombiecricket"},
     };
 
