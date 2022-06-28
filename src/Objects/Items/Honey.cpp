@@ -15,7 +15,7 @@ Honey::Honey(Team* team, Shop* shop) : Object("Honey", team, shop, ObjType::ITEM
 Honey::~Honey() { }
 
 void Honey::on_faint() {
-    utils::vector_logs.push_back(name + " summons a bee !");
+    utils::vector_logs.push_back(name + " on " + attached_pet->name + " summons a bee !");
 
     Pet* bee = AllPets::create_new_pet("bee", team, shop);
     bee->is_tmp = team->is_fighting();

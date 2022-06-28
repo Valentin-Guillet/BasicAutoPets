@@ -6,9 +6,6 @@
 
 # ToDo
 
-- Textual UI
-  + Test memory leak
-- Honey: write from which pet it spawns
 - Implement UI play_again()
 - Nb of life lost wrt turns
 

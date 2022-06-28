@@ -1,4 +1,3 @@
-cheat
 buy 1
 buy 2
 buy 3
