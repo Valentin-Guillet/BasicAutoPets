@@ -10,6 +10,10 @@
 
 
 static int life_per_turn(int turn) {
+    if (turn < 3)
+        return 1;
+    else if (turn < 5)
+        return 2;
     return 3;
 }
 
