@@ -15,6 +15,7 @@ const std::string CLEAR_SCREEN = "\x1B[2J\x1B[H";
 
 CLI::CLI(Game* game) : UserInterface(game) {
     game->cheat();
+    prev_cmd = {"help"};
 }
 
 CLI::~CLI() {
@@ -79,10 +80,18 @@ bool CLI::act() {
     std::string line;
     std::cout << "What do you want to do ?\n";
     std::getline(std::cin, line);
-    get_curr_cmd(line);
+    if (line.empty()) {
+        curr_cmd = prev_cmd;
+    } else {
+        get_curr_cmd(line);
+        prev_cmd = curr_cmd;
+    }
 
     std::string action = curr_cmd[0];
-    if (action == "b" || action == "buy")
+    if (action == "h" || action == "help")
+        help();
+
+    else if (action == "b" || action == "buy")
         buy();
 
     else if (action == "c" || action == "combine_team")
@@ -118,17 +127,47 @@ bool CLI::act() {
     else
         throw InvalidAction("Action " + action + " not recognized.");
 
-    std::cout << "\x1B[2J\x1B[H";
+    std::cout << CLEAR_SCREEN;
     return true;
+}
+
+void CLI::help() const {
+    std::string help_msg;
+    help_msg += "The different possible actions are:\n";
+    help_msg += "- `b[uy] {ind}` to buy a pet\n";
+    help_msg += "- `b[uy] {ind} [{ind_target}]` to buy an object ({ind_target} is optional for objects without targets)\n";
+    help_msg += "- `s[ell] {ind}` to sell a pet\n";
+    help_msg += "- `f[reeze] {ind}` to freeze a pet or an object\n";
+    help_msg += "- `c[ombine_team] {ind1} {ind2}` to combine two pets from the team\n";
+    help_msg += "- `m {ind_shop} {ind_team}` or `combine_shop {ind_shop} {ind_team}` to combine a pet from the shop with a pet from the team\n";
+    help_msg += "- `r[oll]` to roll\n";
+    help_msg += "- `o[rder] {ind1} {ind2}` to switch position of two pets in the team\n";
+    help_msg += "- `e[nd_turn]` to end turn and run a new fight\n";
+    help_msg += "\n";
+    help_msg += "- `q[uit]` to quit the current game\n";
+    help_msg += "- `h[elp] to print this help message`\n";
+    help_msg += "\n";
+    help_msg += "In each case, the index can design a pet in the team (between 1 and 5), a pet in the shop (between 1 and 7) or an object (9 or 0).\n";
+    throw InvalidAction(help_msg);
 }
 
 void CLI::buy() {
     int index = get_args(1)[0];
     if (index == 9 || index == 0) {
-        std::vector<int> args = get_args(2);
         int ind_obj = (index == 9 ? 0 : 1);
-        int ind_target = args[1] - 1;
-        game->buy_object(ind_obj, ind_target);
+
+        Object const* obj = get_shop_object(ind_obj);
+        bool target_all;
+        if (obj)
+            target_all = obj->target_all;
+
+        if (target_all) {
+            game->buy_object(ind_obj, 0);
+        } else {
+            std::vector<int> args = get_args(2);
+            int ind_target = args[1] - 1;
+            game->buy_object(ind_obj, ind_target);
+        }
     } else {
         game->buy_pet(index - 1);
     }
@@ -154,7 +193,6 @@ void CLI::sell() {
 }
 
 void CLI::roll() {
-    std::cout << "Rolling" << std::endl;
     game->roll();
 }
 
@@ -168,7 +206,15 @@ void CLI::freeze() {
 }
 
 void CLI::order() {
-    /* auto [ind1, ind2] = get_args(2); */
+    std::vector<int> args = get_args(2);
+    int ind1 = args[0] - 1;
+    int ind2 = args[1] - 1;
+
+    size_t indices[5] = {0, 1, 2, 3, 4};
+    indices[ind1] = ind2;
+    indices[ind2] = ind1;
+
+    game->order(indices);
 }
 
 void CLI::fight() {
@@ -178,17 +224,16 @@ void CLI::fight() {
     getline(std::cin, action);
     bool skip = (!action.empty() && (action[0] == 'q' || action[0] == 's'));
     int battle_status = game->fight_step();
-    do {
+    while (battle_status == -1) {
         if (!skip) {
             disp_fight();
             disp_logs();
             getline(std::cin, action);
             skip = (!action.empty() && (action[0] == 'q' || action[0] == 's'));
         }
-        std::cout << "Skipping = " << skip << std::endl;
 
         battle_status = game->fight_step();
-    } while(battle_status == -1);
+    }
 
     disp_fight();
     disp_logs();
@@ -201,6 +246,10 @@ void CLI::fight() {
 
 bool CLI::end_turn() {
     game->end_turn();
+    std::cout << CLEAR_SCREEN;
+    disp_game_state();
+    disp_team();
+    disp_shop();
     disp_logs();
     std::cout << "Press a key to continue..." << std::endl;
     std::string key;

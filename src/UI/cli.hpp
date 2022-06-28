@@ -19,6 +19,7 @@ class CLI : public UserInterface {
 
     private:
         std::vector<std::string> curr_cmd;
+        std::vector<std::string> prev_cmd;
 
         void get_curr_cmd(std::string line);
         std::vector<int> get_args(size_t n) const;
@@ -26,6 +27,7 @@ class CLI : public UserInterface {
         bool play_again() const;
         bool act();
 
+        void help() const;
         void buy();
         void combine_shop();
         void combine_team();
