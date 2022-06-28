@@ -24,8 +24,7 @@ int main(int argc, char** argv) {
         ui = new GUI(game);
 
     while (ui->run()) {
-        delete game;
-        game = new Game();
+        game->reset();
     }
 
     delete game;

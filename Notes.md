@@ -6,7 +6,6 @@
 
 # ToDo
 
-- Implement UI play_again()
 - Nb of life lost wrt turns
 
 # Order

@@ -26,6 +26,19 @@ Game::~Game() {
     delete shop;
 }
 
+void Game::reset() {
+    life = 10;
+    victories = 0;
+    turn = 0;
+
+    delete team;
+    delete shop;
+    team = new Team();
+    shop = new Shop(team);
+
+    begin_turn();
+}
+
 
 void Game::begin_turn() {
     money = 10;

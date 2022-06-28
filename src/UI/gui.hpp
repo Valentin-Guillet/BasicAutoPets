@@ -46,6 +46,7 @@ class GUI : public UserInterface {
         void disp_fight() const;
         void disp_status() const;
         void disp_logs(bool clear=true) const;
+        void disp_play_again(bool invalid=false) const;
 };
 
 

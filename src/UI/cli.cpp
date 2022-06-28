@@ -73,7 +73,17 @@ std::vector<int> CLI::get_args(size_t n) const {
 
 bool CLI::play_again() const {
     std::cout << "Game over ! " << std::endl;
-    return false;
+    while (true) {
+        std::cout << "Do you want to play again ? [y/N]" << std::endl;
+        std::string action;
+        getline(std::cin, action);
+        action = utils::to_lower(action);
+        if (!action.empty() && action[0] == 'y')
+            return true;
+        else if (action.empty() || action[0] == 'n')
+            return false;
+        std::cout << "Invalid choice, please type Yes or No" << std::endl;
+    }
 }
 
 bool CLI::act() {

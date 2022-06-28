@@ -60,7 +60,16 @@ bool GUI::run() {
 
 
 bool GUI::play_again() const {
-    return false;
+    disp_play_again();
+    while (true) {
+        int c = std::tolower(getch());
+        if (c == 'y')
+            return true;
+        else if (c == 'n' || c == 10)
+            return false;
+
+        disp_play_again(true);
+    }
 }
 
 bool GUI::act() {
@@ -538,4 +547,29 @@ void GUI::disp_logs(bool clear) const {
 
     if (clear)
         utils::vector_logs.clear();
+}
+
+void GUI::disp_play_again(bool invalid) const {
+    std::string msg = "Game over ! Do you want to play again ? [y/N]";
+
+    std::string hborder(msg.size() + 16, '-');
+    hborder = "+" + hborder + "+";
+    int first_col = COLS / 2 - msg.size() / 2 - 8;
+    mvaddstr(LINES/5, first_col, hborder.c_str());
+    mvaddstr(LINES/5+6, first_col, hborder.c_str());
+    for (int j=LINES/5+1; j<LINES/5+6; j++) {
+        mvaddch(j, first_col, '|');
+        mvaddch(j, first_col + msg.size() + 17, '|');
+    }
+
+    std::string empty_line(msg.size() + 16, ' ');
+    for (int i=LINES/5+1; i<LINES/5+6; i++)
+        mvaddstr(i, first_col+1, empty_line.c_str());
+
+    mvaddstr(LINES/5 + 3, COLS/2 - msg.size()/2, msg.c_str());
+    if (invalid) {
+        std::string invalid_msg = "Invalid choice, please type Y or N";
+        mvaddstr(LINES/5 + 4, COLS/2 - invalid_msg.size()/2, invalid_msg.c_str());
+    }
+    refresh();
 }

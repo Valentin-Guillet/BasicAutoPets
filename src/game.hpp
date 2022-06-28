@@ -14,6 +14,8 @@ class Game {
         Game();
         ~Game();
 
+        void reset();
+
         void begin_turn();
         void order(size_t indices[5]);
         void end_turn();
