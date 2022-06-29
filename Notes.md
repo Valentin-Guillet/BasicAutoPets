@@ -6,6 +6,7 @@
 
 # ToDo
 
+- Pet serialize -> tmp buffs ?
 
 # Order
 

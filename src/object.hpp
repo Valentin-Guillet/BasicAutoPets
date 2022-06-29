@@ -4,7 +4,6 @@
 #define PACK_STANDARD 1
 #define PACK_DLC1 2
 
-#include <iostream>
 #include <string>
 #include <vector>
 
@@ -35,8 +34,6 @@ class Object {
         virtual void on_buy(size_t index) { };
         virtual void on_faint() { };
         virtual int on_damages(int value) { return value; };
-
-        friend std::ostream& operator<<(std::ostream& os, Object const& object);
 
     protected:
         std::string repr;

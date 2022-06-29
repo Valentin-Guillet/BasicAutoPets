@@ -18,7 +18,6 @@ void Honey::on_faint() {
     utils::vector_logs.push_back(name + " on " + attached_pet->name + " summons a bee !");
 
     Pet* bee = AllPets::create_new_pet("bee", team, shop);
-    bee->is_tmp = team->is_fighting();
 
     team->summon(attached_pet, bee);
 }

@@ -34,11 +34,6 @@ void Object::set_pet(Pet* pet) {
     attached_pet = pet;
 }
 
-std::ostream& operator<<(std::ostream& os, Object const& object) {
-    os << object.name;
-    return os;
-}
-
 
 std::string Object::get_random_name(int max_tier) {
     std::vector<std::pair<int, std::string>> names;

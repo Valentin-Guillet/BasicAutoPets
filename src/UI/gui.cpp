@@ -328,15 +328,12 @@ void GUI::fight() {
     disp_frame();
     disp_action();
 
+    game->start_fight();
     disp_fight();
     int c = get_fighting_action();
-
-    int battle_status = game->fight_step();
-    while (battle_status == -1) {
-        if (c == 's' || c == 'q') {
-            battle_status = game->fight_step();
+    while (game->fight_step()) {
+        if (c == 's' || c == 'q')
             continue;
-        }
 
         disp_fight();
         disp_logs();
@@ -346,7 +343,6 @@ void GUI::fight() {
         } else if (c == 'p' || c == 'n') {
             c = get_fighting_action();
         }
-        battle_status = game->fight_step();
     }
 
     disp_fight();
@@ -359,8 +355,7 @@ void GUI::fight() {
     status = "";
     getch();
 
-    game->reset_turn(battle_status);
-
+    game->end_fight();
     state = UIState::none;
 }
 

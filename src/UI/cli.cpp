@@ -220,6 +220,11 @@ void CLI::order() {
     int ind1 = args[0] - 1;
     int ind2 = args[1] - 1;
 
+    if (!(0 <= ind1 && ind1 < 5))
+        throw InvalidAction("[ORDER]: Invalid index " + std::to_string(ind1+1));
+    if (!(0 <= ind2 && ind2 < 5))
+        throw InvalidAction("[ORDER]: Invalid index " + std::to_string(ind2+1));
+
     size_t indices[5] = {0, 1, 2, 3, 4};
     indices[ind1] = ind2;
     indices[ind2] = ind1;
@@ -228,21 +233,19 @@ void CLI::order() {
 }
 
 void CLI::fight() {
+    game->start_fight();
     disp_fight();
 
     std::string action;
     getline(std::cin, action);
     bool skip = (!action.empty() && (action[0] == 'q' || action[0] == 's'));
-    int battle_status = game->fight_step();
-    while (battle_status == -1) {
+    while (game->fight_step()) {
         if (!skip) {
             disp_fight();
             disp_logs();
             getline(std::cin, action);
             skip = (!action.empty() && (action[0] == 'q' || action[0] == 's'));
         }
-
-        battle_status = game->fight_step();
     }
 
     disp_fight();
@@ -251,7 +254,7 @@ void CLI::fight() {
     getline(std::cin, action);
     std::cout << CLEAR_SCREEN;
 
-    game->reset_turn(battle_status);
+    game->end_fight();
 }
 
 bool CLI::end_turn() {
@@ -404,7 +407,7 @@ void CLI::disp_fight() const {
         disp_pet(padding, pet, objects, pets, stats, xps, true);
     }
 
-    std::cout << objects << "\n" << pets << "\n" << stats << "\n" << xps << std::endl;
+    std::cout << objects << "\n" << pets << "\n" << stats << "\n" << xps << std::endl << std::endl;
 }
 
 void CLI::disp_logs() const {

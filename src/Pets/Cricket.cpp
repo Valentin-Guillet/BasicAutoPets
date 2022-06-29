@@ -22,7 +22,6 @@ void Cricket::on_faint() {
 
     int lvl = get_level();
     Pet* zombie = new ZombieCricket(team, shop, lvl);
-    zombie->is_tmp = team->is_fighting();
 
     team->summon(this, zombie);
     Pet::on_faint();

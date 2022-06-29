@@ -13,6 +13,7 @@
 class Game;
 class Team;
 using TeamList = std::unordered_map<int, std::vector<Team*>>;
+enum class FIGHT_STATUS { None, Fighting, Win, Loss, Draw };
 
 class Team {
     friend class UserInterface;
@@ -20,16 +21,19 @@ class Team {
     public:
         static Team* unserialize(Game* game, std::string team_str);
         static Team* get_random_team(int turn);
+        static Team* copy_team(Team const* team);
         static void clear_team_list();
 
+        static FIGHT_STATUS fight_step(Team* team, Team* adv_team);
+
         Team(Game* game);
+        Team(Team const& team);
         ~Team();
 
         size_t get_nb_pets() const;
+        std::vector<Pet*>& get_pets();
         void can_combine(size_t index, std::string other_pet) const;
         void can_combine(size_t src_index, size_t dst_index) const;
-        bool is_fighting() const;
-        std::vector<Pet*>& get_pets();
 
         void begin_turn();
         void order(size_t order[5]);
@@ -46,29 +50,24 @@ class Team {
 
         void give_object(size_t index, Object* obj);
         void earn_money(int amount) const;
-        int fight_step(Team* adv_team);
-        void disp_fight(Team const* const other_team) const;
         std::tuple<int, std::string, std::string> get_fight_str(Team* other_team);
 
-        std::string serialize(bool tmp=false) const;
+        std::string serialize() const;
 
     private:
         static TeamList team_list;
         static void load_teams();
+        static std::vector<Pet*> order_pets(Team const* team, Team const* adv_team);
+        static FIGHT_STATUS start_of_battle(Team* team, Team* adv_team);
+        static FIGHT_STATUS check_end_of_battle(Team const* team, Team const* adv_team);
 
         Game* game;
-
         int turn;
         bool in_fight = false;
-
         std::vector<Pet*> pets;
-        std::vector<Pet*> tmp_pets;
-
-        int check_end_of_battle(Team* adv_team) const;
-        std::vector<Pet*> order_pets(Team* adv_team) const;
 
         void check_size(std::string action, size_t index) const;
-        void _add(Pet* pet);
+        void remove_dead_pets();
 };
 
 

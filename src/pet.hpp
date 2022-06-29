@@ -1,7 +1,6 @@
 #ifndef HEADER_PET
 #define HEADER_PET
 
-#include <iostream>
 #include <string>
 #include <vector>
 
@@ -17,21 +16,22 @@ class Pet {
     public:
         static Pet* unserialize(Team* team, std::string pet_str);
         static Pet* create_random_pet(Team* team, Shop* shop, int max_tier, bool strict_tier=false);
+        static Pet* copy_pet(Pet const* pet, Team* team, Shop* shop);
 
         std::string name;
-        bool is_tmp;
 
         Pet(std::string name, Team* team, Shop* shop);
         virtual ~Pet();
 
         int get_attack() const;
+        int get_life() const;
         int get_xp() const;
         int get_level() const;
         bool is_alive() const;
-        std::string disp_stats() const;
+        bool is_part(Team* ext_team) const;
 
         void reset_stats();
-        void equip_object(Object* obj, bool is_tmp);
+        void equip_object(Object* obj);
         void attacks(Pet* adv_pet) const;
         void take_damage(int value);
         void buff(int buff_attack, int buff_life, bool is_tmp);
@@ -58,7 +58,6 @@ class Pet {
         virtual void on_friend_eats_shop() { };
 
         std::string serialize() const;
-        friend std::ostream& operator<<(std::ostream& os, Pet const& pet);
 
     protected:
         std::string repr;
@@ -74,9 +73,8 @@ class Pet {
         int xp;
         Object* object;
 
-        int tmp_attack;
-        int tmp_life;
-        Object* tmp_object;
+        int attack_buff;
+        int life_buff;
 
     private:
         static std::string get_random_name(int max_tier, bool strict_tier=false);

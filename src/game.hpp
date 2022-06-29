@@ -21,8 +21,10 @@ class Game {
         void end_turn();
         bool is_over() const;
 
-        int fight_step();
-        void reset_turn(int status);
+        void start_fight();
+        bool fight_step();
+        void end_fight();
+        bool in_fight() const;
 
         void buy_pet(size_t index);
         void combine_shop(size_t index_shop, size_t index_team);
@@ -51,8 +53,9 @@ class Game {
         Team* team;
         Shop* shop;
 
-        bool in_fight;
+        Team* fighting_team;
         Team* adv_team;
+        FIGHT_STATUS fight_status;
 
         void check_money(std::string action, int amount) const;
 };

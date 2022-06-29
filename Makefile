@@ -29,6 +29,9 @@ main: $(OBJECTS)
 memory_leak: main
 	@ valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes --verbose --log-file=valgrind-out.txt ./main -c && vim valgrind-out.txt && rm valgrind-out.txt
 
+memory_leak_input: main
+	@ valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes --verbose --log-file=valgrind-out.txt ./main -c < test_input.txt && vim valgrind-out.txt && rm valgrind-out.txt
+
 test_battles: test/main_test
 
 test/main_test: $(TEST_OBJ)

@@ -34,6 +34,6 @@ void Bat::on_start_battle(Team* adv_team) {
 
     for (Pet* target : targets) {
         Object* weak = new Weak(team, shop);
-        target->equip_object(weak, true);
+        target->equip_object(weak);
     }
 }

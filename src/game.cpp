@@ -22,6 +22,7 @@ Game::Game() : life(10), victories(0), turn(0) {
     team = new Team(this);
     shop = new Shop(team);
     begin_turn();
+    fight_status = FIGHT_STATUS::None;
 };
 
 Game::~Game() {
@@ -49,8 +50,6 @@ void Game::begin_turn() {
     shop->begin_turn();
     team->begin_turn();
     turn++;
-
-    adv_team = Team::get_random_team(turn);
 }
 
 void Game::order(size_t indices[5]) {
@@ -65,22 +64,37 @@ bool Game::is_over() const {
     return (life > 0 && victories < 10);
 }
 
-int Game::fight_step() {
-    return team->fight_step(adv_team);
+void Game::start_fight() {
+    adv_team = Team::get_random_team(turn);
+    fighting_team = Team::copy_team(team);
+    fight_status = FIGHT_STATUS::Fighting;
 }
 
-void Game::reset_turn(int status) {
-    if (status == 1)
+bool Game::fight_step() {
+    fight_status = Team::fight_step(fighting_team, adv_team);
+    return in_fight();
+}
+
+void Game::end_fight() {
+    if (fight_status == FIGHT_STATUS::Win)
         victories++;
 
-    else if (status == 2)
+    else if (fight_status == FIGHT_STATUS::Loss)
         life -= life_per_turn(turn);
 
-    team->reset();
-    adv_team->reset();
+    delete fighting_team;
+    delete adv_team;
+    fighting_team = nullptr;
+    adv_team = nullptr;
 
     if (life > 0)
         begin_turn();
+
+    fight_status = FIGHT_STATUS::None;
+}
+
+bool Game::in_fight() const {
+    return fight_status == FIGHT_STATUS::Fighting;
 }
 
 void Game::buy_pet(size_t index) {

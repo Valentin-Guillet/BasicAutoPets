@@ -23,7 +23,10 @@ Shop* Shop::unserialize(Team* team, std::string shop_str) {
         std::string pet_str = pets_str.substr(2, index-2);
         pets_str = pets_str.substr(index+1);
 
-        new_shop->pets.push_back(Pet::unserialize(team, pet_str));
+        if (pet_str == "Empty")
+            new_shop->pets.push_back(nullptr);
+        else
+            new_shop->pets.push_back(Pet::unserialize(team, pet_str));
     }
 
     index = shop_str.find('/');
@@ -45,7 +48,10 @@ Shop* Shop::unserialize(Team* team, std::string shop_str) {
             obj_str = objects_str.substr(0, index);
             objects_str = objects_str.substr(index+1);
         }
-        new_shop->objects.push_back(Object::create_new_object(obj_str, team, new_shop));
+        if (obj_str == "Empty")
+            new_shop->objects.push_back(nullptr);
+        else
+            new_shop->objects.push_back(Object::create_new_object(obj_str, team, new_shop));
     }
 
     index = shop_str.find('/');
@@ -55,13 +61,13 @@ Shop* Shop::unserialize(Team* team, std::string shop_str) {
         new_shop->frozen_objects.push_back(frozen_objs_str[i] == '1');
 
     index = shop_str.find(' ');
-    new_shop->buff_attack = std::stoi(shop_str.substr(0, index));
-    new_shop->buff_life = std::stoi(shop_str.substr(index+1));
+    new_shop->attack_buff = std::stoi(shop_str.substr(0, index));
+    new_shop->life_buff = std::stoi(shop_str.substr(index+1));
 
     return new_shop;
 }
 
-Shop::Shop(Team* team) : team(team), turn(0), buff_attack(0), buff_life(0) { }
+Shop::Shop(Team* team) : team(team), turn(0), attack_buff(0), life_buff(0) { }
 
 Shop::~Shop() {
     for (Pet* pet : pets)
@@ -129,8 +135,8 @@ void Shop::create_bonus_pet() {
 
     int tier = std::min(6, (turn + 1) / 2 + 1);
     Pet* pet = Pet::create_random_pet(team, this, tier, true);
-    if (buff_attack > 0 || buff_life > 0)
-        pet->buff(buff_attack, buff_life, false);
+    if (attack_buff > 0 || life_buff > 0)
+        pet->buff(attack_buff, life_buff, false);
     pets.push_back(pet);
     frozen_pets.push_back(false);
 }
@@ -173,12 +179,12 @@ void Shop::freeze_object(size_t index) {
 void Shop::upgrade(int attack, int life, bool tmp) {
     utils::vector_logs.push_back("Upgrading shop by +" + std::to_string(attack) + "/+" + std::to_string(life));
     for (Pet* pet : pets) {
-        if (!pet) continue;
-        pet->buff(attack, life, false);
+        if (pet)
+            pet->buff(attack, life, false);
     }
     if (!tmp) {
-        buff_attack += attack;
-        buff_life += life;
+        attack_buff += attack;
+        life_buff += life;
     }
 }
 
@@ -188,6 +194,8 @@ std::string Shop::serialize() const {
     for (Pet* pet : pets) {
         if (pet)
             shop_str += pet->serialize() + " ";
+        else
+            shop_str += "(Empty) ";
     }
 
     shop_str += "/ ";
@@ -198,21 +206,23 @@ std::string Shop::serialize() const {
     for (Object* obj : objects) {
         if (obj)
             shop_str += obj->name + " ";
+        else
+            shop_str += "Empty ";
     }
 
     shop_str += "/ ";
     for (bool frozen : frozen_objects)
         shop_str += (frozen ? "1" : "0");
 
-    shop_str += " / " + std::to_string(buff_attack) + " " + std::to_string(buff_life);
+    shop_str += " / " + std::to_string(attack_buff) + " " + std::to_string(life_buff);
     return shop_str;
 }
 
 
 Pet* Shop::create_pet() {
     Pet* pet = Pet::create_random_pet(team, this, std::min(6, (turn + 1) / 2));
-    if (buff_attack > 0 || buff_life > 0)
-        pet->buff(buff_attack, buff_life, false);
+    if (attack_buff > 0 || life_buff > 0)
+        pet->buff(attack_buff, life_buff, false);
     return pet;
 }
 

@@ -32,14 +32,13 @@ int UserInterface::nb_objs_in_shop() const {
 }
 
 Pet const* UserInterface::get_team_pet(size_t index) const {
-    std::vector<Pet*>* pets;
-    if (game->team->is_fighting())
-        pets = &game->team->tmp_pets;
-    else
-        pets = &game->team->pets;
-
-    if (index < pets->size())
-        return (*pets)[index];
+    if (game->fight_status != FIGHT_STATUS::None) {
+        if (index < game->fighting_team->pets.size())
+            return game->fighting_team->pets[index];
+    } else {
+        if (index < game->team->pets.size())
+            return game->team->pets[index];
+    }
     return nullptr;
 }
 
@@ -48,8 +47,8 @@ Pet const* UserInterface::get_shop_pet(size_t index) const {
 }
 
 Pet const* UserInterface::get_adv_pet(size_t index) const {
-    if (index < game->adv_team->tmp_pets.size())
-        return game->adv_team->tmp_pets[index];
+    if (index < game->adv_team->pets.size())
+        return game->adv_team->pets[index];
     return nullptr;
 }
 
@@ -74,25 +73,25 @@ std::string UserInterface::get_repr(Pet const* pet) const {
 }
 
 std::string UserInterface::get_object_repr(Pet const* pet) const {
-    if (pet->tmp_object)
-        return pet->tmp_object->repr;
+    if (pet->object)
+        return pet->object->repr;
     return "";
 }
 
 bool UserInterface::has_attack_buff(Pet const* pet) const {
-    return pet->attack != pet->tmp_attack;
+    return pet->attack_buff > 0;
 }
 
 bool UserInterface::has_life_buff(Pet const* pet) const {
-    return pet->life != pet->tmp_life;
+    return pet->life_buff > 0;
 }
 
 int UserInterface::get_attack(Pet const* pet) const {
-    return pet->tmp_attack;
+    return pet->get_attack();
 }
 
 int UserInterface::get_life(Pet const* pet) const {
-    return pet->tmp_life;
+    return pet->get_life();
 }
 
 std::string UserInterface::get_repr(Object const* obj) const {

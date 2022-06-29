@@ -44,8 +44,8 @@ class Shop {
         std::vector<Object*> objects;
         std::vector<bool> frozen_pets;
         std::vector<bool> frozen_objects;
-        int buff_attack;
-        int buff_life;
+        int attack_buff;
+        int life_buff;
 
         Pet* create_pet();
         Object* create_object();

@@ -33,7 +33,7 @@ void Ant::on_faint() {
     if (!living_pets.empty()) {
         Pet* target = utils::choice(living_pets)[0];
         int lvl = get_level();
-        target->buff(2*lvl, 1*lvl, team->is_fighting());
+        target->buff(2*lvl, 1*lvl, false);
     }
 
     Pet::on_faint();
