@@ -120,7 +120,7 @@ bool CLI::act() {
         freeze();
 
     else if (action == "o" || action == "order")
-        order();
+        move();
 
     else if (action == "e" || action == "end_turn")
         return end_turn();
@@ -215,7 +215,7 @@ void CLI::freeze() {
     }
 }
 
-void CLI::order() {
+void CLI::move() {
     std::vector<int> args = get_args(2);
     int ind1 = args[0] - 1;
     int ind2 = args[1] - 1;
@@ -225,11 +225,7 @@ void CLI::order() {
     if (!(0 <= ind2 && ind2 < 5))
         throw InvalidAction("[ORDER]: Invalid index " + std::to_string(ind2+1));
 
-    size_t indices[5] = {0, 1, 2, 3, 4};
-    indices[ind1] = ind2;
-    indices[ind2] = ind1;
-
-    game->order(indices);
+    game->move(ind1, ind2);
 }
 
 void CLI::fight() {

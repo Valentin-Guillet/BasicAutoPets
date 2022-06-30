@@ -36,8 +36,10 @@ Pet const* UserInterface::get_team_pet(size_t index) const {
         if (index < game->fighting_team->pets.size())
             return game->fighting_team->pets[index];
     } else {
-        if (index < game->team->pets.size())
-            return game->team->pets[index];
+        for (size_t i=0; i<game->team->pets.size(); i++) {
+            if (game->team->order[i] == index)
+                return game->team->pets[i];
+        }
     }
     return nullptr;
 }

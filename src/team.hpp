@@ -36,7 +36,7 @@ class Team {
         void can_combine(size_t src_index, size_t dst_index) const;
 
         void begin_turn();
-        void order(size_t order[5]);
+        void move(size_t src_index, size_t dst_index);
         void end_turn();
         void reset();
 
@@ -65,7 +65,11 @@ class Team {
         int turn;
         bool in_fight = false;
         std::vector<Pet*> pets;
+        std::vector<size_t> order;
 
+        void sort();
+        void append_pet(Pet* new_pet);
+        void remove_pet(size_t index);
         void check_size(std::string action, size_t index) const;
         void remove_dead_pets();
 };

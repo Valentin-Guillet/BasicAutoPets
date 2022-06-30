@@ -34,7 +34,7 @@ class CLI : public UserInterface {
         void sell();
         void roll();
         void freeze();
-        void order();
+        void move();
         void fight();
         bool end_turn();
 

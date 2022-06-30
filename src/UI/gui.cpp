@@ -94,7 +94,7 @@ bool GUI::act() {
                 combine_shop();
                 break;
             case UIState::order:
-                order();
+                move();
                 break;
             case UIState::fighting:
                 fight();
@@ -296,7 +296,7 @@ void GUI::combine_shop() {
     game->combine_shop(c1 - '1', c2 - '1');
 }
 
-void GUI::order() {
+void GUI::move() {
     state = UIState::none;
     status = "[ORDER]: Switching ... and ...";
     disp_status();
@@ -316,11 +316,7 @@ void GUI::order() {
     }
     status = "[ORDER]: Switching " + std::to_string(c1 - '0') + " and " + std::to_string(c2 - '0');
 
-    size_t indices[5] = {0, 1, 2, 3, 4};
-    indices[c1 - '1'] = c2 - '1';
-    indices[c2 - '1'] = c1 - '1';
-
-    game->order(indices);
+    game->move(c1 - '1', c2 - '1');
 }
 
 void GUI::fight() {

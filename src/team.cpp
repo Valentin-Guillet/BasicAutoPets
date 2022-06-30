@@ -28,7 +28,7 @@ Team* Team::unserialize(Game* game, std::string team_str) {
         std::string pet_str = team_str.substr(2, index-2);
         team_str = team_str.substr(index+1);
 
-        new_team->pets.push_back(Pet::unserialize(new_team, pet_str));
+        new_team->append_pet(Pet::unserialize(new_team, pet_str));
     }
     new_team->reset();
 
@@ -52,7 +52,7 @@ Team* Team::copy_team(Team const* team) {
     new_team->turn = team->turn;
 
     for (Pet* pet : team->pets)
-        new_team->pets.push_back(Pet::copy_pet(pet, new_team, nullptr));
+        new_team->append_pet(Pet::copy_pet(pet, new_team, nullptr));
 
     return new_team;
 }
@@ -89,12 +89,12 @@ FIGHT_STATUS Team::fight_step(Team* team, Team* adv_team) {
     if (!pet->is_alive()) {
         pet->on_faint();
         delete pet;
-        team->pets.erase(team->pets.begin());
+        team->remove_pet(0);
     }
     if (!adv_pet->is_alive()) {
         adv_pet->on_faint();
         delete adv_pet;
-        adv_team->pets.erase(adv_team->pets.begin());
+        adv_team->remove_pet(0);
     }
 
     return Team::check_end_of_battle(team, adv_team);
@@ -136,14 +136,14 @@ void Team::begin_turn() {
         pet->on_start_turn();
 }
 
-void Team::order(size_t order[5]) {
-    std::vector<Pet*> ordered_pets;
-    for (size_t i=0; i<5; i++) {
-        if (order[i] < pets.size())
-            ordered_pets.push_back(pets[order[i]]);
+void Team::move(size_t src_index, size_t dst_index) {
+    for (size_t i=0; i<order.size(); i++) {
+        if (order[i] == src_index)
+            order[i] = dst_index;
+        else if (order[i] == dst_index)
+            order[i] = src_index;
     }
-
-    pets = ordered_pets;
+    sort();
 }
 
 void Team::end_turn() {
@@ -160,7 +160,7 @@ void Team::add(Pet* new_pet) {
     new_pet->on_buy();
     for (Pet* pet : pets)
         pet->on_friend_bought(new_pet);
-    pets.push_back(new_pet);
+    append_pet(new_pet);
 }
 
 void Team::combine(size_t index, Pet* other_pet, bool activate_on_buy) {
@@ -175,7 +175,7 @@ void Team::combine(size_t src_index, size_t dst_index) {
     can_combine(src_index, dst_index);
 
     combine(dst_index, pets[src_index], false);
-    pets.erase(pets.begin() + src_index);
+    remove_pet(src_index);
 }
 
 int Team::sell(size_t index) {
@@ -183,7 +183,7 @@ int Team::sell(size_t index) {
 
     Pet* pet = pets[index];
     int lvl = pet->get_level();
-    pets.erase(pets.begin() + index);
+    remove_pet(index);
 
     pet->on_sell();
     delete pet;
@@ -212,7 +212,7 @@ void Team::summon(Pet* base_pet, Pet* new_pet) {
 void Team::faint(size_t index) {
     pets[index]->on_faint();
     delete pets[index];
-    pets.erase(pets.begin() + index);
+    remove_pet(index);
 }
 
 void Team::give_object(size_t index, Object* obj) {
@@ -350,20 +350,56 @@ FIGHT_STATUS Team::check_end_of_battle(Team const* team, Team const* adv_team) {
     return FIGHT_STATUS::Fighting;
 }
 
+void Team::sort() {
+    if (pets.size() < 2)
+        return;
+
+    std::vector<Pet*> ordered_pets;
+    std::vector<size_t> new_order;
+    for (size_t i=0; i<5; i++) {
+        for (size_t j=0; j<pets.size(); j++) {
+            if (order[j] == i) {
+                ordered_pets.push_back(pets[j]);
+                new_order.push_back(i);
+                break;
+            }
+        }
+    }
+    pets = ordered_pets;
+    order = new_order;
+}
+
+void Team::append_pet(Pet* new_pet) {
+    size_t index;
+    for (index=0; index<pets.size(); index++) {
+        if (order[index] > index)
+            break;
+    }
+    pets.push_back(new_pet);
+    order.push_back(index);
+    sort();
+}
+
+void Team::remove_pet(size_t index) {
+    pets.erase(pets.begin() + index);
+    order.erase(order.begin() + index);
+}
+
 void Team::check_size(std::string action, size_t index) const {
     if (index < pets.size()) return;
     throw InvalidAction("[" + action + "]: no pet in team at index " + std::to_string(index+1));
 }
 
 void Team::remove_dead_pets() {
-    for (auto it=pets.begin(); it!=pets.end(); ) {
-        Pet* pet = *it;
+    size_t i = 0;
+    while (i < pets.size()) {
+        Pet* pet = pets[i];
         if (!pet->is_alive()) {
             pet->on_faint();
             delete pet;
-            it = pets.erase(it);
+            remove_pet(i);
         } else {
-            it++;
+            i++;
         }
     }
 }

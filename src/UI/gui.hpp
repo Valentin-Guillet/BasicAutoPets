@@ -31,7 +31,7 @@ class GUI : public UserInterface {
         void freeze();
         void combine_team();
         void combine_shop();
-        void order();
+        void move();
         void fight();
 
         int get_fighting_action();

@@ -52,8 +52,8 @@ void Game::begin_turn() {
     turn++;
 }
 
-void Game::order(size_t indices[5]) {
-    team->order(indices);
+void Game::move(size_t src_index, size_t dst_index) {
+    team->move(src_index, dst_index);
 }
 
 void Game::end_turn() {

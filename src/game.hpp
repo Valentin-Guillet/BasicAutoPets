@@ -17,7 +17,7 @@ class Game {
         void reset();
 
         void begin_turn();
-        void order(size_t indices[5]);
+        void move(size_t src_index, size_t dst_index);
         void end_turn();
         bool is_over() const;
 
