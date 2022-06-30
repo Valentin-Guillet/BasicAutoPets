@@ -17,6 +17,7 @@ enum class FIGHT_STATUS { None, Fighting, Win, Loss, Draw };
 
 class Team {
     friend class UserInterface;
+    friend class Environment;
 
     public:
         static Team* unserialize(Game* game, std::string team_str);

@@ -45,6 +45,7 @@ build/%.o: src/%.cpp $(HEADERS)
 	@ mkdir -p build/Objects/Foods
 	@ mkdir -p build/Objects/Items
 	@ mkdir -p build/UI/
+	@ mkdir -p build/Interface/
 	$(CC) -c $(CFLAGS) -o $@ $<
 
 src/Pets/all_pets.hpp: $(PETS_SOURCES)

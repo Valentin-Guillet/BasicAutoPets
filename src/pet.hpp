@@ -12,6 +12,7 @@ class Team;
 
 class Pet {
     friend class UserInterface;
+    friend class Environment;
 
     public:
         static Pet* unserialize(Team* team, std::string pet_str);

@@ -9,6 +9,7 @@
 
 class Game {
     friend class UserInterface;
+    friend class Environment;
 
     public:
         Game();

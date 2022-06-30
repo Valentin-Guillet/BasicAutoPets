@@ -11,6 +11,7 @@
 
 class Shop {
     friend class UserInterface;
+    friend class Environment;
 
     public:
         static Shop* unserialize(Team* team, std::string shop_str);
