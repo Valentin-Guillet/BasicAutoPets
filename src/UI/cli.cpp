@@ -166,7 +166,7 @@ void CLI::buy() {
     if (index == 9 || index == 0) {
         int ind_obj = (index == 9 ? 0 : 1);
 
-        Object const* obj = get_shop_object(ind_obj);
+        Object const* obj = get_shop_object(ind_obj, true);
         bool target_all;
         if (obj)
             target_all = obj->target_all;
@@ -368,7 +368,7 @@ void CLI::disp_shop() const {
     frozen += utils::pad("", padding * (5 - nb_pets_in_shop()));
 
     for (int i=0; i<nb_objs_in_shop(); i++) {
-        Object const* obj = get_shop_object(i);
+        Object const* obj = get_shop_object(i, false);
         if (obj) {
             pets += utils::pad(get_repr(obj), padding);
             stats += utils::pad("Cost: " + std::to_string(get_cost(obj)), padding);

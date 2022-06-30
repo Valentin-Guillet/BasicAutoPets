@@ -8,6 +8,18 @@
 #include "utils.hpp"
 
 
+static size_t get_max_pets(int turn) {
+    if (turn < 5)
+        return 3;
+    else if (turn < 9)
+        return 4;
+    return 5;
+}
+
+static size_t get_max_objects(int turn) {
+    return (turn < 3 ? 1 : 2);
+}
+
 Shop* Shop::unserialize(Team* team, std::string shop_str) {
     Shop* new_shop = new Shop(team);
 
@@ -105,7 +117,7 @@ void Shop::roll() {
     pets = tmp_pets;
     frozen_pets = std::vector<bool>(pets.size(), true);
 
-    for (size_t i=pets.size(); i<get_max_pets(); i++) {
+    for (size_t i=pets.size(); i<get_max_pets(turn); i++) {
         pets.push_back(create_pet());
         frozen_pets.push_back(false);
     }
@@ -120,7 +132,8 @@ void Shop::roll() {
     objects = tmp_objs;
     frozen_objects = std::vector<bool>(objects.size(), true);
 
-    for (size_t i=objects.size(); i<get_max_objects(); i++) {
+    size_t nb_to_add = std::min(get_max_objects(turn), 7 - pets.size() - objects.size());
+    for (size_t i=objects.size(); i<nb_to_add; i++) {
         objects.push_back(create_object());
         frozen_objects.push_back(false);
     }
@@ -243,16 +256,4 @@ void Shop::check_size_objects(std::string action, size_t index) const {
         throw InvalidAction("[" + action + "]: invalid shop index " + std::to_string(index+1));
     if (!objects[index])
         throw InvalidAction("[" + action + "]: no object left in shop at index " + std::to_string(index+1));
-}
-
-size_t Shop::get_max_pets() const {
-    if (turn < 5)
-        return 3;
-    else if (turn < 9)
-        return 4;
-    return 5;
-}
-
-size_t Shop::get_max_objects() const {
-    return (turn < 3 ? 1 : 2);
 }

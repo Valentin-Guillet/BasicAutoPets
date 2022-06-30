@@ -10,7 +10,6 @@
 
 
 class Shop {
-    friend class Pet;
     friend class UserInterface;
 
     public:
@@ -51,9 +50,6 @@ class Shop {
         Object* create_object();
         void check_size_pets(std::string action, size_t index) const;
         void check_size_objects(std::string action, size_t index) const;
-
-        size_t get_max_pets() const;
-        size_t get_max_objects() const;
 };
 
 

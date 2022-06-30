@@ -54,7 +54,14 @@ Pet const* UserInterface::get_adv_pet(size_t index) const {
     return nullptr;
 }
 
-Object const* UserInterface::get_shop_object(size_t index) const {
+Object const* UserInterface::get_shop_object(size_t index, bool human_index) const {
+    // If 6 pets in shop, the first object is at index 0 BUT should be
+    // accessible through the 0 index in UI (i.e. index 1)
+    if (human_index && game->shop->pets.size() == 6) {
+        if (index == 0)
+            return nullptr;
+        index--;
+    }
     return game->shop->objects[index];
 }
 

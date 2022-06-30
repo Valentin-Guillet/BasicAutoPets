@@ -192,7 +192,7 @@ void GUI::buy() {
     // Buy object
     } else if (c == '9' || c == '0') {
         size_t nc = (c == '9' ? 0 : 1);
-        Object const* obj = get_shop_object(nc);
+        Object const* obj = get_shop_object(nc, true);
         if (!obj) {
             status = "[BUY_OBJECT]: No object in shop at index " + std::to_string(nc);
             return;
@@ -475,7 +475,7 @@ void GUI::disp_shop() const {
 
     size_t nb_objs = nb_objs_in_shop();
     for (size_t i=0; i<nb_objs; i++) {
-        Object const* obj = get_shop_object(i);
+        Object const* obj = get_shop_object(i, false);
         if (obj)
             disp_object(obj, padding, 14, is_obj_frozen(i));
         else

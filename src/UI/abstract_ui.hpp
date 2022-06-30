@@ -29,7 +29,7 @@ class UserInterface {
         Pet const* get_team_pet(size_t index) const;
         Pet const* get_shop_pet(size_t index) const;
         Pet const* get_adv_pet(size_t index) const;
-        Object const* get_shop_object(size_t index) const;
+        Object const* get_shop_object(size_t index, bool human_index) const;
         bool is_pet_frozen(size_t index) const;
         bool is_obj_frozen(size_t index) const;
 
