@@ -5,3 +5,5 @@ main
 
 data/
 data/*
+
+src/*/all_*
