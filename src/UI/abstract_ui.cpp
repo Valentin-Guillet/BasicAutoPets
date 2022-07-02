@@ -45,7 +45,9 @@ Pet const* UserInterface::get_team_pet(size_t index) const {
 }
 
 Pet const* UserInterface::get_shop_pet(size_t index) const {
-    return game->shop->pets[index];
+    if (index < game->shop->pets.size())
+        return game->shop->pets[index];
+    return nullptr;
 }
 
 Pet const* UserInterface::get_adv_pet(size_t index) const {
@@ -71,10 +73,6 @@ bool UserInterface::is_pet_frozen(size_t index) const {
 
 bool UserInterface::is_obj_frozen(size_t index) const {
     return game->shop->frozen_objects[index];
-}
-
-std::string UserInterface::get_name(Pet const* pet) const {
-    return pet->name;
 }
 
 std::string UserInterface::get_repr(Pet const* pet) const {

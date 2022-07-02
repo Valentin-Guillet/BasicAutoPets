@@ -17,12 +17,11 @@
 
 
 const std::unordered_map<UIState, std::string> MSGS = {
-    {UIState::none, "What do you want to do ?     (B)uy     (S)ell     (F)reeze     (C)ombine team     Co(m)bine shop     (R)oll     (O)rder     (E)nd turn     (Q)uit"},
+    {UIState::none, "What do you want to do ?     (B)uy     (S)ell     (F)reeze     (C)ombine team     (R)oll     (O)rder     (E)nd turn     (Q)uit"},
     {UIState::buy, "Buying !"},
     {UIState::sell, "Selling !"},
     {UIState::freeze, "Freezing !"},
-    {UIState::combine_team, "Combining team !"},
-    {UIState::combine_shop, "Combining shop !"},
+    {UIState::combine, "Combining pets !"},
     {UIState::order, "Ordering !"},
     {UIState::fighting, "Fight !     (A)uto-play     (P)lay     (S)kip"},
 };
@@ -87,11 +86,8 @@ bool GUI::act() {
             case UIState::freeze:
                 freeze();
                 break;
-            case UIState::combine_team:
-                combine_team();
-                break;
-            case UIState::combine_shop:
-                combine_shop();
+            case UIState::combine:
+                combine();
                 break;
             case UIState::order:
                 move();
@@ -135,11 +131,7 @@ bool GUI::take_action() {
             break;
 
         case 'c':
-            state = UIState::combine_team;
-            break;
-
-        case 'm':
-            state = UIState::combine_shop;
+            state = UIState::combine;
             break;
 
         case 'r':
@@ -183,42 +175,15 @@ bool GUI::take_action() {
 
 void GUI::buy() {
     state = UIState::none;
+    status = "[BUY]: Buying ...";
+    disp_status();
+
     int c = std::tolower(getch());
+    if ('1' <= c && c <= '7')
+        buy_pet(c - '1');
 
-    // Buy pet
-    if ('1' <= c && c <= '7') {
-        game->buy_pet(c - '1');
-
-    // Buy object
-    } else if (c == '9' || c == '0') {
-        size_t nc = (c == '9' ? 0 : 1);
-        Object const* obj = get_shop_object(nc, true);
-        if (!obj) {
-            status = "[BUY_OBJECT]: No object in shop at index " + std::to_string(nc);
-            return;
-        }
-
-        std::string obj_name = obj->name;
-        if (obj->target_all) {
-            game->buy_object(nc, 0);
-            status = "[BUY_OBJECT]: Bought " + obj_name;
-        } else {
-            status = "[BUY_OBJECT]: Buying " + obj_name + " for pet ...";
-            disp_status();
-
-            size_t target = std::tolower(getch());
-            if (!('1' <= target && target <= '5')) {
-                status = "[BUY_OBJECT]: Invalid target for " + obj_name;
-                return;
-            }
-            target = (target - '1');
-            game->buy_object(nc, target);
-
-            std::string target_name = get_name(get_team_pet(target));
-            if (!target_name.empty())
-                status = "[BUY_OBJECT]: Giving " + obj_name + " to " + target_name;
-        }
-    }
+    else if (c == '9' || c == '0')
+        buy_object((c == '9' ? 0 : 1));
 }
 
 void GUI::sell() {
@@ -230,7 +195,7 @@ void GUI::sell() {
         return;
     }
     c = (c - '1');
-    std::string pet_name = get_name(get_team_pet(c));
+    std::string pet_name = get_team_pet(c)->name;
     game->sell(c);
 
     if (!pet_name.empty())
@@ -250,50 +215,27 @@ void GUI::freeze() {
     }
 }
 
-void GUI::combine_team() {
+void GUI::combine() {
     state = UIState::none;
-    status = "[COMBINE_TEAM]: Combining pets ... and ...";
+    status = "[COMBINE]: Combining pets ... and ...";
     disp_status();
 
     int c1 = std::tolower(getch());
     if (!('1' <= c1 && c1 <= '5')) {
-        status = "[COMBINE_TEAM]: Invalid pet index";
+        status = "[COMBINE]: Invalid pet index";
         return;
     }
-    status = "[COMBINE_TEAM]: Combining pets " + std::to_string(c1 - '0') + " and ...";
+    status = "[COMBINE]: Combining pets " + std::to_string(c1 - '0') + " and ...";
     disp_status();
 
     int c2 = std::tolower(getch());
     if (!('1' <= c2 && c2 <= '5')) {
-        status = "[COMBINE_TEAM]: Invalid pet index";
+        status = "[COMBINE]: Invalid pet index";
         return;
     }
-    status = "[COMBINE_TEAM]: Combining pets " + std::to_string(c1 - '0') + " and " + std::to_string(c2 - '0');
+    status = "[COMBINE]: Combining pets " + std::to_string(c1 - '0') + " and " + std::to_string(c2 - '0');
 
-    game->combine_team(c1 - '1', c2 - '1');
-}
-
-void GUI::combine_shop() {
-    state = UIState::none;
-    status = "[COMBINE_SHOP]: Combining shop pet ... with team pet ...";
-    disp_status();
-
-    int c1 = std::tolower(getch());
-    if (!('1' <= c1 && c1 <= '5')) {
-        status = "[COMBINE_SHOP]: Invalid pet index";
-        return;
-    }
-    status = "[COMBINE_SHOP]: Combining shop pet " + std::to_string(c1 - '0') + " with team pet ...";
-    disp_status();
-
-    int c2 = std::tolower(getch());
-    if (!('1' <= c2 && c2 <= '5')) {
-        status = "[COMBINE_SHOP]: Invalid pet index";
-        return;
-    }
-    status = "[COMBINE_SHOP]: Combining shop pet " + std::to_string(c1 - '0') + " with team pet " + std::to_string(c2 - '0');
-
-    game->combine_shop(c1 - '1', c2 - '1');
+    game->combine(c1 - '1', c2 - '1');
 }
 
 void GUI::move() {
@@ -355,6 +297,57 @@ void GUI::fight() {
     state = UIState::none;
 }
 
+
+void GUI::buy_pet(size_t index) {
+    Pet const* pet = get_shop_pet(index);
+    if (!pet) {
+        status = "[BUY] No pet in shop at index " + std::to_string(index + 1);
+        return;
+    }
+
+    std::string pet_name = pet->name;
+    status = "[BUY]: Buying " + pet_name + " in position ...";
+    disp_status();
+
+    size_t target = std::tolower(getch());
+    if (!('1' <= target && target <= '5')) {
+        status = "[BUY]: Invalid dst index";
+        return;
+    }
+    size_t target_index = target - '1';
+    game->buy_pet(index, target_index);
+    status = "[BUY]: Bought " + pet_name + " in position " + std::to_string(target_index + 1);
+}
+
+void GUI::buy_object(size_t index) {
+    Object const* obj = get_shop_object(index, true);
+    if (!obj) {
+        status = "[BUY]: No object in shop at index " + std::to_string(index + 1);
+        return;
+    }
+
+    std::string obj_name = obj->name;
+    if (obj->target_all) {
+        game->buy_object(index, 0);
+        status = "[BUY]: Bought " + obj_name;
+        return;
+    }
+
+    status = "[BUY]: Buying " + obj_name + " for pet ...";
+    disp_status();
+
+    size_t target = std::tolower(getch());
+    if (!('1' <= target && target <= '5')) {
+        status = "[BUY]: Invalid target for " + obj_name;
+        return;
+    }
+    size_t target_index = target - '1';
+    game->buy_object(index, target_index);
+
+    std::string target_name = get_team_pet(target_index)->name;
+    if (!target_name.empty())
+        status = "[BUY]: Giving " + obj_name + " to " + target_name;
+}
 
 int GUI::get_fighting_action() {
     int c;

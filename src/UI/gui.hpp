@@ -9,7 +9,7 @@
 #include "pet.hpp"
 
 
-enum class UIState { none, buy, sell, freeze, combine_team, combine_shop, order, fighting };
+enum class UIState { none, buy, sell, freeze, combine, order, fighting };
 
 class GUI : public UserInterface {
     public:
@@ -29,10 +29,12 @@ class GUI : public UserInterface {
         void buy();
         void sell();
         void freeze();
-        void combine_team();
-        void combine_shop();
+        void combine();
         void move();
         void fight();
+
+        void buy_pet(size_t index);
+        void buy_object(size_t index);
 
         int get_fighting_action();
 

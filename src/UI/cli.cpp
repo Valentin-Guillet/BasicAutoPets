@@ -49,8 +49,9 @@ void CLI::get_curr_cmd(std::string line) {
     std::istringstream iss(line);
     std::string token;
 
-    while (!iss.eof()) {
-        iss >> token;
+    while (true) {
+        if (!(iss >> token))
+            break;
         curr_cmd.push_back(token);
     }
 }
@@ -104,11 +105,8 @@ bool CLI::act() {
     else if (action == "b" || action == "buy")
         buy();
 
-    else if (action == "c" || action == "combine_team")
-        combine_team();
-
-    else if (action == "m" || action == "combine_shop")
-        combine_shop();
+    else if (action == "c" || action == "combine")
+        combine();
 
     else if (action == "s" || action == "sell")
         sell();
@@ -149,7 +147,6 @@ void CLI::help() const {
     help_msg += "- `s[ell] {ind}` to sell a pet\n";
     help_msg += "- `f[reeze] {ind}` to freeze a pet or an object\n";
     help_msg += "- `c[ombine_team] {ind1} {ind2}` to combine two pets from the team\n";
-    help_msg += "- `m {ind_shop} {ind_team}` or `combine_shop {ind_shop} {ind_team}` to combine a pet from the shop with a pet from the team\n";
     help_msg += "- `r[oll]` to roll\n";
     help_msg += "- `o[rder] {ind1} {ind2}` to switch position of two pets in the team\n";
     help_msg += "- `e[nd_turn]` to end turn and run a new fight\n";
@@ -179,22 +176,17 @@ void CLI::buy() {
             game->buy_object(ind_obj, ind_target);
         }
     } else {
-        game->buy_pet(index - 1);
+        std::vector<int> args = get_args(2);
+        int ind_target = args[1] - 1;
+        game->buy_pet(index - 1, ind_target);
     }
 }
 
-void CLI::combine_shop() {
-    std::vector<int> args = get_args(2);
-    int ind_shop = args[0] - 1;
-    int ind_team = args[1] - 1;
-    game->combine_shop(ind_shop, ind_team);
-}
-
-void CLI::combine_team() {
+void CLI::combine() {
     std::vector<int> args = get_args(2);
     int ind_team_1 = args[0] - 1;
     int ind_team_2 = args[1] - 1;
-    game->combine_team(ind_team_1, ind_team_2);
+    game->combine(ind_team_1, ind_team_2);
 }
 
 void CLI::sell() {
@@ -325,7 +317,7 @@ void CLI::disp_pet(int padding, Pet const* pet,
     if (lvl == 1)
         xps += utils::pad("Lvl 1 " + std::to_string(xp) + "/2", padding);
     else if (lvl == 2)
-        xps += utils::pad("Lvl 1 " + std::to_string(xp - 2) + "/3", padding);
+        xps += utils::pad("Lvl 2 " + std::to_string(xp - 2) + "/3", padding);
     else
         xps += utils::pad("Lvl 3 0/0", padding);
 }
@@ -360,7 +352,10 @@ void CLI::disp_shop() const {
             std::string life = std::to_string(get_life(pet));
             stats += utils::pad(attack + " / " + life, padding);
 
-            frozen += utils::pad((is_pet_frozen(i) ? "🧊" : ""), padding);
+            if (is_pet_frozen(i))
+                frozen += utils::pad("🧊", padding+2);
+            else
+                frozen += utils::pad("", padding);
         }
     }
     pets += utils::pad("", padding * (5 - nb_pets_in_shop()));
@@ -370,9 +365,13 @@ void CLI::disp_shop() const {
     for (int i=0; i<nb_objs_in_shop(); i++) {
         Object const* obj = get_shop_object(i, false);
         if (obj) {
-            pets += utils::pad(get_repr(obj), padding);
+            pets += utils::pad(get_repr(obj), padding+2);
             stats += utils::pad("Cost: " + std::to_string(get_cost(obj)), padding);
-            frozen += utils::pad((is_obj_frozen(i) ? "🧊" : ""), padding);
+
+            if (is_obj_frozen(i))
+                frozen += utils::pad("🧊", padding+2);
+            else
+                frozen += utils::pad("", padding);
         } else {
             pets += utils::pad("______", padding);
             stats += utils::pad("", padding);

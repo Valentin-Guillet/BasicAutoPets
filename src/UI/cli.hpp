@@ -29,8 +29,7 @@ class CLI : public UserInterface {
 
         void help() const;
         void buy();
-        void combine_shop();
-        void combine_team();
+        void combine();
         void sell();
         void roll();
         void freeze();

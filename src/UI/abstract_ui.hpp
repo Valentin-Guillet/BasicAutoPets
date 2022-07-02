@@ -33,7 +33,6 @@ class UserInterface {
         bool is_pet_frozen(size_t index) const;
         bool is_obj_frozen(size_t index) const;
 
-        std::string get_name(Pet const* pet) const;
         std::string get_repr(Pet const* pet) const;
         std::string get_object_repr(Pet const* pet) const;
         bool has_attack_buff(Pet const* pet) const;
