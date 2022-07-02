@@ -15,7 +15,7 @@ Team* Team::unserialize(Game* game, std::string team_str) {
     Team* new_team = new Team(game);
     int index = team_str.find(' ');
 
-    if (index == -1) {
+    if (index == -1 || index == (int)team_str.size() - 1) {
         new_team->turn = std::stoi(team_str);
         return new_team;
     }
@@ -23,13 +23,24 @@ Team* Team::unserialize(Game* game, std::string team_str) {
     new_team->turn = std::stoi(team_str.substr(0, index));
     team_str = team_str.substr(index);
 
+    int order_index = team_str.find('/');
+    std::string order_str;
+    if (order_index != -1) {
+        order_str = team_str.substr(order_index+2);
+        team_str = team_str.substr(0, order_index-1);
+    }
+
     Pos pos = 0;
     while (!team_str.empty()) {
         index = team_str.find(')');
         std::string pet_str = team_str.substr(2, index-2);
         team_str = team_str.substr(index+1);
 
-        new_team->append_pet(Pet::unserialize(new_team, pet_str), pos++);
+        Pos saved_pos = pos;
+        if (!order_str.empty())
+            saved_pos = order_str[pos] - '0';
+        new_team->append_pet(Pet::unserialize(new_team, pet_str), saved_pos);
+        pos++;
     }
     new_team->reset();
 
@@ -284,14 +295,20 @@ std::tuple<int, std::string, std::string> Team::get_fight_str(Team* other_team) 
 }
 
 std::string Team::serialize() const {
-    std::string team_str;
+    if (pets.empty())
+        return "";
 
+    std::string team_str;
     for (Pet* pet : pets) {
         if (pet->is_alive())
             team_str += pet->serialize() + " ";
     }
-    if (!team_str.empty())
-        team_str.pop_back();
+    team_str.pop_back();
+
+    team_str += " / ";
+    for (Pos pos : order)
+        team_str += std::to_string(pos);
+
     return team_str;
 }
 
