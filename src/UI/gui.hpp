@@ -3,7 +3,7 @@
 
 #include <string>
 
-#include "UI/abstract_ui.hpp"
+#include "UI/user_interface.hpp"
 #include "game.hpp"
 #include "object.hpp"
 #include "pet.hpp"
@@ -17,6 +17,7 @@ class GUI : public UserInterface {
         ~GUI();
 
         bool run() override;
+        void display_game() const override;
 
     private:
         UIState state;

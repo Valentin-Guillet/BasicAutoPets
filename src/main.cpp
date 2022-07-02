@@ -2,15 +2,12 @@
 #include <iostream>
 
 #include "game.hpp"
-#include "UI/cli.hpp"
-#include "UI/gui.hpp"
+#include "UI/user_interface.hpp"
 #include "utils.hpp"
 
 
 int main(int argc, char** argv) {
     Game* game = new Game();
-    UserInterface* ui;
-
     bool use_cli = false;
     for (int i=1; i<argc; i++) {
         std::string arg(argv[i]);
@@ -18,14 +15,9 @@ int main(int argc, char** argv) {
             use_cli = true;
     }
 
-    if (use_cli)
-        ui = new CLI(game);
-    else
-        ui = new GUI(game);
-
-    while (ui->run()) {
+    UserInterface* ui = UserInterface::create_ui(game, use_cli);
+    while (ui->run())
         game->reset();
-    }
 
     delete game;
     delete ui;

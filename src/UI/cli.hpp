@@ -4,7 +4,7 @@
 #include <string>
 #include <vector>
 
-#include "UI/abstract_ui.hpp"
+#include "UI/user_interface.hpp"
 #include "game.hpp"
 #include "object.hpp"
 #include "pet.hpp"
@@ -16,6 +16,7 @@ class CLI : public UserInterface {
         ~CLI();
 
         bool run() override;
+        void display_game() const override;
 
     private:
         std::vector<std::string> curr_cmd;

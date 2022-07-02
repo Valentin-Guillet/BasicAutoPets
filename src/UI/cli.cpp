@@ -1,5 +1,4 @@
 
-
 #include "UI/cli.hpp"
 
 #include <algorithm>
@@ -26,10 +25,7 @@ bool CLI::run() {
     std::cout << CLEAR_SCREEN;
     bool continue_game;
     do {
-        disp_game_state();
-        disp_team();
-        disp_shop();
-        disp_logs();
+        display_game();
         while (true) {
             try {
                 continue_game = act();
@@ -41,6 +37,13 @@ bool CLI::run() {
     } while(continue_game);
 
     return play_again();
+}
+
+void CLI::display_game() const {
+    disp_game_state();
+    disp_team();
+    disp_shop();
+    disp_logs();
 }
 
 
@@ -248,17 +251,14 @@ void CLI::fight() {
 bool CLI::end_turn() {
     game->end_turn();
     std::cout << CLEAR_SCREEN;
-    disp_game_state();
-    disp_team();
-    disp_shop();
-    disp_logs();
+    display_game();
     std::cout << "Press a key to continue..." << std::endl;
     std::string key;
     getline(std::cin, key);
     std::cout << CLEAR_SCREEN;
 
     fight();
-    return game->is_over();
+    return !game->is_over();
 }
 
 void CLI::download() const {

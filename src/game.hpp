@@ -24,7 +24,7 @@ class Game {
 
         void start_fight();
         bool fight_step();
-        void end_fight();
+        int end_fight();
         bool in_fight() const;
 
         void buy_pet(Pos src_pos, Pos dst_pos);

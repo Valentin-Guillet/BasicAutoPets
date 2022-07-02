@@ -1,9 +1,6 @@
 
 #include "UI/gui.hpp"
 
-#include <locale.h>
-#include <ncurses.h>
-
 #include <algorithm>
 #include <cctype>
 #include <chrono>
@@ -12,6 +9,9 @@
 #include <thread>
 #include <unordered_map>
 #include <unordered_set>
+
+#include <locale.h>
+#include <ncurses.h>
 
 #include "utils.hpp"
 
@@ -45,16 +45,20 @@ GUI::~GUI() {
 bool GUI::run() {
     do {
         clear();
-        disp_frame();
-        disp_game_state();
-        disp_team();
-        disp_shop();
-        disp_action();
-        disp_status();
-        disp_logs();
+        display_game();
     } while (act());
 
     return play_again();
+}
+
+void GUI::display_game() const {
+    disp_frame();
+    disp_game_state();
+    disp_team();
+    disp_shop();
+    disp_action();
+    disp_status();
+    disp_logs();
 }
 
 
@@ -94,7 +98,7 @@ bool GUI::act() {
                 break;
             case UIState::fighting:
                 fight();
-                continue_game = game->is_over();
+                continue_game = !game->is_over();
                 break;
         }
     } catch (InvalidAction& e) {
@@ -110,12 +114,7 @@ bool GUI::take_action() {
     switch (c) {
         case KEY_RESIZE:
             clear();
-            disp_frame();
-            disp_game_state();
-            disp_team();
-            disp_shop();
-            disp_action();
-            disp_status();
+            display_game();
             break;
 
         case 'b':

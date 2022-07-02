@@ -61,7 +61,7 @@ void Game::end_turn() {
 }
 
 bool Game::is_over() const {
-    return (life > 0 && victories < 10);
+    return !(life > 0 && victories < 10);
 }
 
 void Game::start_fight() {
@@ -75,12 +75,15 @@ bool Game::fight_step() {
     return in_fight();
 }
 
-void Game::end_fight() {
-    if (fight_status == FIGHT_STATUS::Win)
+int Game::end_fight() {
+    int output = 0;
+    if (fight_status == FIGHT_STATUS::Win) {
         victories++;
-
-    else if (fight_status == FIGHT_STATUS::Loss)
+        output = 1;
+    } else if (fight_status == FIGHT_STATUS::Loss) {
         life -= life_per_turn(turn);
+        output = -1;
+    }
 
     delete fighting_team;
     delete adv_team;
@@ -92,6 +95,8 @@ void Game::end_fight() {
 
     team->reset();
     fight_status = FIGHT_STATUS::None;
+
+    return output;
 }
 
 bool Game::in_fight() const {

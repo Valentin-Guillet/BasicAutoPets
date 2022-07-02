@@ -1,5 +1,5 @@
-#ifndef HEADER_UI_ABSTRACT
-#define HEADER_UI_ABSTRACT
+#ifndef HEADER_UI_USERINTERFACE
+#define HEADER_UI_USERINTERFACE
 
 
 #include <string>
@@ -11,10 +11,13 @@
 
 class UserInterface {
     public:
+        static UserInterface* create_ui(Game* game, bool use_cli);
+
         UserInterface(Game* game);
         virtual ~UserInterface();
 
         virtual bool run() = 0;
+        virtual void display_game() const = 0;
 
     protected:
         Game* game;
@@ -45,4 +48,4 @@ class UserInterface {
 };
 
 
-#endif // HEADER_UI_ABSTRACT
+#endif // HEADER_UI_USERINTERFACE
