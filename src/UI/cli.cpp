@@ -339,7 +339,7 @@ void CLI::disp_shop() const {
     std::cout << std::endl;
 
     std::string pets, stats, frozen;
-    for (int i=0; i<nb_pets_in_shop(); i++) {
+    for (size_t i=0; i<nb_pets_in_shop(); i++) {
         Pet const* pet = get_shop_pet(i);
         if (!pet) {
             pets += utils::pad("______", padding);
@@ -362,7 +362,7 @@ void CLI::disp_shop() const {
     stats += utils::pad("", padding * (5 - nb_pets_in_shop()));
     frozen += utils::pad("", padding * (5 - nb_pets_in_shop()));
 
-    for (int i=0; i<nb_objs_in_shop(); i++) {
+    for (size_t i=0; i<nb_objs_in_shop(); i++) {
         Object const* obj = get_shop_object(i, false);
         if (obj) {
             pets += utils::pad(get_repr(obj), padding+2);

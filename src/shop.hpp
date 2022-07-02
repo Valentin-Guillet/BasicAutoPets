@@ -15,6 +15,8 @@ class Shop {
 
     public:
         static Shop* unserialize(Team* team, std::string shop_str);
+        static size_t get_max_pets(int turn);
+        static size_t get_max_objects(int turn);
 
         Shop(Team* team);
         ~Shop();

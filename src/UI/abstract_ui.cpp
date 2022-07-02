@@ -23,12 +23,12 @@ int UserInterface::get_turn() const {
     return game->turn;
 }
 
-int UserInterface::nb_pets_in_shop() const {
-    return game->shop->pets.size();
+size_t UserInterface::nb_pets_in_shop() const {
+    return Shop::get_max_pets(game->turn);
 }
 
-int UserInterface::nb_objs_in_shop() const {
-    return game->shop->objects.size();
+size_t UserInterface::nb_objs_in_shop() const {
+    return Shop::get_max_objects(game->turn);
 }
 
 Pet const* UserInterface::get_team_pet(size_t index) const {
@@ -64,7 +64,10 @@ Object const* UserInterface::get_shop_object(size_t index, bool human_index) con
             return nullptr;
         index--;
     }
-    return game->shop->objects[index];
+
+    if (index < game->shop->objects.size())
+        return game->shop->objects[index];
+    return nullptr;
 }
 
 bool UserInterface::is_pet_frozen(size_t index) const {

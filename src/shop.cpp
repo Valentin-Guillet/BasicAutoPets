@@ -8,18 +8,6 @@
 #include "utils.hpp"
 
 
-static size_t get_max_pets(int turn) {
-    if (turn < 5)
-        return 3;
-    else if (turn < 9)
-        return 4;
-    return 5;
-}
-
-static size_t get_max_objects(int turn) {
-    return (turn < 3 ? 1 : 2);
-}
-
 Shop* Shop::unserialize(Team* team, std::string shop_str) {
     Shop* new_shop = new Shop(team);
 
@@ -36,9 +24,8 @@ Shop* Shop::unserialize(Team* team, std::string shop_str) {
         pets_str = pets_str.substr(index+1);
 
         if (pet_str == "Empty")
-            new_shop->pets.push_back(nullptr);
-        else
-            new_shop->pets.push_back(Pet::unserialize(team, pet_str));
+            continue;
+        new_shop->pets.push_back(Pet::unserialize(team, pet_str));
     }
 
     index = shop_str.find('/');
@@ -61,9 +48,8 @@ Shop* Shop::unserialize(Team* team, std::string shop_str) {
             objects_str = objects_str.substr(index+1);
         }
         if (obj_str == "Empty")
-            new_shop->objects.push_back(nullptr);
-        else
-            new_shop->objects.push_back(Object::create_new_object(obj_str, team, new_shop));
+            continue;
+        new_shop->objects.push_back(Object::create_new_object(obj_str, team, new_shop));
     }
 
     index = shop_str.find('/');
@@ -77,6 +63,18 @@ Shop* Shop::unserialize(Team* team, std::string shop_str) {
     new_shop->life_buff = std::stoi(shop_str.substr(index+1));
 
     return new_shop;
+}
+
+size_t Shop::get_max_pets(int turn) {
+    if (turn < 5)
+        return 3;
+    else if (turn < 9)
+        return 4;
+    return 5;
+}
+
+size_t Shop::get_max_objects(int turn) {
+    return (turn < 3 ? 1 : 2);
 }
 
 Shop::Shop(Team* team) : team(team), turn(0), attack_buff(0), life_buff(0) { }
@@ -140,7 +138,7 @@ void Shop::roll() {
 }
 
 void Shop::create_bonus_pet() {
-    utils::vector_logs.push_back("Creating bonus pet! ");
+    utils::vector_logs.push_back("Creating bonus pet !");
     if (pets.size() + objects.size() == 7) {
         utils::vector_logs.push_back("No empty spot for a bonus pet !");
         return;
@@ -150,6 +148,7 @@ void Shop::create_bonus_pet() {
     Pet* pet = Pet::create_random_pet(team, this, tier, true);
     if (attack_buff > 0 || life_buff > 0)
         pet->buff(attack_buff, life_buff, false);
+
     pets.push_back(pet);
     frozen_pets.push_back(false);
 }
@@ -158,8 +157,8 @@ Pet* Shop::buy_pet(size_t index) {
     check_size_pets("BUY_PET", index);
 
     Pet* pet = pets[index];
-    pets[index] = nullptr;
-    frozen_pets[index] = false;
+    pets.erase(pets.begin() + index);
+    frozen_pets.erase(frozen_pets.begin() + index);
     return pet;
 }
 
@@ -175,8 +174,8 @@ void Shop::buy_object(size_t index, size_t index_target) {
     } else {
         team->give_object(index_target, object);
     }
-    objects[index] = nullptr;
-    frozen_objects[index] = false;
+    objects.erase(objects.begin() + index);
+    frozen_objects.erase(frozen_objects.begin() + index);
 }
 
 void Shop::freeze_pet(size_t index) {

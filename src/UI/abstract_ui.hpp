@@ -24,8 +24,8 @@ class UserInterface {
         int get_victories() const;
         int get_turn() const;
 
-        int nb_pets_in_shop() const;
-        int nb_objs_in_shop() const;
+        size_t nb_pets_in_shop() const;
+        size_t nb_objs_in_shop() const;
         Pet const* get_team_pet(size_t index) const;
         Pet const* get_shop_pet(size_t index) const;
         Pet const* get_adv_pet(size_t index) const;
