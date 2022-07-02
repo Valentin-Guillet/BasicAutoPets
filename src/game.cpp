@@ -90,6 +90,7 @@ void Game::end_fight() {
     if (life > 0)
         begin_turn();
 
+    team->reset();
     fight_status = FIGHT_STATUS::None;
 }
 
