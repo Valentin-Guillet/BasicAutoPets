@@ -42,7 +42,6 @@ Team* Team::unserialize(Game* game, std::string team_str) {
         new_team->append_pet(Pet::unserialize(new_team, pet_str), saved_pos);
         pos++;
     }
-    new_team->reset();
 
     return new_team;
 }

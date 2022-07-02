@@ -21,13 +21,26 @@ Pet* Pet::unserialize(Team* team, std::string pet_str) {
 
     std::string name, object_name;
     int attack, life, xp;
+    int attack_buff = 0, life_buff = 0;
     getline(iss, name, ' ');
 
     getline(iss, token, ' ');
-    attack = std::stoi(token);
+    size_t index = token.find(':');
+    if (index != std::string::npos) {
+        attack = std::stoi(token.substr(0, index));
+        attack_buff = std::stoi(token.substr(index+1));
+    } else {
+        attack = std::stoi(token);
+    }
 
     getline(iss, token, ' ');
-    life = std::stoi(token);
+    index = token.find(':');
+    if (index != std::string::npos) {
+        life = std::stoi(token.substr(0, index));
+        life_buff = std::stoi(token.substr(index+1));
+    } else {
+        life = std::stoi(token);
+    }
 
     getline(iss, token, ' ');
     xp = std::stoi(token);
@@ -39,9 +52,10 @@ Pet* Pet::unserialize(Team* team, std::string pet_str) {
 
     Pet* pet = AllPets::create_new_pet(name, team, nullptr);
     pet->attack = attack;
+    pet->attack_buff = attack_buff;
     pet->life = life;
+    pet->life_buff = life_buff;
     pet->xp = xp;
-    pet->reset_stats();
 
     Object* object = nullptr;
     if (object_name != "none")
@@ -140,8 +154,8 @@ void Pet::take_damage(int value) {
 void Pet::buff(int buff_attack, int buff_life, bool is_tmp) {
     utils::vector_logs.push_back(name + " is getting buffed (+" + std::to_string(buff_attack) + "/+" + std::to_string(buff_life) + ")");
     if (is_tmp) {
-        attack_buff = buff_attack;
-        life_buff = buff_life;
+        attack_buff += buff_attack;
+        life_buff += buff_life;
     } else {
         attack = std::min(attack + buff_attack, 50);
         life = std::min(life + buff_life, 50);
@@ -183,8 +197,14 @@ void Pet::on_faint(size_t index) {
 std::string Pet::serialize() const {
     std::string pet_str = "(";
     pet_str += name + " ";
-    pet_str += std::to_string(attack) + " ";
-    pet_str += std::to_string(life) + " ";
+    pet_str += std::to_string(attack);
+    if (attack_buff > 0)
+        pet_str += ":" + std::to_string(attack_buff);
+    pet_str += " ";
+    pet_str += std::to_string(life);
+    if (life_buff > 0)
+        pet_str += ":" + std::to_string(life_buff);
+    pet_str += " ";
     pet_str += std::to_string(xp) + " ";
     pet_str += (object ? object->name : "none") + ")";
     return pet_str;
