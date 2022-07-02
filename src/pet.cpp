@@ -175,9 +175,9 @@ void Pet::on_friend_bought(Pet* new_pet) {
     on_friend_summoned(new_pet);
 }
 
-void Pet::on_faint() {
+void Pet::on_faint(size_t index) {
     if (object)
-        object->on_faint();
+        object->on_faint(index);
 }
 
 std::string Pet::serialize() const {

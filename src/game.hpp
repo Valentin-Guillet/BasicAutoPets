@@ -27,11 +27,10 @@ class Game {
         void end_fight();
         bool in_fight() const;
 
-        void buy_pet(size_t index);
-        void combine_shop(size_t index_shop, size_t index_team);
-        void combine_team(size_t src_index, size_t dst_index);
-        void sell(size_t index);
-        void buy_object(size_t index, size_t index_target);
+        void buy_pet(Pos src_pos, Pos dst_pos);
+        void buy_object(size_t obj_index, Pos pet_pos);
+        void combine(Pos src_pos, Pos dst_pos);
+        void sell(Pos pos);
         void roll();
         void freeze_pet(size_t index);
         void freeze_object(size_t index);
@@ -58,6 +57,7 @@ class Game {
         Team* adv_team;
         FIGHT_STATUS fight_status;
 
+        void combine_from_shop(size_t shop_index, Pos pet_pos);
         void check_money(std::string action, int amount) const;
 };
 

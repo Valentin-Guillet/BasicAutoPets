@@ -11,7 +11,7 @@ class Cricket : public Pet {
         Cricket(Team* team, Shop* shop);
         ~Cricket() override;
 
-        void on_faint() override;
+        void on_faint(Pos pos) override;
 };
 
 

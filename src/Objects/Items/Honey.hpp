@@ -11,7 +11,7 @@ class Honey : public Object {
         Honey(Team* team, Shop* shop);
         ~Honey() override;
 
-        void on_faint() override;
+        void on_faint(Pos pos) override;
 };
 
 #endif // HEADER_HONEY

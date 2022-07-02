@@ -52,8 +52,8 @@ void Game::begin_turn() {
     turn++;
 }
 
-void Game::move(size_t src_index, size_t dst_index) {
-    team->move(src_index, dst_index);
+void Game::move(Pos src_pos, Pos dst_pos) {
+    team->move(src_pos, dst_pos);
 }
 
 void Game::end_turn() {
@@ -97,40 +97,35 @@ bool Game::in_fight() const {
     return fight_status == FIGHT_STATUS::Fighting;
 }
 
-void Game::buy_pet(size_t index) {
+void Game::buy_pet(Pos src_pos, Pos dst_pos) {
     check_money("BUY_PET", 3);
+    if (team->has_pet(dst_pos)) {
+        combine_from_shop(src_pos, dst_pos);
+        return;
+    }
+
     if (team->get_nb_pets() == 5)
         throw InvalidAction("[BUY_PET]: already have 5 pets in the team !");
-
-    Pet* pet = shop->buy_pet(index);
-    team->add(pet);
+    Pet* pet = shop->buy_pet(src_pos);
+    team->add(pet, dst_pos);
     money -= 3;
 }
 
-void Game::combine_shop(size_t index_shop, size_t index_team) {
-    check_money("COMBINE_SHOP", 3);
-    std::string shop_pet_name = shop->get_pet_name(index_shop);
-    team->can_combine(index_team, shop_pet_name);
-
-    Pet* pet = shop->buy_pet(index_shop);
-    team->combine(index_team, pet);
-    money -= 3;
-}
-
-void Game::combine_team(size_t src_index, size_t dst_index) {
-    team->combine(src_index, dst_index);
-}
-
-void Game::sell(size_t index) {
-    money += team->sell(index);
-}
-
-void Game::buy_object(size_t index, size_t index_target) {
-    int cost = shop->get_cost_object(index);
+void Game::buy_object(size_t obj_index, Pos pet_pos) {
+    int cost = shop->get_cost_object(obj_index);
     check_money("BUY_OBJECT", cost);
 
-    shop->buy_object(index, index_target);
+    size_t pet_index = team->pos_to_index(pet_pos);
+    shop->buy_object(obj_index, pet_index);
     money -= cost;
+}
+
+void Game::combine(Pos src_pos, Pos dst_pos) {
+    team->combine(src_pos, dst_pos);
+}
+
+void Game::sell(Pos pos) {
+    money += team->sell(pos);
 }
 
 void Game::roll() {
@@ -222,6 +217,15 @@ void Game::cheat() {
     money += 1000;
 }
 
+
+void Game::combine_from_shop(size_t shop_index, Pos pet_pos) {
+    std::string shop_pet_name = shop->get_pet_name(shop_index);
+    team->can_combine(pet_pos, shop_pet_name);
+
+    Pet* pet = shop->buy_pet(shop_index);
+    team->combine(pet_pos, pet);
+    money -= 3;
+}
 
 void Game::check_money(std::string action, int amount) const {
     if (money >= amount)

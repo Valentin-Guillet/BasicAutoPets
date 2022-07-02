@@ -13,6 +13,9 @@
 class Game;
 class Team;
 using TeamList = std::unordered_map<int, std::vector<Team*>>;
+
+using Pos = size_t;
+
 enum class FIGHT_STATUS { None, Fighting, Win, Loss, Draw };
 
 class Team {
@@ -33,20 +36,22 @@ class Team {
 
         size_t get_nb_pets() const;
         std::vector<Pet*>& get_pets();
-        void can_combine(size_t index, std::string other_pet) const;
-        void can_combine(size_t src_index, size_t dst_index) const;
+        void can_combine(Pos pos, std::string other_pet) const;
+        void can_combine(Pos src_pos, Pos dst_pos) const;
 
         void begin_turn();
-        void move(size_t src_index, size_t dst_index);
+        void move(Pos src_pos, Pos dst_pos);
         void end_turn();
         void reset();
 
-        void add(Pet* new_pet);
-        void combine(size_t index, Pet* other_pet, bool activate_on_buy=true);
-        void combine(size_t src_index, size_t dst_index);
-        int sell(size_t index);
+        size_t pos_to_index(Pos pos) const;
+        bool has_pet(Pos pos) const;
+        void add(Pet* new_pet, Pos pos);
+        void combine(Pos pos, Pet* other_pet, bool activate_on_buy=true);
+        void combine(Pos src_pos, Pos dst_pos);
+        int sell(Pos pos);
 
-        void summon(Pet* base_pet, Pet* new_pet);
+        void summon(size_t index, Pet* new_pet);
         void faint(size_t index);
 
         void give_object(size_t index, Object* obj);
@@ -66,12 +71,11 @@ class Team {
         int turn;
         bool in_fight = false;
         std::vector<Pet*> pets;
-        std::vector<size_t> order;
+        std::vector<Pos> order;
 
         void sort();
-        void append_pet(Pet* new_pet);
+        void append_pet(Pet* new_pet, Pos pos, bool insert=false);
         void remove_pet(size_t index);
-        void check_size(std::string action, size_t index) const;
         void remove_dead_pets();
 };
 

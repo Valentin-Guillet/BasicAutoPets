@@ -20,7 +20,7 @@ Ant::Ant(Team* team, Shop* shop) : Pet("Ant", team, shop) {
 
 Ant::~Ant() { }
 
-void Ant::on_faint() {
+void Ant::on_faint(Pos pos) {
     utils::vector_logs.push_back(name + " fainting !");
 
     std::vector<Pet*> team_pets = team->get_pets();
@@ -36,5 +36,5 @@ void Ant::on_faint() {
         target->buff(2*lvl, 1*lvl, false);
     }
 
-    Pet::on_faint();
+    Pet::on_faint(pos);
 }

@@ -42,7 +42,7 @@ class Pet {
         virtual void on_buy() { };
         virtual void on_sell() { };
         virtual void on_hurt() { };
-        virtual void on_faint();
+        virtual void on_faint(size_t index);
         virtual void on_knockout() { };
         virtual void on_object(Object* obj) { };
         virtual void on_object_bought(size_t index, Object* obj) { };

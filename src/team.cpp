@@ -23,12 +23,13 @@ Team* Team::unserialize(Game* game, std::string team_str) {
     new_team->turn = std::stoi(team_str.substr(0, index));
     team_str = team_str.substr(index);
 
+    Pos pos = 0;
     while (!team_str.empty()) {
         index = team_str.find(')');
         std::string pet_str = team_str.substr(2, index-2);
         team_str = team_str.substr(index+1);
 
-        new_team->append_pet(Pet::unserialize(new_team, pet_str));
+        new_team->append_pet(Pet::unserialize(new_team, pet_str), pos++);
     }
     new_team->reset();
 
@@ -51,8 +52,10 @@ Team* Team::copy_team(Team const* team) {
     Team* new_team = new Team(team->game);
     new_team->turn = team->turn;
 
-    for (Pet* pet : team->pets)
-        new_team->append_pet(Pet::copy_pet(pet, new_team, nullptr));
+    for (size_t i=0; i<team->pets.size(); i++) {
+        Pet* new_pet = Pet::copy_pet(team->pets[i], new_team, nullptr);
+        new_team->append_pet(new_pet, team->order[i]);
+    }
 
     return new_team;
 }
@@ -86,16 +89,11 @@ FIGHT_STATUS Team::fight_step(Team* team, Team* adv_team) {
         pet->attacks(adv_pet);
     }
 
-    if (!pet->is_alive()) {
-        pet->on_faint();
-        delete pet;
-        team->remove_pet(0);
-    }
-    if (!adv_pet->is_alive()) {
-        adv_pet->on_faint();
-        delete adv_pet;
-        adv_team->remove_pet(0);
-    }
+    if (!pet->is_alive())
+        team->faint(0);
+
+    if (!adv_pet->is_alive())
+        adv_team->faint(0);
 
     return Team::check_end_of_battle(team, adv_team);
 }
@@ -116,18 +114,18 @@ std::vector<Pet*>& Team::get_pets() {
     return pets;
 }
 
-void Team::can_combine(size_t index, std::string other_pet) const {
-    check_size("COMBINE", index);
+void Team::can_combine(Pos pos, std::string other_pet) const {
+    size_t index = pos_to_index(pos);
     if (pets[index]->name != other_pet)
         throw InvalidAction("[COMBINE]: trying to combine different pets");
 }
 
-void Team::can_combine(size_t src_index, size_t dst_index) const {
-    check_size("COMBINE", src_index);
-    if (src_index == dst_index)
-        throw InvalidAction("[COMBINE]: same source (" + std::to_string(src_index+1) + ")" + \
-                            " and destination (" + std::to_string(dst_index+1) + ")");
-    can_combine(dst_index, pets[src_index]->name);
+void Team::can_combine(Pos src_pos, Pos dst_pos) const {
+    if (src_pos == dst_pos)
+        throw InvalidAction("[COMBINE]: same source (" + std::to_string(src_pos+1) + ")" + \
+                            " and destination (" + std::to_string(dst_pos+1) + ")");
+    size_t src_index = pos_to_index(src_pos);
+    can_combine(dst_pos, pets[src_index]->name);
 }
 
 void Team::begin_turn() {
@@ -136,12 +134,12 @@ void Team::begin_turn() {
         pet->on_start_turn();
 }
 
-void Team::move(size_t src_index, size_t dst_index) {
+void Team::move(Pos src_pos, Pos dst_pos) {
     for (size_t i=0; i<order.size(); i++) {
-        if (order[i] == src_index)
-            order[i] = dst_index;
-        else if (order[i] == dst_index)
-            order[i] = src_index;
+        if (order[i] == src_pos)
+            order[i] = dst_pos;
+        else if (order[i] == dst_pos)
+            order[i] = src_pos;
     }
     sort();
 }
@@ -156,14 +154,31 @@ void Team::reset() {
         pet->reset_stats();
 }
 
-void Team::add(Pet* new_pet) {
+size_t Team::pos_to_index(Pos pos) const {
+    for (size_t i=0; i<pets.size(); i++) {
+        if (order[i] == pos)
+            return i;
+    }
+    throw InvalidAction("No pet in team at position " + std::to_string(pos+1));
+}
+
+bool Team::has_pet(Pos pos) const {
+    for (size_t i=0; i<pets.size(); i++) {
+        if (order[i] == pos)
+            return true;
+    }
+    return false;
+}
+
+void Team::add(Pet* new_pet, Pos pos) {
     new_pet->on_buy();
     for (Pet* pet : pets)
         pet->on_friend_bought(new_pet);
-    append_pet(new_pet);
+    append_pet(new_pet, pos);
 }
 
-void Team::combine(size_t index, Pet* other_pet, bool activate_on_buy) {
+void Team::combine(Pos pos, Pet* other_pet, bool activate_on_buy) {
+    size_t index = pos_to_index(pos);
     Pet* dst = pets[index];
     dst->combine(other_pet);
     if (activate_on_buy)
@@ -171,16 +186,16 @@ void Team::combine(size_t index, Pet* other_pet, bool activate_on_buy) {
     delete other_pet;
 }
 
-void Team::combine(size_t src_index, size_t dst_index) {
-    can_combine(src_index, dst_index);
+void Team::combine(Pos src_pos, Pos dst_pos) {
+    can_combine(src_pos, dst_pos);
 
-    combine(dst_index, pets[src_index], false);
+    size_t src_index = pos_to_index(src_pos);
+    combine(dst_pos, pets[src_index], false);
     remove_pet(src_index);
 }
 
-int Team::sell(size_t index) {
-    check_size("SELL_PET", index);
-
+int Team::sell(Pos pos) {
+    size_t index = pos_to_index(pos);
     Pet* pet = pets[index];
     int lvl = pet->get_level();
     remove_pet(index);
@@ -191,7 +206,7 @@ int Team::sell(size_t index) {
     return lvl;
 }
 
-void Team::summon(Pet* base_pet, Pet* new_pet) {
+void Team::summon(Pos pos, Pet* new_pet) {
     utils::vector_logs.push_back("New pet summoned: " + new_pet->name);
     if (pets.size() >= 6) {
         utils::vector_logs.push_back("Already 5 pets in team, aborting");
@@ -199,9 +214,7 @@ void Team::summon(Pet* base_pet, Pet* new_pet) {
         return;
     }
 
-    auto it = std::find(pets.begin(), pets.end(), base_pet);
-    pets.insert(it+1, new_pet);
-
+    append_pet(new_pet, pos, true);
     for (Pet* pet : pets) {
         if (pet == new_pet)
             continue;
@@ -210,14 +223,14 @@ void Team::summon(Pet* base_pet, Pet* new_pet) {
 }
 
 void Team::faint(size_t index) {
-    pets[index]->on_faint();
-    delete pets[index];
+    Pet* pet = pets[index];
+    Pos pos = order[index];
     remove_pet(index);
+    pet->on_faint(pos);
+    delete pet;
 }
 
 void Team::give_object(size_t index, Object* obj) {
-    check_size("GIVE_OBJECT", index);
-
     if (obj->type == ObjType::ITEM)
         pets[index]->equip_object(obj);
 
@@ -248,9 +261,9 @@ std::tuple<int, std::string, std::string> Team::get_fight_str(Team* other_team) 
         }
 
         if (!pet->is_alive())
-            pet->on_faint();
+            pet->on_faint(0);
         if (!other_pet->is_alive())
-            other_pet->on_faint();
+            other_pet->on_faint(0);
     }
 
     int output;
@@ -355,7 +368,7 @@ void Team::sort() {
         return;
 
     std::vector<Pet*> ordered_pets;
-    std::vector<size_t> new_order;
+    std::vector<Pos> new_order;
     for (size_t i=0; i<5; i++) {
         for (size_t j=0; j<pets.size(); j++) {
             if (order[j] == i) {
@@ -369,14 +382,18 @@ void Team::sort() {
     order = new_order;
 }
 
-void Team::append_pet(Pet* new_pet) {
-    size_t index;
-    for (index=0; index<pets.size(); index++) {
-        if (order[index] > index)
-            break;
+void Team::append_pet(Pet* new_pet, Pos pos, bool insert) {
+    if (has_pet(pos)) {
+        if (!insert)
+            throw InvalidAction("[APPEND_PET] Already got pet at position " + std::to_string(pos+1));
+
+        for (size_t i=0; i<pets.size(); i++) {
+            if (order[i] >= pos)
+                order[i]++;
+        }
     }
     pets.push_back(new_pet);
-    order.push_back(index);
+    order.push_back(pos);
     sort();
 }
 
@@ -385,21 +402,12 @@ void Team::remove_pet(size_t index) {
     order.erase(order.begin() + index);
 }
 
-void Team::check_size(std::string action, size_t index) const {
-    if (index < pets.size()) return;
-    throw InvalidAction("[" + action + "]: no pet in team at index " + std::to_string(index+1));
-}
-
 void Team::remove_dead_pets() {
     size_t i = 0;
     while (i < pets.size()) {
-        Pet* pet = pets[i];
-        if (!pet->is_alive()) {
-            pet->on_faint();
-            delete pet;
-            remove_pet(i);
-        } else {
+        if (!pets[i]->is_alive())
+            faint(i);
+        else
             i++;
-        }
     }
 }

@@ -11,7 +11,7 @@ class Ant : public Pet {
         Ant(Team* team, Shop* shop);
         ~Ant() override;
 
-        void on_faint() override;
+        void on_faint(Pos pos) override;
 };
 
 
