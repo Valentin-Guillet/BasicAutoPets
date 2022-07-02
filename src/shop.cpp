@@ -2,7 +2,6 @@
 #include "shop.hpp"
 
 #include <algorithm>
-#include <iostream>
 
 #include "pet.hpp"
 #include "utils.hpp"
@@ -22,9 +21,6 @@ Shop* Shop::unserialize(Team* team, std::string shop_str) {
         index = pets_str.find(')');
         std::string pet_str = pets_str.substr(2, index-2);
         pets_str = pets_str.substr(index+1);
-
-        if (pet_str == "Empty")
-            continue;
         new_shop->pets.push_back(Pet::unserialize(team, pet_str));
     }
 
@@ -47,8 +43,6 @@ Shop* Shop::unserialize(Team* team, std::string shop_str) {
             obj_str = objects_str.substr(0, index);
             objects_str = objects_str.substr(index+1);
         }
-        if (obj_str == "Empty")
-            continue;
         new_shop->objects.push_back(Object::create_new_object(obj_str, team, new_shop));
     }
 
@@ -202,24 +196,18 @@ void Shop::upgrade(int attack, int life, bool tmp) {
 std::string Shop::serialize() const {
     std::string shop_str;
 
-    for (Pet* pet : pets) {
-        if (pet)
-            shop_str += pet->serialize() + " ";
-        else
-            shop_str += "(Empty) ";
-    }
+    for (Pet* pet : pets)
+        shop_str += pet->serialize() + " ";
 
     shop_str += "/ ";
     for (bool frozen : frozen_pets)
         shop_str += (frozen ? "1" : "0");
 
     shop_str += " / ";
-    for (Object* obj : objects) {
-        if (obj)
-            shop_str += obj->name + " ";
-        else
-            shop_str += "Empty ";
-    }
+    for (Object* obj : objects)
+        shop_str += obj->name + " ";
+    if (objects.empty())
+        shop_str += " ";
 
     shop_str += "/ ";
     for (bool frozen : frozen_objects)
