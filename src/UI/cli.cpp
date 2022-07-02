@@ -94,7 +94,7 @@ bool CLI::act() {
     std::string line;
     std::cout << "What do you want to do ?\n";
     std::getline(std::cin, line);
-    if (line.empty()) {
+    if (line.empty() || line.find_first_not_of(' ') == std::string::npos) {
         curr_cmd = prev_cmd;
     } else {
         get_curr_cmd(line);

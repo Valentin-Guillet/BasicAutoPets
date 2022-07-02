@@ -244,8 +244,9 @@ void Team::faint(size_t index) {
 void Team::give_object(size_t index, Object* obj) {
     if (obj->type == ObjType::ITEM)
         pets[index]->equip_object(obj);
+    else if (!obj->target_all && obj->name != "Pill")
+        pets[index]->on_object(obj);
 
-    pets[index]->on_object(obj);
     for (size_t i=0; i<pets.size(); i++)
         pets[i]->on_object_bought(index, obj);
 }
