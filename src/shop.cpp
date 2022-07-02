@@ -246,13 +246,9 @@ Object* Shop::create_object() {
 void Shop::check_size_pets(std::string action, size_t index) const {
     if (index >= pets.size())
         throw InvalidAction("[" + action + "]: invalid shop index " + std::to_string(index+1));
-    if (!pets[index])
-        throw InvalidAction("[" + action + "]: no pet left in shop at index " + std::to_string(index+1));
 }
 
 void Shop::check_size_objects(std::string action, size_t index) const {
     if (index >= objects.size())
         throw InvalidAction("[" + action + "]: invalid shop index " + std::to_string(index+1));
-    if (!objects[index])
-        throw InvalidAction("[" + action + "]: no object left in shop at index " + std::to_string(index+1));
 }
