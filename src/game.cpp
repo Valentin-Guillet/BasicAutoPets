@@ -168,7 +168,7 @@ void Game::unserialize(std::string game_str) {
     std::string line;
 
     std::getline(stream, line, '\n');
-    int index = line.find(' ');
+    size_t index = line.find(' ');
     turn = std::stoi(line.substr(0, index));
     line = line.substr(index+1);
 

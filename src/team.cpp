@@ -13,9 +13,9 @@ TeamList Team::team_list;
 
 Team* Team::unserialize(Game* game, std::string team_str) {
     Team* new_team = new Team(game);
-    int index = team_str.find(' ');
+    size_t index = team_str.find(' ');
 
-    if (index == -1 || index == (int)team_str.size() - 1) {
+    if (index == std::string::npos || index == team_str.size() - 1) {
         new_team->turn = std::stoi(team_str);
         return new_team;
     }
@@ -23,9 +23,9 @@ Team* Team::unserialize(Game* game, std::string team_str) {
     new_team->turn = std::stoi(team_str.substr(0, index));
     team_str = team_str.substr(index);
 
-    int order_index = team_str.find('/');
+    size_t order_index = team_str.find('/');
     std::string order_str;
-    if (order_index != -1) {
+    if (order_index != std::string::npos) {
         order_str = team_str.substr(order_index+2);
         team_str = team_str.substr(0, order_index-1);
     }

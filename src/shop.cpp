@@ -11,7 +11,7 @@
 Shop* Shop::unserialize(Team* team, std::string shop_str) {
     Shop* new_shop = new Shop(team);
 
-    int index = shop_str.find(' ');
+    size_t index = shop_str.find(' ');
     new_shop->turn = std::stoi(shop_str.substr(0, index));
     shop_str = shop_str.substr(index);
 
@@ -40,7 +40,7 @@ Shop* Shop::unserialize(Team* team, std::string shop_str) {
     while (!objects_str.empty()) {
         index = objects_str.find(' ');
         std::string obj_str;
-        if (index == -1) {
+        if (index == std::string::npos) {
             obj_str = objects_str;
             objects_str.clear();
         } else {
