@@ -6,23 +6,27 @@
 #include "game.hpp"
 
 
-using Action = int;
+const size_t ACTION_SIZE = 89;
+const size_t STATE_SIZE = 0;
 
-const int ACTION_SIZE = 99;
-const int STATE_SIZE = 0;
+using Action = size_t;
+using State = int;
+using Mask = std::array<bool, ACTION_SIZE>;
 
 class Environment {
     public:
-        Environment(Game* game);
+        Environment();
         ~Environment();
 
-        void get_state() const;
-        void take_action(Action action);
+        void reset();
+        bool is_done() const;
+        State get_state() const;
+        int step(Action action);
 
-    private:
+        Mask get_mask() const;
+
         Game* game;
-
-        std::array<bool, ACTION_SIZE> get_mask() const;
+    private:
 };
 
 #endif // HEADER_INTERFACE_ENVIRONMENT

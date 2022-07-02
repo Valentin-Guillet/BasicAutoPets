@@ -6,7 +6,15 @@
 
 # ToDo
 
-- Pet serialize -> tmp buffs ?
+- Env
+  + Compute mask
+- Agents
+  + Agent::save_action() -> saves pair (state, action) in buffer
+  + Agent::write_to_file() -> saves this buffer to a file for debug purposes
+- RandomAgent
+  + Option to be totally random or categorically random
+- Memory leak check
+- Rule-based Agent
 
 # Order
 
