@@ -124,15 +124,15 @@ void Pet::reset_stats() {
 }
 
 void Pet::equip_object(Object* obj) {
-    if (obj)
-        utils::vector_logs.push_back("Giving " + obj->name + " to " + name);
+    if (!obj)
+        return;
+    utils::vector_logs.push_back("Giving " + obj->name + " to " + name);
 
-    if (object)
-        delete object;
+    delete object;
+    object = nullptr;
 
-    object = obj;
-    if (obj)
-        object->set_pet(this);
+    object = Object::copy_object(obj, team, shop);
+    object->set_pet(this);
 }
 
 void Pet::attacks(Pet* adv_pet) const {
@@ -180,8 +180,7 @@ void Pet::combine(Pet* const other) {
     int new_life = std::max(life, other->life) + min_xp + 1;
     buff(new_attack - attack, new_life - life, false);
     gain_xp(other->xp+1);
-    if (other->object)
-        equip_object(other->object);
+    equip_object(other->object);
 }
 
 

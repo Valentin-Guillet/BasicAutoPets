@@ -20,6 +20,7 @@ class Object {
     public:
         static Object* create_new_object(std::string name, Team* team, Shop* shop);
         static Object* create_random_object(Team* team, Shop* shop, int max_tier);
+        static Object* copy_object(Object const* obj, Team* team, Shop* shop);
 
         Object(std::string name, Team* team, Shop* shop, ObjType type);
         virtual ~Object();
