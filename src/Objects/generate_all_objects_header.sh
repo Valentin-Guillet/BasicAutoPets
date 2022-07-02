@@ -1,8 +1,8 @@
 #!/bin/bash
 
 cat > all_objects.hpp << EOF
-#ifndef HEADER_ALL_OBJECTS
-#define HEADER_ALL_OBJECTS
+#ifndef HEADER_OBJECTS_ALLOBJECTS
+#define HEADER_OBJECTS_ALLOBJECTS
 
 #include <string>
 #include <utility>
@@ -48,7 +48,7 @@ cat >> all_objects.hpp << EOF
 };
 
 
-#endif // HEADER_ALL_OBJECTS
+#endif // HEADER_OBJECTS_ALLOBJECTS
 EOF
 
 

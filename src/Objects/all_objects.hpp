@@ -1,5 +1,5 @@
-#ifndef HEADER_ALL_OBJECTS
-#define HEADER_ALL_OBJECTS
+#ifndef HEADER_OBJECTS_ALL_OBJECTS
+#define HEADER_OBJECTS_ALL_OBJECTS
 
 #include <string>
 #include <utility>
@@ -29,4 +29,4 @@ namespace AllObjects {
 };
 
 
-#endif // HEADER_ALL_OBJECTS
+#endif // HEADER_OBJECTS_ALL_OBJECTS

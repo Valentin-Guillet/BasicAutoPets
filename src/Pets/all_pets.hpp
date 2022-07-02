@@ -1,5 +1,5 @@
-#ifndef HEADER_ALL_PETS
-#define HEADER_ALL_PETS
+#ifndef HEADER_PETS_ALLPETS
+#define HEADER_PETS_ALLPETS
 
 #include <string>
 #include <utility>
@@ -49,4 +49,4 @@ namespace AllPets {
 };
 
 
-#endif // HEADER_ALL_PETS
+#endif // HEADER_PETS_ALLPETS

@@ -1,5 +1,5 @@
-#ifndef HEADER_APPLE
-#define HEADER_APPLE
+#ifndef HEADER_OBJECTS_APPLE
+#define HEADER_OBJECTS_APPLE
 
 #include "object.hpp"
 #include "shop.hpp"
@@ -15,4 +15,4 @@ class Apple : public Object {
 };
 
 
-#endif // HEADER_APPLE
+#endif // HEADER_OBJECTS_APPLE

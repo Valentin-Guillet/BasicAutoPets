@@ -1,5 +1,5 @@
-#ifndef HEADER_ANT
-#define HEADER_ANT
+#ifndef HEADER_PETS_ANT
+#define HEADER_PETS_ANT
 
 #include "pet.hpp"
 #include "shop.hpp"
@@ -15,4 +15,4 @@ class Ant : public Pet {
 };
 
 
-#endif // HEADER_ANT
+#endif // HEADER_PETS_ANT

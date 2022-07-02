@@ -1,5 +1,5 @@
-#ifndef HEADER_LADYBUG
-#define HEADER_LADYBUG
+#ifndef HEADER_PETS_LADYBUG
+#define HEADER_PETS_LADYBUG
 
 #include "pet.hpp"
 #include "shop.hpp"
@@ -15,4 +15,4 @@ class LadyBug : public Pet {
 };
 
 
-#endif // HEADER_LADYBUG
+#endif // HEADER_PETS_LADYBUG

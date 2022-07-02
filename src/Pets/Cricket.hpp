@@ -1,5 +1,5 @@
-#ifndef HEADER_CRICKET
-#define HEADER_CRICKET
+#ifndef HEADER_PETS_CRICKET
+#define HEADER_PETS_CRICKET
 
 #include "pet.hpp"
 #include "shop.hpp"
@@ -15,4 +15,4 @@ class Cricket : public Pet {
 };
 
 
-#endif // HEADER_CRICKET
+#endif // HEADER_PETS_CRICKET

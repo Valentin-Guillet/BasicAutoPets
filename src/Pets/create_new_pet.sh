@@ -28,8 +28,8 @@ EOF
 
 
 cat > $name.hpp << EOF
-#ifndef HEADER_${name^^}
-#define HEADER_${name^^}
+#ifndef HEADER_PETS_${name^^}
+#define HEADER_PETS_${name^^}
 
 #include "pet.hpp"
 #include "shop.hpp"
@@ -44,5 +44,5 @@ class $name : public Pet {
 };
 
 
-#endif // HEADER_${name^^}
+#endif // HEADER_PETS_${name^^}
 EOF

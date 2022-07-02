@@ -1,5 +1,5 @@
-#ifndef HEADER_CUPCAKE
-#define HEADER_CUPCAKE
+#ifndef HEADER_OBJECTS_CUPCAKE
+#define HEADER_OBJECTS_CUPCAKE
 
 #include "object.hpp"
 #include "shop.hpp"
@@ -15,4 +15,4 @@ class Cupcake : public Object {
 };
 
 
-#endif // HEADER_CUPCAKE
+#endif // HEADER_OBJECTS_CUPCAKE

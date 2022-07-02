@@ -1,8 +1,8 @@
 #!/bin/bash
 
 cat > all_pets.hpp << EOF
-#ifndef HEADER_ALL_PETS
-#define HEADER_ALL_PETS
+#ifndef HEADER_PETS_ALLPETS
+#define HEADER_PETS_ALLPETS
 
 #include <string>
 #include <utility>
@@ -44,7 +44,7 @@ cat >> all_pets.hpp << EOF
 };
 
 
-#endif // HEADER_ALL_PETS
+#endif // HEADER_PETS_ALLPETS
 EOF
 
 

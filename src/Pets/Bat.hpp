@@ -1,5 +1,5 @@
-#ifndef HEADER_BAT
-#define HEADER_BAT
+#ifndef HEADER_PETS_BAT
+#define HEADER_PETS_BAT
 
 #include "pet.hpp"
 #include "shop.hpp"
@@ -15,4 +15,4 @@ class Bat : public Pet {
 };
 
 
-#endif // HEADER_BAT
+#endif // HEADER_PETS_BAT

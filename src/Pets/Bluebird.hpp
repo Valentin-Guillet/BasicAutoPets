@@ -1,5 +1,5 @@
-#ifndef HEADER_BLUEBIRD
-#define HEADER_BLUEBIRD
+#ifndef HEADER_PETS_BLUEBIRD
+#define HEADER_PETS_BLUEBIRD
 
 #include "pet.hpp"
 #include "shop.hpp"
@@ -15,4 +15,4 @@ class Bluebird : public Pet {
 };
 
 
-#endif // HEADER_BLUEBIRD
+#endif // HEADER_PETS_BLUEBIRD

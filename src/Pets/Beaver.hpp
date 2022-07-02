@@ -1,5 +1,5 @@
-#ifndef HEADER_BEAVER
-#define HEADER_BEAVER
+#ifndef HEADER_PETS_BEAVER
+#define HEADER_PETS_BEAVER
 
 #include "pet.hpp"
 #include "shop.hpp"
@@ -15,4 +15,4 @@ class Beaver : public Pet {
 };
 
 
-#endif // HEADER_BEAVER
+#endif // HEADER_PETS_BEAVER

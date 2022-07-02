@@ -1,5 +1,5 @@
-#ifndef HEADER_ZOMBIECRICKET
-#define HEADER_ZOMBIECRICKET
+#ifndef HEADER_PETS_ZOMBIECRICKET
+#define HEADER_PETS_ZOMBIECRICKET
 
 #include "pet.hpp"
 #include "shop.hpp"
@@ -14,4 +14,4 @@ class ZombieCricket : public Pet {
 };
 
 
-#endif // HEADER_ZOMBIECRICKET
+#endif // HEADER_PETS_ZOMBIECRICKET

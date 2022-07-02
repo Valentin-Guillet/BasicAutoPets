@@ -1,5 +1,5 @@
-#ifndef HEADER_HONEY
-#define HEADER_HONEY
+#ifndef HEADER_OBJECTS_HONEY
+#define HEADER_OBJECTS_HONEY
 
 #include "object.hpp"
 #include "shop.hpp"
@@ -14,4 +14,4 @@ class Honey : public Object {
         void on_faint(Pos pos) override;
 };
 
-#endif // HEADER_HONEY
+#endif // HEADER_OBJECTS_HONEY

@@ -1,5 +1,5 @@
-#ifndef HEADER_OTTER
-#define HEADER_OTTER
+#ifndef HEADER_PETS_OTTER
+#define HEADER_PETS_OTTER
 
 #include "pet.hpp"
 #include "shop.hpp"
@@ -15,4 +15,4 @@ class Otter : public Pet {
 };
 
 
-#endif // HEADER_OTTER
+#endif // HEADER_PETS_OTTER

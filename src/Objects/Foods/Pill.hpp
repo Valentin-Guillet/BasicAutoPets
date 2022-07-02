@@ -1,5 +1,5 @@
-#ifndef HEADER_PILL
-#define HEADER_PILL
+#ifndef HEADER_OBJECTS_PILL
+#define HEADER_OBJECTS_PILL
 
 #include "object.hpp"
 #include "shop.hpp"
@@ -15,4 +15,4 @@ class Pill : public Object {
 };
 
 
-#endif // HEADER_PILL
+#endif // HEADER_OBJECTS_PILL

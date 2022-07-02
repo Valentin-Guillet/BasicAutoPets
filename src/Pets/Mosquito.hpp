@@ -1,5 +1,5 @@
-#ifndef HEADER_MOSQUITO
-#define HEADER_MOSQUITO
+#ifndef HEADER_PETS_MOSQUITO
+#define HEADER_PETS_MOSQUITO
 
 #include "pet.hpp"
 #include "shop.hpp"
@@ -15,4 +15,4 @@ class Mosquito : public Pet {
 };
 
 
-#endif // HEADER_MOSQUITO
+#endif // HEADER_PETS_MOSQUITO

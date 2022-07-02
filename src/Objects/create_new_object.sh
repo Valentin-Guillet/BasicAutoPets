@@ -19,8 +19,8 @@ EOF
 
 
 cat > $dst/$name.hpp << EOF
-#ifndef HEADER_${name^^}
-#define HEADER_${name^^}
+#ifndef HEADER_OBJECTS_${name^^}
+#define HEADER_OBJECTS_${name^^}
 
 #include "object.hpp"
 #include "shop.hpp"
@@ -35,5 +35,5 @@ class $name : public Object {
 };
 
 
-#endif // HEADER_${name^^}
+#endif // HEADER_OBJECTS_${name^^}
 EOF

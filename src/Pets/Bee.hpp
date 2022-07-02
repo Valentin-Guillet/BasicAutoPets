@@ -1,5 +1,5 @@
-#ifndef HEADER_BEE
-#define HEADER_BEE
+#ifndef HEADER_PETS_BEE
+#define HEADER_PETS_BEE
 
 #include "pet.hpp"
 #include "shop.hpp"
@@ -13,4 +13,4 @@ class Bee : public Pet {
 };
 
 
-#endif // HEADER_BEE
+#endif // HEADER_PETS_BEE

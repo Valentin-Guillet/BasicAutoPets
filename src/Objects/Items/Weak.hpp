@@ -1,5 +1,5 @@
-#ifndef HEADER_WEAK
-#define HEADER_WEAK
+#ifndef HEADER_OBJECTS_WEAK
+#define HEADER_OBJECTS_WEAK
 
 #include "object.hpp"
 #include "shop.hpp"
@@ -15,4 +15,4 @@ class Weak : public Object {
 };
 
 
-#endif // HEADER_WEAK
+#endif // HEADER_OBJECTS_WEAK

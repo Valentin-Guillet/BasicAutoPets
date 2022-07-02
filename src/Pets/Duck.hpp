@@ -1,5 +1,5 @@
-#ifndef HEADER_DUCK
-#define HEADER_DUCK
+#ifndef HEADER_PETS_DUCK
+#define HEADER_PETS_DUCK
 
 #include "pet.hpp"
 #include "shop.hpp"
@@ -15,4 +15,4 @@ class Duck : public Pet {
 };
 
 
-#endif // HEADER_DUCK
+#endif // HEADER_PETS_DUCK
