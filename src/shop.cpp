@@ -183,10 +183,9 @@ void Shop::freeze_object(size_t index) {
 
 void Shop::upgrade(int attack, int life, bool tmp) {
     utils::vector_logs.push_back("Upgrading shop by +" + std::to_string(attack) + "/+" + std::to_string(life));
-    for (Pet* pet : pets) {
-        if (pet)
-            pet->buff(attack, life, false);
-    }
+    for (Pet* pet : pets)
+        pet->buff(attack, life, false);
+
     if (!tmp) {
         attack_buff += attack;
         life_buff += life;
