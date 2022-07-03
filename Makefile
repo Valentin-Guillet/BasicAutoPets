@@ -18,7 +18,7 @@ AGENT_OBJS := build/main_agents.o $(filter-out build/main.o, $(OBJECTS))
 TEST_OBJ := $(filter-out build/main.o, $(OBJECTS))
 TEST_OBJ += test/main_test_battles.cpp
 
-PETS_SOURCES := $(shell find src/Pets/ -name *.cpp ! -name all_pets.cpp)
+PETS_HEADERS := $(shell find src/Pets/ -name *.hpp)
 
 
 all: main
@@ -54,10 +54,10 @@ build/%.o: src/%.cpp $(HEADERS)
 
 
 # Dependency is here to update file each time a pet file is modified
-src/Pets/all_pets.cpp: $(PETS_SOURCES)
+src/Pets/all_pets.cpp: $(PETS_HEADERS)
 	cd src/Pets && ./generate_all_pets_header.sh
 
-src/Objects/all_objects.cpp: src/Objects/*/*.cpp
+src/Objects/all_objects.cpp: src/Objects/*/*.hpp
 	cd src/Objects && ./generate_all_objects_header.sh
 
 

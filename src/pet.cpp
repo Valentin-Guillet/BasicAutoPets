@@ -218,7 +218,8 @@ std::string Pet::get_random_name(int max_tier, bool strict_tier) {
                  AllPets::PET_LIST.end(),
                  std::back_inserter(names),
                  [min_tier, max_tier](std::pair<int, std::string> p) {
-                    return min_tier <= p.first && p.first <= max_tier;
+                    return (min_tier <= p.first && p.first <= max_tier
+                            && p.second != "sloth");
                  });
 
     return utils::choice(names)[0].second;

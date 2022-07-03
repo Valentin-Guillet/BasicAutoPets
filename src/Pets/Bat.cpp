@@ -9,7 +9,7 @@
 
 Bat::Bat(Team* team, Shop* shop) : Pet("Bat", team, shop) {
     repr = "🦇";
-    id = 13;
+    id = 14;
     pack = PACK_DLC1;
     tier = 2;
     attack = 1;
