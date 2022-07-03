@@ -1,0 +1,89 @@
+ 0 -> Roll
+ 1 -> Buy 0 0
+ 2 -> Buy 0 1
+ 3 -> Buy 0 2
+ 4 -> Buy 0 3
+ 5 -> Buy 0 4
+ 6 -> Buy 1 0
+ 7 -> Buy 1 1
+ 8 -> Buy 1 2
+ 9 -> Buy 1 3
+10 -> Buy 1 4
+11 -> Buy 2 0
+12 -> Buy 2 1
+13 -> Buy 2 2
+14 -> Buy 2 3
+15 -> Buy 2 4
+16 -> Buy 3 0
+17 -> Buy 3 1
+18 -> Buy 3 2
+19 -> Buy 3 3
+20 -> Buy 3 4
+21 -> Buy 4 0
+22 -> Buy 4 1
+23 -> Buy 4 2
+24 -> Buy 4 3
+25 -> Buy 4 4
+26 -> Buy 5 0
+27 -> Buy 5 1
+28 -> Buy 5 2
+29 -> Buy 5 3
+30 -> Buy 5 4
+31 -> Buy 6 0
+32 -> Buy 6 1
+33 -> Buy 6 2
+34 -> Buy 6 3
+35 -> Buy 6 4
+36 -> Sell 0
+37 -> Sell 1
+38 -> Sell 2
+39 -> Sell 3
+40 -> Sell 4
+41 -> Combine 0 1
+42 -> Combine 0 2
+43 -> Combine 0 3
+44 -> Combine 0 4
+45 -> Combine 1 0
+46 -> Combine 1 2
+47 -> Combine 1 3
+48 -> Combine 1 4
+49 -> Combine 2 0
+50 -> Combine 2 1
+51 -> Combine 2 3
+52 -> Combine 2 4
+53 -> Combine 3 0
+54 -> Combine 3 1
+55 -> Combine 3 2
+56 -> Combine 3 4
+57 -> Combine 4 0
+58 -> Combine 4 1
+59 -> Combine 4 2
+60 -> Combine 4 3
+61 -> Swap 0 1
+62 -> Swap 0 2
+63 -> Swap 0 3
+64 -> Swap 0 4
+65 -> Swap 1 0
+66 -> Swap 1 2
+67 -> Swap 1 3
+68 -> Swap 1 4
+69 -> Swap 2 0
+70 -> Swap 2 1
+71 -> Swap 2 3
+72 -> Swap 2 4
+73 -> Swap 3 0
+74 -> Swap 3 1
+75 -> Swap 3 2
+76 -> Swap 3 4
+77 -> Swap 4 0
+78 -> Swap 4 1
+79 -> Swap 4 2
+80 -> Swap 4 3
+81 -> Freeze 0
+82 -> Freeze 1
+83 -> Freeze 2
+84 -> Freeze 3
+85 -> Freeze 4
+86 -> Freeze 5
+87 -> Freeze 6
+88 -> EndTurn

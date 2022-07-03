@@ -1,7 +1,5 @@
-#ifndef HEADER_INTERFACE_RANDOMAGENT
-#define HEADER_INTERFACE_RANDOMAGENT
-
-#include <random>
+#ifndef HEADER_INTERFACE_AGENTS_RANDOM
+#define HEADER_INTERFACE_AGENTS_RANDOM
 
 #include "Interface/Agents/agent.hpp"
 #include "Interface/environment.hpp"
@@ -13,10 +11,7 @@ class RandomAgent : public Agent {
         ~RandomAgent();
 
         Action act(State state, Mask mask) override;
-
-    private:
-        std::mt19937 rng;
 };
 
 
-#endif // HEADER_INTERFACE_RANDOMAGENT
+#endif // HEADER_INTERFACE_AGENTS_RANDOM
