@@ -1,6 +1,9 @@
 
 # Questions
 
+- Does Crab copy less than its own life (i.e. 3) ?
+- Does Dodo gives to dead pets ?
+
 - [Blowfish 3/5] | [Fish 2/3 - Snake 6/6]
   -> Does the blowfish fires ? How many times ? What about when it has 20 hp ?
 
