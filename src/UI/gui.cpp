@@ -153,13 +153,13 @@ bool GUI::take_action() {
 
         case 'd':
             game->save_state();
-            status = "Saving current game state...";
+            status = "Current game state saved !";
             disp_status();
             break;
 
         case 'l':
             game->load_state();
-            status = "Loading game state";
+            status = "Loading saved game state";
             disp_status();
             disp_logs(false);
             refresh();
@@ -341,9 +341,9 @@ void GUI::buy_object(size_t index) {
         return;
     }
     size_t target_index = target - '1';
-    game->buy_object(index, target_index);
-
     std::string target_name = get_team_pet(target_index)->name;
+
+    game->buy_object(index, target_index);
     if (!target_name.empty())
         status = "[BUY]: Giving " + obj_name + " to " + target_name;
 }
@@ -401,7 +401,7 @@ void GUI::disp_game_state() const {
 void GUI::disp_pet(Pet const* pet, int x, int y, bool disp_xp, bool in_shop, bool frozen) const {
     std::string object_name = get_object_repr(pet);
     if (!object_name.empty())
-        mvaddstr(y, x+2, object_name.c_str());
+        mvaddstr(y, x+3, object_name.c_str());
     mvaddstr(y+1, x+3, get_repr(pet).c_str());
     if (in_shop && has_attack_buff(pet))
         attron(A_UNDERLINE);
@@ -511,8 +511,8 @@ void GUI::disp_fight() const {
 
 void GUI::disp_status() const {
     std::string empty_msg(COLS-3, ' ');
-    mvaddstr(21, 1, empty_msg.c_str());
-    mvaddstr(21, 1, status.c_str());
+    mvaddstr(22, 1, empty_msg.c_str());
+    mvaddstr(22, 1, status.c_str());
 }
 
 void GUI::disp_logs(bool clear) const {
