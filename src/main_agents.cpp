@@ -8,19 +8,35 @@
 
 
 int main(int argc, char** argv) {
-    Environment env;
+    bool display = false;
+    for (int i=1; i<argc; i++) {
+        std::string arg(argv[i]);
+        if (arg == "-d" || arg == "--display")
+            display = true;
+    }
 
-    UserInterface* ui = UserInterface::create_ui(env.game, true);
+    Environment env;
+    UserInterface* ui = nullptr;
+    if (display)
+        ui = UserInterface::create_ui(env.game, true);
 
     int total_reward = 0;
-    Agent* agent = Agent::create_agent("random");
-    while (!env.is_done()) {
-        State state = env.get_state();
-        Mask mask = env.get_mask();
-        total_reward += env.step(agent->act(state, mask));
+    Agent* agent = Agent::create_agent("rule_based");
 
-        ui->display_game();
-        /* std::cin.get(); */
+    for (size_t i=0; i<100; i++) {
+        while (!env.is_done()) {
+            State state = env.get_state();
+
+            Mask mask = env.get_mask();
+            Action action = agent->act(state, mask);
+            total_reward += env.step(action);
+
+            if (display) {
+                ui->display_game();
+                std::cin.get();
+            }
+        }
+    env.reset();
     }
 
     std::cout << "Total reward = " << total_reward << std::endl;
