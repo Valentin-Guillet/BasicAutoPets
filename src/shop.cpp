@@ -82,13 +82,13 @@ Shop::~Shop() {
 }
 
 int Shop::get_cost_object(size_t index) const {
-    if (index >= objects.size() || !objects[index])
+    if (index >= objects.size())
         throw InvalidAction("[BUY_OBJECT]: no object at index " + std::to_string(index+1));
     return objects[index]->get_cost();
 }
 
 std::string Shop::get_pet_name(size_t index) const {
-    if (index >= pets.size() || !pets[index])
+    if (index >= pets.size())
         throw InvalidAction("[COMBINE]: no pet in shop at index " + std::to_string(index+1));
     return pets[index]->name;
 }

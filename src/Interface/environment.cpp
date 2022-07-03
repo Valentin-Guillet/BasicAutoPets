@@ -1,8 +1,6 @@
 
 #include "Interface/environment.hpp"
 
-#include <iostream>
-
 #include "utils.hpp"
 
 
@@ -28,7 +26,6 @@ State Environment::get_state() const {
 
 int Environment::step(Action action) {
     game->save_state();
-    std::cout << "[ENV] Taking action " << action << std::endl;
     // Roll
     if (action == 0) {
         game->roll();
@@ -40,8 +37,6 @@ int Environment::step(Action action) {
     if (action < 7 * 5) {
         size_t shop_pos = action / 5;
         size_t team_pos = action % 5;
-
-        std::cout << "Buying from " << shop_pos << " to " << team_pos << std::endl;
 
         size_t nb_pets = game->shop->pets.size();
         if (shop_pos < nb_pets) {
@@ -64,26 +59,26 @@ int Environment::step(Action action) {
 
     // Combine team pets
     if (action < 5 * 4) {
-        int pet_id_1 = action / 4;
-        int pet_id_2 = action % 4;
+        int pet_pos_1 = action / 4;
+        int pet_pos_2 = action % 4;
 
         // Skip when ids are identical (hence the 20 actions instead of 25)
-        pet_id_2 += (pet_id_2 >= pet_id_1);
+        pet_pos_2 += (pet_pos_2 >= pet_pos_1);
 
-        game->combine(pet_id_1, pet_id_2);
+        game->combine(pet_pos_1, pet_pos_2);
         return 0;
     }
     action -= 5 * 4;
 
     // Swap pets
     if (action < 5 * 4) {
-        int pet_id_1 = action / 4;
-        int pet_id_2 = action % 4;
+        int pet_pos_1 = action / 4;
+        int pet_pos_2 = action % 4;
 
         // Skip when ids are identical (hence the 20 actions instead of 25)
-        pet_id_2 += (pet_id_2 >= pet_id_1);
+        pet_pos_2 += (pet_pos_2 >= pet_pos_1);
 
-        game->move(pet_id_1, pet_id_2);
+        game->move(pet_pos_1, pet_pos_2);
         return 0;
     }
     action -= 5 * 4;
@@ -120,41 +115,41 @@ Mask Environment::get_mask() const {
         size_t team_pos = i % 5;
 
         size_t nb_pets = game->shop->pets.size();
-        try {
-            // Buy Pet
-            if (shop_pos < nb_pets) {
-                game->check_money("", 3);
-
-                // Combine
-                if (game->team->has_pet(team_pos)) {
-                    std::string shop_pet_name = game->shop->get_pet_name(shop_pos);
-                    game->team->can_combine(team_pos, shop_pet_name);
-
-                    game->shop->check_size_pets("", shop_pos);
-                }
-
-                // Buy new pet
-                else {
-                    if (game->team->get_nb_pets() == 5)
-                        throw InvalidAction("");
-                    game->shop->check_size_pets("", shop_pos);
-                }
-
-            // Buy object
-            } else if (shop_pos >= 5) {
-                size_t obj_index = (shop_pos == 6 && nb_pets < 6) ? 1 : 0;
-                int cost = game->shop->get_cost_object(obj_index);
-                game->check_money("", cost);
-
-                game->team->pos_to_index(team_pos);
-                game->shop->check_size_objects("", obj_index);
-            } else {
-                throw InvalidAction("");
+        // Buy pet
+        if (shop_pos < nb_pets) {
+            if (game->money < 3) {
+                mask[index++] = false;
+                continue;
             }
 
-            mask[index++] = true;
+            // Combine
+            if (game->team->has_pet(team_pos)) {
+                size_t pet_ind = game->team->pos_to_index(team_pos);
+                mask[index++] = (game->team->pets[pet_ind]->name == game->shop->pets[shop_pos]->name);
+                continue;
+            }
 
-        } catch (InvalidAction& e) {
+            // Buy new pet
+            mask[index++] = (game->team->pets.size() < 5);
+
+        // Buy object
+        } else if (shop_pos >= 5) {
+            size_t nb_objs = game->shop->objects.size();
+            size_t obj_index = (shop_pos == 6 && nb_pets < 6) ? 1 : 0;
+            if (obj_index >= nb_objs) {
+                mask[index++] = false;
+                continue;
+            }
+
+            int cost = game->shop->objects[obj_index]->get_cost();
+            if (game->money < cost) {
+                mask[index++] = false;
+                continue;
+            }
+
+            mask[index++] = (game->shop->objects[obj_index]->target_all || game->team->has_pet(team_pos));
+
+        } else {
             mask[index++] = false;
         }
     }
@@ -165,26 +160,27 @@ Mask Environment::get_mask() const {
 
     // Combine
     for (size_t i=0; i<5*4; i++) {
-        int pet_id_1 = i / 4;
-        int pet_id_2 = i % 4;
-        pet_id_2 += (pet_id_2 >= pet_id_1);
+        size_t pos1 = i / 4;
+        size_t pos2 = i % 4;
+        pos2 += (pos2 >= pos1);
 
-        try {
-            game->team->can_combine(pet_id_1, pet_id_2);
-            mask[index++] = true;
-        } catch (InvalidAction& e) {
+        if (!game->team->has_pet(pos1) || !game->team->has_pet(pos2)) {
             mask[index++] = false;
+            continue;
         }
+        size_t ind1 = game->team->pos_to_index(pos1);
+        size_t ind2 = game->team->pos_to_index(pos2);
 
+        mask[index++] = (game->team->pets[ind1]->name == game->team->pets[ind2]->name);
     }
 
     // Swap
     for (size_t i=0; i<5*4; i++) {
-        int pet_id_1 = i / 4;
-        int pet_id_2 = i % 4;
-        pet_id_2 += (pet_id_2 >= pet_id_1);
+        int pet_pos_1 = i / 4;
+        int pet_pos_2 = i % 4;
+        pet_pos_2 += (pet_pos_2 >= pet_pos_1);
 
-        mask[index++] = (game->team->has_pet(pet_id_1) && game->team->has_pet(pet_id_2));
+        mask[index++] = (game->team->has_pet(pet_pos_1) && game->team->has_pet(pet_pos_2));
     }
 
     // Freeze
