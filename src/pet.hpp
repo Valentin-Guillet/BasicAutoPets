@@ -15,7 +15,7 @@ class Pet {
     friend class Environment;
 
     public:
-        static Pet* unserialize(Team* team, std::string pet_str);
+        static Pet* unserialize(Team* team, Shop* shop, std::string pet_str);
         static Pet* create_random_pet(Team* team, Shop* shop, int max_tier, bool strict_tier=false);
         static Pet* copy_pet(Pet const* pet, Team* team, Shop* shop);
 
@@ -23,6 +23,8 @@ class Pet {
 
         Pet(std::string name, Team* team, Shop* shop);
         virtual ~Pet();
+
+        void bind(Shop* shop);
 
         int get_attack() const;
         int get_life() const;

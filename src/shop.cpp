@@ -21,7 +21,7 @@ Shop* Shop::unserialize(Team* team, std::string shop_str) {
         index = pets_str.find(')');
         std::string pet_str = pets_str.substr(2, index-2);
         pets_str = pets_str.substr(index+1);
-        new_shop->pets.push_back(Pet::unserialize(team, pet_str));
+        new_shop->pets.push_back(Pet::unserialize(team, new_shop, pet_str));
     }
 
     index = shop_str.find('/');

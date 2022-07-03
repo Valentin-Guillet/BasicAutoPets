@@ -39,7 +39,7 @@ Team* Team::unserialize(Game* game, std::string team_str) {
         Pos saved_pos = pos;
         if (!order_str.empty())
             saved_pos = order_str[pos] - '0';
-        new_team->append_pet(Pet::unserialize(new_team, pet_str), saved_pos);
+        new_team->append_pet(Pet::unserialize(new_team, nullptr, pet_str), saved_pos);
         pos++;
     }
 
@@ -121,6 +121,11 @@ Team::Team(Game* game) : game(game), turn(0) { }
 Team::~Team() {
     for (Pet* pet : pets)
         delete pet;
+}
+
+void Team::bind(Shop* shop) const {
+    for (Pet* pet : pets)
+        pet->bind(shop);
 }
 
 size_t Team::get_nb_pets() const {

@@ -34,6 +34,8 @@ class Team {
         Team(Team const& team);
         ~Team();
 
+        void bind(Shop* shop) const;
+
         size_t get_nb_pets() const;
         std::vector<Pet*>& get_pets();
         void can_combine(Pos pos, std::string other_pet) const;

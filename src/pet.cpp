@@ -15,7 +15,7 @@ Pet* Pet::create_random_pet(Team* team, Shop* shop, int max_tier, bool strict_ti
     return AllPets::create_new_pet(name, team, shop);
 }
 
-Pet* Pet::unserialize(Team* team, std::string pet_str) {
+Pet* Pet::unserialize(Team* team, Shop* shop, std::string pet_str) {
     std::istringstream iss(pet_str);
     std::string token;
 
@@ -50,7 +50,7 @@ Pet* Pet::unserialize(Team* team, std::string pet_str) {
     name = utils::to_lower(name);
     object_name = utils::to_lower(object_name);
 
-    Pet* pet = AllPets::create_new_pet(name, team, nullptr);
+    Pet* pet = AllPets::create_new_pet(name, team, shop);
     pet->attack = attack;
     pet->attack_buff = attack_buff;
     pet->life = life;
@@ -59,7 +59,7 @@ Pet* Pet::unserialize(Team* team, std::string pet_str) {
 
     Object* object = nullptr;
     if (object_name != "none")
-        object = Object::create_new_object(object_name, team, nullptr);
+        object = Object::create_new_object(object_name, team, shop);
     pet->equip_object(object);
 
     return pet;
@@ -88,6 +88,10 @@ Pet::Pet(std::string name, Team* team, Shop* shop) :
 
 Pet::~Pet() {
     delete object;
+}
+
+void Pet::bind(Shop* shop) {
+    this->shop = shop;
 }
 
 int Pet::get_attack() const {

@@ -191,6 +191,8 @@ void Game::unserialize(std::string game_str) {
     delete shop;
     std::getline(stream, line, '\n');
     shop = Shop::unserialize(team, turn_str + line);
+
+    team->bind(shop);
 }
 
 void Game::save_state() const {
