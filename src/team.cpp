@@ -92,18 +92,25 @@ FIGHT_STATUS Team::fight_step(Team* team, Team* adv_team) {
     Pet* adv_pet = adv_team->pets.front();
 
     if (pet->get_attack() > adv_pet->get_attack()) {
-        pet->attacks(adv_pet);
-        adv_pet->attacks(pet);
+        pet->on_before_attack();
+        adv_pet->on_before_attack();
+
+        if (pet->is_alive() && adv_pet->is_alive()) {
+            pet->attacks(adv_pet);
+            adv_pet->attacks(pet);
+        }
     } else {
-        adv_pet->attacks(pet);
-        pet->attacks(adv_pet);
+        adv_pet->on_before_attack();
+        pet->on_before_attack();
+
+        if (pet->is_alive() && adv_pet->is_alive()) {
+            adv_pet->attacks(pet);
+            pet->attacks(adv_pet);
+        }
     }
 
-    if (!pet->is_alive())
-        team->faint(0);
-
-    if (!adv_pet->is_alive())
-        adv_team->faint(0);
+    team->remove_dead_pets();
+    adv_team->remove_dead_pets();
 
     return Team::check_end_of_battle(team, adv_team);
 }
