@@ -16,6 +16,7 @@ class Team;
 
 class Object {
     friend class UserInterface;
+    friend class Environment;
 
     public:
         static Object* create_new_object(std::string name, Team* team, Shop* shop);

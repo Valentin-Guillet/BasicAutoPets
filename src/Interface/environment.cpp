@@ -1,6 +1,10 @@
 
 #include "Interface/environment.hpp"
 
+#include "object.hpp"
+#include "pet.hpp"
+#include "shop.hpp"
+#include "team.hpp"
 #include "utils.hpp"
 
 
@@ -21,7 +25,54 @@ bool Environment::is_done() const {
 }
 
 State Environment::get_state() const {
-    return 0;
+    State state = {};
+    state.turn = game->turn;
+    state.life = game->life;
+    state.victories = game->victories;
+    state.money = game->money;
+
+    for (size_t i=0; i<5; i++) {
+        if (!game->team->has_pet(i))
+            continue;
+
+        size_t index = game->team->pos_to_index(i);
+        Pet* pet = game->team->pets[index];
+        state.team_id[i] = pet->id;
+        state.team_tier[i] = pet->tier;
+        state.team_attack[i] = pet->attack;
+        state.team_attack_buff[i] = pet->attack_buff;
+        state.team_life[i] = pet->life;
+        state.team_life_buff[i] = pet->life_buff;
+        state.team_xp[i] = pet->xp;
+    }
+
+    state.shop_attack_buff = game->shop->attack_buff;
+    state.shop_life_buff = game->shop->life_buff;
+
+    size_t nb_pets = game->shop->pets.size();
+    for (size_t i=0; i<nb_pets; i++) {
+        Pet* pet = game->shop->pets[i];
+        state.shop_type[i] = 1;
+        state.shop_id[i] = pet->id;
+        state.shop_tier[i] = pet->tier;
+        state.shop_attack[i] = pet->attack;
+        state.shop_life[i] = pet->life;
+        state.shop_cost[i] = 3;
+        state.shop_frozen[i] = game->shop->frozen_pets[i];
+    }
+
+    size_t nb_objs = game->shop->objects.size();
+    for (size_t i=0; i<nb_objs; i++) {
+        size_t index = (nb_pets == 6 || i == 1) ? 6 : 5;
+        Object* obj = game->shop->objects[i];
+        state.shop_type[index] = 2;
+        state.shop_id[index] = obj->id;
+        state.shop_tier[index] = obj->tier;
+        state.shop_cost[index] = obj->cost;
+        state.shop_frozen[index] = game->shop->frozen_objects[i];
+    }
+
+    return state;
 }
 
 int Environment::step(Action action) {
@@ -141,7 +192,7 @@ Mask Environment::get_mask() const {
                 continue;
             }
 
-            int cost = game->shop->objects[obj_index]->get_cost();
+            int cost = game->shop->objects[obj_index]->cost;
             if (game->money < cost) {
                 mask[index++] = false;
                 continue;

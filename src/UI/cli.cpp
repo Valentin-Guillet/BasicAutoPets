@@ -167,7 +167,7 @@ void CLI::buy() {
         int ind_obj = (index == 9 ? 0 : 1);
 
         Object const* obj = get_shop_object(ind_obj, true);
-        bool target_all;
+        bool target_all = false;
         if (obj)
             target_all = obj->target_all;
 
