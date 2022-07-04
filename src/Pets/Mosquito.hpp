@@ -11,7 +11,7 @@ class Mosquito : public Pet {
         Mosquito(Team* team, Shop* shop);
         ~Mosquito() override;
 
-        void on_start_battle(Team* adv_team) override;
+        void on_start_battle() override;
 };
 
 

@@ -11,7 +11,7 @@ class Dodo : public Pet {
         Dodo(Team* team, Shop* shop);
         ~Dodo() override;
 
-        void on_start_battle(Team* adv_team) override;
+        void on_start_battle() override;
 };
 
 

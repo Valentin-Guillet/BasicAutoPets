@@ -65,9 +65,12 @@ bool Game::is_over() const {
 }
 
 void Game::start_fight() {
-    adv_team = Team::get_random_team(turn);
     fighting_team = Team::copy_team(team);
+    adv_team = Team::get_random_team(turn);
     fight_status = FIGHT_STATUS::Fighting;
+
+    fighting_team->bind(adv_team);
+    adv_team->bind(fighting_team);
 }
 
 bool Game::fight_step() {

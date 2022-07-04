@@ -16,7 +16,7 @@ Dodo::Dodo(Team* team, Shop* shop) : Pet("Dodo", team, shop) {
 
 Dodo::~Dodo() { }
 
-void Dodo::on_start_battle(Team* adv_team) {
+void Dodo::on_start_battle() {
     utils::vector_logs.push_back("Start of battle: " + name + " gives attack ahead");
 
     int lvl = get_level();

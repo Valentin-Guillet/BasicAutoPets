@@ -123,6 +123,11 @@ Team::~Team() {
         delete pet;
 }
 
+void Team::bind(Team* adv_team) const {
+    for (Pet* pet : pets)
+        pet->bind(adv_team);
+}
+
 void Team::bind(Shop* shop) const {
     for (Pet* pet : pets)
         pet->bind(shop);
@@ -132,7 +137,7 @@ size_t Team::get_nb_pets() const {
     return pets.size();
 }
 
-std::vector<Pet*>& Team::get_pets() {
+std::vector<Pet*> Team::get_pets() {
     return pets;
 }
 
@@ -364,12 +369,8 @@ std::vector<Pet*> Team::order_pets(Team const* team, Team const* adv_team) {
 FIGHT_STATUS Team::start_of_battle(Team* team, Team* adv_team) {
     std::vector<Pet*> ordered_pets = order_pets(team, adv_team);
 
-    for (Pet* pet : ordered_pets) {
-        if (pet->is_part(team))
-            pet->on_start_battle(adv_team);
-        else
-            pet->on_start_battle(team);
-    }
+    for (Pet* pet : ordered_pets)
+        pet->on_start_battle();
 
     team->remove_dead_pets();
     adv_team->remove_dead_pets();

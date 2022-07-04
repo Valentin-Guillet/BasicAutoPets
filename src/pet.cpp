@@ -82,12 +82,16 @@ Pet* Pet::copy_pet(Pet const* pet, Team* team, Shop* shop) {
 }
 
 Pet::Pet(std::string name, Team* team, Shop* shop) :
-        name(name), team(team), shop(shop), xp(0), object(nullptr) {
+        name(name), team(team), adv_team(nullptr), shop(shop), xp(0), object(nullptr) {
     reset_stats();
 }
 
 Pet::~Pet() {
     delete object;
+}
+
+void Pet::bind(Team* adv_team) {
+    this->adv_team = adv_team;
 }
 
 void Pet::bind(Shop* shop) {
@@ -116,10 +120,6 @@ int Pet::get_level() const {
 
 bool Pet::is_alive() const {
     return (life + life_buff) > 0;
-}
-
-bool Pet::is_part(Team* ext_team) const {
-    return team == ext_team;
 }
 
 void Pet::reset_stats() {

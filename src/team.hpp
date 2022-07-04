@@ -34,10 +34,11 @@ class Team {
         Team(Team const& team);
         ~Team();
 
+        void bind(Team* adv_team) const;
         void bind(Shop* shop) const;
 
         size_t get_nb_pets() const;
-        std::vector<Pet*>& get_pets();
+        std::vector<Pet*> get_pets();
         void can_combine(Pos pos, std::string other_pet) const;
         void can_combine(Pos src_pos, Pos dst_pos) const;
 

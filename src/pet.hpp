@@ -24,6 +24,7 @@ class Pet {
         Pet(std::string name, Team* team, Shop* shop);
         virtual ~Pet();
 
+        void bind(Team* adv_team);
         void bind(Shop* shop);
 
         int get_attack() const;
@@ -31,7 +32,6 @@ class Pet {
         int get_xp() const;
         int get_level() const;
         bool is_alive() const;
-        bool is_part(Team* ext_team) const;
 
         void reset_stats();
         void equip_object(Object* obj);
@@ -51,7 +51,7 @@ class Pet {
         virtual void on_level_up() { };
         virtual void on_start_turn() { };
         virtual void on_end_turn() { };
-        virtual void on_start_battle(Team* adv_team) { };
+        virtual void on_start_battle() { };
         virtual void on_friend_summoned(Pet* new_pet) { };
         virtual void on_before_attack() { };
         virtual void on_friend_ahead_attacks() { };
@@ -66,6 +66,7 @@ class Pet {
         std::string repr;
 
         Team* team;
+        Team* adv_team;
         Shop* shop;
 
         int id;

@@ -19,7 +19,7 @@ Bat::Bat(Team* team, Shop* shop) : Pet("Bat", team, shop) {
 
 Bat::~Bat() { }
 
-void Bat::on_start_battle(Team* adv_team) {
+void Bat::on_start_battle() {
     int lvl = get_level();
     utils::vector_logs.push_back("Start of battle: " + name + " makes " + std::to_string(lvl) + " enemy pets weak.");
 

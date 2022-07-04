@@ -11,7 +11,7 @@ class Bat : public Pet {
         Bat(Team* team, Shop* shop);
         ~Bat() override;
 
-        void on_start_battle(Team* adv_team) override;
+        void on_start_battle() override;
 };
 
 

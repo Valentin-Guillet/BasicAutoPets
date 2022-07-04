@@ -18,7 +18,7 @@ Mosquito::Mosquito(Team* team, Shop* shop) : Pet("Mosquito", team, shop) {
 
 Mosquito::~Mosquito() { }
 
-void Mosquito::on_start_battle(Team* adv_team) {
+void Mosquito::on_start_battle() {
     int lvl = get_level();
     utils::vector_logs.push_back("Start of battle: " + name + " shots " + std::to_string(lvl) + " times.");
 
