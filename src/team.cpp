@@ -3,7 +3,6 @@
 
 #include <algorithm>
 #include <fstream>
-#include <iostream>
 
 #include "game.hpp"
 #include "utils.hpp"
@@ -235,7 +234,10 @@ int Team::sell(Pos pos) {
 
 void Team::summon(Pos pos, Pet* new_pet) {
     utils::vector_logs.push_back("New pet summoned: " + new_pet->name);
-    if (pets.size() >= 6) {
+    size_t nb_pets = 0;
+    for (Pet* pet : pets)
+        nb_pets += (pet->is_alive());
+    if (nb_pets >= 5) {
         utils::vector_logs.push_back("Already 5 pets in team, aborting");
         delete new_pet;
         return;
@@ -265,6 +267,9 @@ void Team::give_object(size_t index, Object* obj) {
 
     for (size_t i=0; i<pets.size(); i++)
         pets[i]->on_object_bought(index, obj);
+
+    if (obj->name == "Pill")
+        remove_dead_pets();
 }
 
 void Team::earn_money(int amount) const {
@@ -394,17 +399,22 @@ FIGHT_STATUS Team::check_end_of_battle(Team const* team, Team const* adv_team) {
 }
 
 void Team::sort() {
-    if (pets.size() < 2)
+    if (pets.size() <= 1)
         return;
+
+    size_t max_pos = 5;
+    for (Pos pos : order) {
+        if (pos > max_pos)
+            max_pos = pos;
+    }
 
     std::vector<Pet*> ordered_pets;
     std::vector<Pos> new_order;
-    for (size_t i=0; i<5; i++) {
+    for (size_t i=0; i<max_pos; i++) {
         for (size_t j=0; j<pets.size(); j++) {
             if (order[j] == i) {
                 ordered_pets.push_back(pets[j]);
                 new_order.push_back(i);
-                break;
             }
         }
     }
@@ -417,11 +427,35 @@ void Team::append_pet(Pet* new_pet, Pos pos, bool insert) {
         if (!insert)
             throw InvalidAction("[APPEND_PET] Already got pet at position " + std::to_string(pos+1));
 
-        for (size_t i=0; i<pets.size(); i++) {
-            if (order[i] >= pos)
-                order[i]++;
+        size_t index = pos_to_index(pos);
+        for (size_t i=1; index+i < pets.size() && order[index+i] == pos+i; i++)
+            order[index+i]++;
+
+        // Magic function that deals with inserting pet, and modify
+        // the position of other pets accordingly
+        pos += (pos < 4);
+        int n = order.size() - 1;
+        size_t max_pos = 4;
+
+        // If last pet is at position more than 4 and while a pet is at an order
+        // greater than its max possible position
+        while (n >= 0 && order[n] >= max_pos) {
+            // While on the left of inserted pet, set pos to max possible
+            if (order[n] > pos) {
+                order[n] = max_pos;
+                // If there were no empty spaces before, move position once to the right
+                if (pets[n]->is_alive() && max_pos == pos)
+                    pos--;
+
+            // After the inserted pet, continue shifting right if needed
+            } else {
+                order[n]--;
+            }
+            max_pos -= (pets[n]->is_alive());
+            n--;
         }
     }
+
     pets.push_back(new_pet);
     order.push_back(pos);
     sort();
@@ -433,11 +467,18 @@ void Team::remove_pet(size_t index) {
 }
 
 void Team::remove_dead_pets() {
-    size_t i = 0;
-    while (i < pets.size()) {
-        if (!pets[i]->is_alive())
-            faint(i);
-        else
-            i++;
-    }
+    bool removed;
+    // Continue removing while pets are dying because faint triggers can kill other
+    do {
+        removed = false;
+        size_t i = 0;
+        while (i < pets.size()) {
+            if (!pets[i]->is_alive()) {
+                faint(i);
+                removed = true;
+            } else {
+                i++;
+            }
+        }
+    } while (removed);
 }
