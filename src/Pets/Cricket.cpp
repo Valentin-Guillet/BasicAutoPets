@@ -22,7 +22,7 @@ void Cricket::on_faint(Pos pos) {
 
     int lvl = get_level();
     Pet* zombie = new ZombieCricket(team, shop, lvl);
-
     team->summon(pos, zombie);
+
     Pet::on_faint(pos);
 }
