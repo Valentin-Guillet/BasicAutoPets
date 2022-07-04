@@ -125,7 +125,7 @@ void Shop::roll() {
     frozen_objects = std::vector<bool>(objects.size(), true);
 
     size_t nb_to_add = std::min(get_max_objects(turn), 7 - pets.size() - objects.size());
-    for (size_t i=objects.size(); i<nb_to_add; i++) {
+    for (size_t i=0; i<nb_to_add; i++) {
         objects.push_back(create_object());
         frozen_objects.push_back(false);
     }

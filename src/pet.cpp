@@ -148,7 +148,9 @@ void Pet::attacks(Pet* adv_pet) const {
 void Pet::take_damage(int value) {
     if (object)
         value = object->on_damages(value);
-    life -= value;
+
+    life -= std::max(0, value - life_buff);
+    life_buff = std::max(0, life_buff - value);
     utils::vector_logs.push_back(name + " takes " + std::to_string(value) + " damages");
 
     if (is_alive())
