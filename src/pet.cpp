@@ -142,10 +142,10 @@ void Pet::equip_object(Object* obj) {
 void Pet::attacks(Pet* adv_pet) const {
     utils::vector_logs.push_back(name + " attacks " + adv_pet->name + " for " + std::to_string(get_attack()) + " damages");
 
-    adv_pet->take_damage(get_attack());
+    adv_pet->take_damage(get_attack(), false);
 }
 
-void Pet::take_damage(int value) {
+void Pet::take_damage(int value, bool activate_hurt) {
     if (object)
         value = object->on_damages(value);
 
@@ -153,7 +153,7 @@ void Pet::take_damage(int value) {
     life_buff = std::max(0, life_buff - value);
     utils::vector_logs.push_back(name + " takes " + std::to_string(value) + " damages");
 
-    if (is_alive())
+    if (activate_hurt && is_alive())
         on_hurt();
 }
 

@@ -36,7 +36,7 @@ class Pet {
         void reset_stats();
         void equip_object(Object* obj);
         void attacks(Pet* adv_pet) const;
-        void take_damage(int value);
+        void take_damage(int value, bool activate_hurt=true);
         void buff(int buff_attack, int buff_life, bool is_tmp);
         void gain_xp(int amount);
         void combine(Pet* const other);

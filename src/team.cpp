@@ -97,6 +97,11 @@ FIGHT_STATUS Team::fight_step(Team* team, Team* adv_team) {
         if (pet->is_alive() && adv_pet->is_alive()) {
             pet->attacks(adv_pet);
             adv_pet->attacks(pet);
+
+        if (pet->is_alive())
+            pet->on_hurt();
+        if (adv_pet->is_alive())
+            adv_pet->on_hurt();
         }
     } else {
         adv_pet->on_before_attack();
@@ -106,6 +111,11 @@ FIGHT_STATUS Team::fight_step(Team* team, Team* adv_team) {
             adv_pet->attacks(pet);
             pet->attacks(adv_pet);
         }
+
+        if (adv_pet->is_alive())
+            adv_pet->on_hurt();
+        if (pet->is_alive())
+            pet->on_hurt();
     }
 
     team->remove_dead_pets();
