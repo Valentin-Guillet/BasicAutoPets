@@ -43,7 +43,7 @@ test/main_test: $(TEST_OBJ)
 	$(CC) $(CFLAGS) $^ $(LFLAGS) $@
 
 
-build/%.o: src/%.cpp $(HEADERS)
+build/%.o: src/%.cpp src/Pets/all_pets.cpp src/Objects/all_objects.cpp $(HEADERS)
 	@ mkdir -p build/Pets/
 	@ mkdir -p build/Objects/Foods
 	@ mkdir -p build/Objects/Items
