@@ -121,6 +121,9 @@ FIGHT_STATUS Team::fight_step(Team* team, Team* adv_team) {
     team->remove_dead_pets();
     adv_team->remove_dead_pets();
 
+    team->add_summons();
+    adv_team->add_summons();
+
     return Team::check_end_of_battle(team, adv_team);
 }
 
@@ -177,7 +180,7 @@ void Team::move(Pos src_pos, Pos dst_pos) {
         else if (order[i] == dst_pos)
             order[i] = src_pos;
     }
-    sort();
+    sort_team();
 }
 
 void Team::end_turn() {
@@ -243,22 +246,7 @@ int Team::sell(Pos pos) {
 }
 
 void Team::summon(Pos pos, Pet* new_pet) {
-    utils::vector_logs.push_back("New pet summoned: " + new_pet->name);
-    size_t nb_pets = 0;
-    for (Pet* pet : pets)
-        nb_pets += (pet->is_alive());
-    if (nb_pets >= 5) {
-        utils::vector_logs.push_back("Already 5 pets in team, aborting");
-        delete new_pet;
-        return;
-    }
-
-    append_pet(new_pet, pos, true);
-    for (Pet* pet : pets) {
-        if (pet == new_pet)
-            continue;
-        pet->on_friend_summoned(new_pet);
-    }
+    summoned_pets.push_back({new_pet, pos});
 }
 
 void Team::faint(size_t index) {
@@ -278,8 +266,10 @@ void Team::give_object(size_t index, Object* obj) {
     for (size_t i=0; i<pets.size(); i++)
         pets[i]->on_object_bought(index, obj);
 
-    if (obj->name == "Pill")
+    if (obj->name == "Pill") {
         remove_dead_pets();
+        add_summons();
+    }
 }
 
 void Team::earn_money(int amount) const {
@@ -408,19 +398,13 @@ FIGHT_STATUS Team::check_end_of_battle(Team const* team, Team const* adv_team) {
     return FIGHT_STATUS::Fighting;
 }
 
-void Team::sort() {
+void Team::sort_team() {
     if (pets.size() <= 1)
         return;
 
-    size_t max_pos = 5;
-    for (Pos pos : order) {
-        if (pos > max_pos)
-            max_pos = pos;
-    }
-
     std::vector<Pet*> ordered_pets;
     std::vector<Pos> new_order;
-    for (size_t i=0; i<max_pos; i++) {
+    for (size_t i=0; i<5; i++) {
         for (size_t j=0; j<pets.size(); j++) {
             if (order[j] == i) {
                 ordered_pets.push_back(pets[j]);
@@ -432,43 +416,96 @@ void Team::sort() {
     order = new_order;
 }
 
-void Team::append_pet(Pet* new_pet, Pos pos, bool insert) {
-    if (has_pet(pos)) {
-        if (!insert)
-            throw InvalidAction("[APPEND_PET] Already got pet at position " + std::to_string(pos+1));
-
-        size_t index = pos_to_index(pos);
-        for (size_t i=1; index+i < pets.size() && order[index+i] == pos+i; i++)
-            order[index+i]++;
-
-        // Magic function that deals with inserting pet, and modify
-        // the position of other pets accordingly
-        pos += (pos < 4);
-        int n = order.size() - 1;
-        size_t max_pos = 4;
-
-        // If last pet is at position more than 4 and while a pet is at an order
-        // greater than its max possible position
-        while (n >= 0 && order[n] >= max_pos) {
-            // While on the left of inserted pet, set pos to max possible
-            if (order[n] > pos) {
-                order[n] = max_pos;
-                // If there were no empty spaces before, move position once to the right
-                if (pets[n]->is_alive() && max_pos == pos)
-                    pos--;
-
-            // After the inserted pet, continue shifting right if needed
-            } else {
-                order[n]--;
-            }
-            max_pos -= (pets[n]->is_alive());
-            n--;
-        }
-    }
+void Team::append_pet(Pet* new_pet, Pos pos) {
+    if (has_pet(pos))
+        throw InvalidAction("[APPEND_PET] Already got pet at position " + std::to_string(pos+1));
 
     pets.push_back(new_pet);
     order.push_back(pos);
-    sort();
+    sort_team();
+}
+
+void Team::add_summons() {
+    if (summoned_pets.empty())
+        return;
+
+    std::sort(summoned_pets.begin(), summoned_pets.end(),
+              [](std::pair<Pet*, Pos> p1, std::pair<Pet*, Pos> p2) {
+              return p1.second < p2.second;
+              });
+
+    for (size_t index=0; index<summoned_pets.size(); index++) {
+        auto [new_pet, pos] = summoned_pets[index];
+
+        utils::vector_logs.push_back("Summoning new " + new_pet->name);
+        if (pets.size() >= 5) {
+            utils::vector_logs.push_back("Already 5 pets in team, aborting");
+            delete new_pet;
+            continue;
+        }
+
+        bool first = false;
+        if (pos == (size_t) -1) {
+            first = true;
+            pos = 0;
+        }
+
+        if (has_pet(pos)) {
+            size_t ind = pos_to_index(pos);
+            size_t min_pos = (first ? 0 : 1);
+            size_t max_pos = pos + 1;
+            for (size_t i=min_pos; ind+i < pets.size() && order[ind+i] == pos+i; i++) {
+                order[ind+i]++;
+                max_pos = i + 1;
+            }
+
+            for (size_t i=index+1; i < summoned_pets.size() && pos <= max_pos; i++) {
+                Pos pos = summoned_pets[i].second;
+                summoned_pets[i].second += (pos <= max_pos);
+                max_pos += (pos == max_pos);
+            }
+
+            // Magic function that deals with inserting pet, and modify
+            // the position of other pets accordingly
+            pos += (!first && pos < 4);
+            int n = order.size() - 1;
+            max_pos = 4;
+
+            // If last pet is at position more than 4 and while a pet is at an order
+            // greater than its max possible position
+            while (n >= 0 && order[n] >= max_pos) {
+                // While on the left of inserted pet, set pos to max possible
+                if (order[n] > pos) {
+                    order[n] = max_pos;
+                    // If there were no empty spaces before, move position once to the right
+                    pos -= (max_pos == pos);
+
+                // After the inserted pet, continue shifting right if needed
+                } else {
+                    order[n]--;
+                }
+
+                for (size_t j=index+1; j<summoned_pets.size(); j++) {
+                    std::pair<Pet*, Pos>& pet_pos = summoned_pets[j];
+                    pet_pos.second -= (pet_pos.second == max_pos);
+                }
+
+                max_pos--;
+                n--;
+            }
+        }
+
+        pets.push_back(new_pet);
+        order.push_back(pos);
+        sort_team();
+
+        for (Pet* pet : pets) {
+            if (pet != new_pet)
+                pet->on_friend_summoned(new_pet);
+        }
+    }
+
+    summoned_pets.clear();
 }
 
 void Team::remove_pet(size_t index) {

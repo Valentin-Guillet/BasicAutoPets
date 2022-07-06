@@ -4,6 +4,7 @@
 #include <string>
 #include <tuple>
 #include <unordered_map>
+#include <utility>
 #include <vector>
 
 #include "pet.hpp"
@@ -76,8 +77,11 @@ class Team {
         std::vector<Pet*> pets;
         std::vector<Pos> order;
 
-        void sort();
-        void append_pet(Pet* new_pet, Pos pos, bool insert=false);
+        std::vector<std::pair<Pet*, Pos>> summoned_pets;
+
+        void sort_team();
+        void append_pet(Pet* new_pet, Pos pos);
+        void add_summons();
         void remove_pet(size_t index);
         void remove_dead_pets();
 };

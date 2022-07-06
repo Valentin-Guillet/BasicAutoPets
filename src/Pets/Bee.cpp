@@ -13,4 +13,3 @@ Bee::Bee(Team* team, Shop* shop) : Pet("Bee", team, shop) {
 }
 
 Bee::~Bee() { }
-

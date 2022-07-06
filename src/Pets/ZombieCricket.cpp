@@ -12,4 +12,3 @@ ZombieCricket::ZombieCricket(Team* team, Shop* shop, int lvl) : Pet("ZombieCrick
 }
 
 ZombieCricket::~ZombieCricket() { }
-
