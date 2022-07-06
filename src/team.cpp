@@ -237,10 +237,13 @@ int Team::sell(Pos pos) {
     size_t index = pos_to_index(pos);
     Pet* pet = pets[index];
     int lvl = pet->get_level();
-    remove_pet(index);
 
+    remove_pet(index);
     pet->on_sell();
     delete pet;
+
+    for (Pet* other_pet : pets)
+        other_pet->on_friend_sold();
 
     return lvl;
 }
