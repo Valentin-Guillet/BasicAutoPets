@@ -34,7 +34,9 @@ class Pet {
         int get_level() const;
         bool is_alive() const;
 
+        void set_stats(int new_attack, int new_life, int new_xp);
         void reset_stats();
+
         void equip_object(Object* obj);
         void attacks(Pet* adv_pet) const;
         void take_damage(int value, bool activate_hurt=true);

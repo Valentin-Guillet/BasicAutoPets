@@ -126,6 +126,12 @@ bool Pet::is_alive() const {
     return (life + life_buff) > 0;
 }
 
+void Pet::set_stats(int new_attack, int new_life, int new_xp) {
+    attack = new_attack;
+    life = new_life;
+    xp = new_xp;
+}
+
 void Pet::reset_stats() {
     attack_buff = 0;
     life_buff = 0;
