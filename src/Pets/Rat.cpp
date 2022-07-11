@@ -28,6 +28,7 @@ void Rat::on_faint(Pos pos) {
 
     for (int i=0; i<lvl; i++) {
         Pet* dirty_rat = new DirtyRat(adv_team, nullptr);
+        dirty_rat->bind(team);
         adv_team->summon(-1, dirty_rat);
     }
 }

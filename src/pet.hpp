@@ -26,6 +26,7 @@ class Pet {
 
         void bind(Team* adv_team);
         void bind(Shop* shop);
+        Team* get_adv_team() const;
 
         int get_attack() const;
         int get_life() const;

@@ -29,7 +29,7 @@ EOF
 for file in *.hpp
 do
     [ $file = "all_pets.hpp" ] && continue
-    tier=$(sed -n '/tier/p' ${file%.hpp}.cpp)
+    tier=$(sed -n '/tier = /p' ${file%.hpp}.cpp)
     tier="${tier:11:-1}"
     name=${file%.hpp}
     name=${name,,}

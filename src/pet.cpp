@@ -98,6 +98,10 @@ void Pet::bind(Shop* shop) {
     this->shop = shop;
 }
 
+Team* Pet::get_adv_team() const {
+    return adv_team;
+}
+
 int Pet::get_attack() const {
     return std::min(50, attack + attack_buff);
 }
