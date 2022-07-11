@@ -68,6 +68,7 @@ class Team {
         static TeamList team_list;
         static void load_teams();
         static std::vector<Pet*> order_pets(Team const* team, Team const* adv_team);
+        static void remove_dead_pets(Team* team, Team* adv_team);
         static FIGHT_STATUS start_of_battle(Team* team, Team* adv_team);
         static FIGHT_STATUS check_end_of_battle(Team const* team, Team const* adv_team);
 
@@ -83,7 +84,7 @@ class Team {
         void append_pet(Pet* new_pet, Pos pos);
         void add_summons();
         void remove_pet(size_t index);
-        void remove_dead_pets();
+        bool remove_dead_pets();
 };
 
 

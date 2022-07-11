@@ -118,9 +118,7 @@ FIGHT_STATUS Team::fight_step(Team* team, Team* adv_team) {
             pet->on_hurt();
     }
 
-    team->remove_dead_pets();
-    adv_team->remove_dead_pets();
-
+    Team::remove_dead_pets(team, adv_team);
     team->add_summons();
     adv_team->add_summons();
 
@@ -375,15 +373,17 @@ std::vector<Pet*> Team::order_pets(Team const* team, Team const* adv_team) {
     return ordered_pets;
 }
 
+void Team::remove_dead_pets(Team* team, Team* adv_team) {
+    while (team->remove_dead_pets() || adv_team->remove_dead_pets()) { }
+}
+
 FIGHT_STATUS Team::start_of_battle(Team* team, Team* adv_team) {
     std::vector<Pet*> ordered_pets = order_pets(team, adv_team);
 
     for (Pet* pet : ordered_pets)
         pet->on_start_battle();
 
-    team->remove_dead_pets();
-    adv_team->remove_dead_pets();
-
+    Team::remove_dead_pets(team, adv_team);
     return check_end_of_battle(team, adv_team);
 }
 
@@ -517,8 +517,9 @@ void Team::remove_pet(size_t index) {
     order.erase(order.begin() + index);
 }
 
-void Team::remove_dead_pets() {
+bool Team::remove_dead_pets() {
     bool removed;
+    int nb_pets_removed = 0;
     // Continue removing while pets are dying because faint triggers can kill other
     do {
         removed = false;
@@ -527,9 +528,11 @@ void Team::remove_dead_pets() {
             if (!pets[i]->is_alive()) {
                 faint(i);
                 removed = true;
+                nb_pets_removed++;
             } else {
                 i++;
             }
         }
     } while (removed);
+    return nb_pets_removed > 0;
 }
