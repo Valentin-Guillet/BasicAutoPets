@@ -18,5 +18,10 @@ Pill::~Pill() { }
 
 void Pill::on_buy(size_t index) {
     utils::vector_logs.push_back(name + " bought !");
-    team->faint(index);
+
+    if (!team->has_pet(index))
+        return;
+
+    Pet* pet = team->get_pets()[team->pos_to_index(index)];
+    pet->kill();
 }

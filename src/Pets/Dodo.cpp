@@ -37,5 +37,6 @@ void Dodo::on_start_battle() {
             pets[index]->buff(attack_bonus, 0, false);
             break;
         }
+        index--;
     }
 }

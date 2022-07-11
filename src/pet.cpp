@@ -133,8 +133,6 @@ void Pet::equip_object(Object* obj) {
     utils::vector_logs.push_back("Giving " + obj->name + " to " + name);
 
     delete object;
-    object = nullptr;
-
     object = Object::copy_object(obj, team, shop);
     object->set_pet(this);
 }
@@ -187,6 +185,11 @@ void Pet::combine(Pet* const other) {
     buff(new_attack - attack, new_life - life, false);
     gain_xp(other->xp+1);
     equip_object(other->object);
+}
+
+void Pet::kill() {
+    life = -100;
+    life_buff = -100;
 }
 
 

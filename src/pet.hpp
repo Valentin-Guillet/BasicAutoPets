@@ -40,6 +40,7 @@ class Pet {
         void buff(int buff_attack, int buff_life, bool is_tmp);
         void gain_xp(int amount);
         void combine(Pet* const other);
+        void kill();
 
         virtual void on_buy() { };
         virtual void on_sell() { };
