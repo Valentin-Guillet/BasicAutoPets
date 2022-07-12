@@ -18,6 +18,8 @@ namespace utils {
         return elts;
     }
 
+    int randint(int min, int max=-1);
+
     extern std::vector<std::string> vector_logs;
 
     std::string pad(std::string str, size_t const num, char const padding_char=' ');

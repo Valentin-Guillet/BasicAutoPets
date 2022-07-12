@@ -2,6 +2,19 @@
 #include "utils.hpp"
 
 
+int utils::randint(int min, int max) {
+    if (max == -1) {
+        max = min;
+        min = 0;
+    }
+
+    std::random_device rd;
+    std::mt19937 rng(rd());
+    std::uniform_int_distribution<int> uniform_law(min, max);
+
+    return uniform_law(rng);
+}
+
 std::string utils::pad(std::string str, size_t const num, char const padding_char) {
     if(!(num > str.size())) return str;
 
