@@ -150,7 +150,10 @@ void Pet::equip_object(Object* obj) {
 void Pet::attacks(Pet* adv_pet) const {
     utils::vector_logs.push_back(name + " attacks " + adv_pet->name + " for " + std::to_string(get_attack()) + " damages");
 
-    adv_pet->take_damage(get_attack(), false);
+    int value = get_attack();
+    if (object)
+        value = object->on_attack(value);
+    adv_pet->take_damage(value, false);
 }
 
 void Pet::take_damage(int value, bool activate_hurt) {

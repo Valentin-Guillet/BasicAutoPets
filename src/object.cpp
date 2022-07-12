@@ -26,8 +26,8 @@ Object* Object::copy_object(Object const* obj, Team* team, Shop* shop) {
 
 
 Object::Object(std::string name, Team* team, Shop* shop, ObjType type) :
-    name(name), type(type), team(team), shop(shop), attached_pet(nullptr), cost(3) {
-}
+    name(name), type(type), target_all(false),
+    team(team), shop(shop), attached_pet(nullptr), cost(3) { }
 
 Object::~Object() { };
 

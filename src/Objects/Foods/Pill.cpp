@@ -8,10 +8,9 @@
 
 Pill::Pill(Team* team, Shop* shop) : Object("Pill", team, shop, ObjType::FOOD) {
     repr = "💊";
-    id = 4;
+    id = 5;
     tier = 2;
     cost = 1;
-    target_all = false;
 }
 
 Pill::~Pill() { }

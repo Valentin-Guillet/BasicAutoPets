@@ -35,6 +35,7 @@ class Object {
 
         virtual void on_buy(size_t index) { };
         virtual void on_faint(size_t index) { };
+        virtual int on_attack(int value) { return value; };
         virtual int on_damages(int value) { return value; };
 
     protected:
