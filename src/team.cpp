@@ -90,33 +90,27 @@ FIGHT_STATUS Team::fight_step(Team* team, Team* adv_team) {
     Pet* pet = team->pets.front();
     Pet* adv_pet = adv_team->pets.front();
 
+    Pet *first_pet, *second_pet;
     if (pet->get_attack() > adv_pet->get_attack()) {
-        pet->on_before_attack();
-        adv_pet->on_before_attack();
-
-        if (pet->is_alive() && adv_pet->is_alive()) {
-            pet->attacks(adv_pet);
-            adv_pet->attacks(pet);
-
-        if (pet->is_alive())
-            pet->on_hurt();
-        if (adv_pet->is_alive())
-            adv_pet->on_hurt();
-        }
+        first_pet = pet;
+        second_pet = adv_pet;
     } else {
-        adv_pet->on_before_attack();
-        pet->on_before_attack();
-
-        if (pet->is_alive() && adv_pet->is_alive()) {
-            adv_pet->attacks(pet);
-            pet->attacks(adv_pet);
-        }
-
-        if (adv_pet->is_alive())
-            adv_pet->on_hurt();
-        if (pet->is_alive())
-            pet->on_hurt();
+        first_pet = adv_pet;
+        second_pet = pet;
     }
+
+    first_pet->on_before_attack();
+    second_pet->on_before_attack();
+
+    if (first_pet->is_alive() && second_pet->is_alive()) {
+        first_pet->attacks(second_pet);
+        second_pet->attacks(first_pet);
+    }
+
+    if (first_pet->is_alive())
+        first_pet->on_hurt();
+    if (second_pet->is_alive())
+        second_pet->on_hurt();
 
     Team::remove_dead_pets(team, adv_team);
     team->add_summons();
