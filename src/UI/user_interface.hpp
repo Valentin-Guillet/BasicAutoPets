@@ -20,7 +20,7 @@ class UserInterface {
         virtual void display_game() const = 0;
 
     protected:
-        Game* game;
+        Game* m_game;
 
         int get_money() const;
         int get_life() const;

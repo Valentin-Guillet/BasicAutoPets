@@ -5,22 +5,22 @@
 
 
 Otter::Otter(Team* team, Shop* shop) : Pet("Otter", team, shop) {
-    repr = "🦦";
-    id = 11;
-    pack = PACK_STANDARD;
-    tier = 1;
-    attack = 1;
-    life = 2;
+    m_repr = "🦦";
+    m_id = 11;
+    m_pack = PACK_STANDARD;
+    m_tier = 1;
+    m_attack = 1;
+    m_life = 2;
     reset_stats();
 }
 
 Otter::~Otter() { }
 
 void Otter::on_buy() {
-    utils::vector_logs.push_back(name + " bought, buffing random friend !");
+    utils::vector_logs.push_back(m_name + " bought, buffing random friend !");
 
     int lvl = get_level();
-    std::vector<Pet*> team_pets = team->get_pets();
+    std::vector<Pet*> team_pets = m_team->get_pets();
     if (team_pets.empty())
         return;
 

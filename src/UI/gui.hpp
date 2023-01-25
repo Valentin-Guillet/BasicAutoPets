@@ -20,8 +20,8 @@ class GUI : public UserInterface {
         void display_game() const override;
 
     private:
-        UIState state;
-        std::string status;
+        UIState m_state;
+        std::string m_status;
 
         bool play_again() const;
         bool act();

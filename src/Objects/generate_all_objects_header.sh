@@ -33,8 +33,8 @@ EOF
 
 for file in Items/*.hpp Foods/*.hpp
 do
-    tier=$(sed -n '/tier/p' ${file%.hpp}.cpp)
-    tier="${tier:11:-1}"
+    tier=$(sed -n '/m_tier/p' ${file%.hpp}.cpp)
+    tier="${tier:13:-1}"
     name=$(basename ${file%.hpp})
     name=${name,,}
     echo "        {$tier, \"$name\"}," >> all_objects.hpp

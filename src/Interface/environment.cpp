@@ -26,50 +26,50 @@ bool Environment::is_done() const {
 
 State Environment::get_state() const {
     State state = {};
-    state.turn = game->turn;
-    state.life = game->life;
-    state.victories = game->victories;
-    state.money = game->money;
+    state.turn = game->m_turn;
+    state.life = game->m_life;
+    state.victories = game->m_victories;
+    state.money = game->m_money;
 
     for (size_t i=0; i<5; i++) {
-        if (!game->team->has_pet(i))
+        if (!game->m_team->has_pet(i))
             continue;
 
-        size_t index = game->team->pos_to_index(i);
-        Pet* pet = game->team->pets[index];
-        state.team_id[i] = pet->id;
-        state.team_tier[i] = pet->tier;
-        state.team_attack[i] = pet->attack;
-        state.team_attack_buff[i] = pet->attack_buff;
-        state.team_life[i] = pet->life;
-        state.team_life_buff[i] = pet->life_buff;
-        state.team_xp[i] = pet->xp;
+        size_t index = game->m_team->pos_to_index(i);
+        Pet* pet = game->m_team->m_pets[index];
+        state.team_id[i] = pet->m_id;
+        state.team_tier[i] = pet->m_tier;
+        state.team_attack[i] = pet->m_attack;
+        state.team_attack_buff[i] = pet->m_attack_buff;
+        state.team_life[i] = pet->m_life;
+        state.team_life_buff[i] = pet->m_life_buff;
+        state.team_xp[i] = pet->m_xp;
     }
 
-    state.shop_attack_buff = game->shop->attack_buff;
-    state.shop_life_buff = game->shop->life_buff;
+    state.shop_attack_buff = game->m_shop->m_attack_buff;
+    state.shop_life_buff = game->m_shop->m_life_buff;
 
-    size_t nb_pets = game->shop->pets.size();
+    size_t nb_pets = game->m_shop->m_pets.size();
     for (size_t i=0; i<nb_pets; i++) {
-        Pet* pet = game->shop->pets[i];
+        Pet* pet = game->m_shop->m_pets[i];
         state.shop_type[i] = 1;
-        state.shop_id[i] = pet->id;
-        state.shop_tier[i] = pet->tier;
-        state.shop_attack[i] = pet->attack;
-        state.shop_life[i] = pet->life;
+        state.shop_id[i] = pet->m_id;
+        state.shop_tier[i] = pet->m_tier;
+        state.shop_attack[i] = pet->m_attack;
+        state.shop_life[i] = pet->m_life;
         state.shop_cost[i] = 3;
-        state.shop_frozen[i] = game->shop->frozen_pets[i];
+        state.shop_frozen[i] = game->m_shop->m_frozen_pets[i];
     }
 
-    size_t nb_objs = game->shop->objects.size();
+    size_t nb_objs = game->m_shop->m_objects.size();
     for (size_t i=0; i<nb_objs; i++) {
         size_t index = (nb_pets == 6 || i == 1) ? 6 : 5;
-        Object* obj = game->shop->objects[i];
+        Object* obj = game->m_shop->m_objects[i];
         state.shop_type[index] = 2;
-        state.shop_id[index] = obj->id;
-        state.shop_tier[index] = obj->tier;
-        state.shop_cost[index] = obj->cost;
-        state.shop_frozen[index] = game->shop->frozen_objects[i];
+        state.shop_id[index] = obj->m_id;
+        state.shop_tier[index] = obj->m_tier;
+        state.shop_cost[index] = obj->m_cost;
+        state.shop_frozen[index] = game->m_shop->m_frozen_objects[i];
     }
 
     return state;
@@ -89,7 +89,7 @@ int Environment::step(Action action) {
         size_t shop_pos = action / 5;
         size_t team_pos = action % 5;
 
-        size_t nb_pets = game->shop->pets.size();
+        size_t nb_pets = game->m_shop->m_pets.size();
         if (shop_pos < nb_pets) {
             game->buy_pet(shop_pos, team_pos);
         } else {
@@ -136,9 +136,9 @@ int Environment::step(Action action) {
 
     // Freeze shop
     if (action < 7) {
-        if (action < game->shop->pets.size())
+        if (action < game->m_shop->m_pets.size())
             game->freeze_pet(action);
-        else if (game->shop->pets.size() == 6 && action == 6)
+        else if (game->m_shop->m_pets.size() == 6 && action == 6)
             game->freeze_object(0);
         else if (action >= 5)
             game->freeze_object(action - 5);
@@ -158,47 +158,47 @@ Mask Environment::get_mask() const {
     size_t index = 0;
 
     // Roll
-    mask[index++] = (game->money >= 1);
+    mask[index++] = (game->m_money >= 1);
 
     // Buy
     for (size_t i=0; i<7*5; i++) {
         size_t shop_pos = i / 5;
         size_t team_pos = i % 5;
 
-        size_t nb_pets = game->shop->pets.size();
+        size_t nb_pets = game->m_shop->m_pets.size();
         // Buy pet
         if (shop_pos < nb_pets) {
-            if (game->money < 3) {
+            if (game->m_money < 3) {
                 mask[index++] = false;
                 continue;
             }
 
             // Combine
-            if (game->team->has_pet(team_pos)) {
-                size_t pet_ind = game->team->pos_to_index(team_pos);
-                mask[index++] = (game->team->pets[pet_ind]->name == game->shop->pets[shop_pos]->name);
+            if (game->m_team->has_pet(team_pos)) {
+                size_t pet_ind = game->m_team->pos_to_index(team_pos);
+                mask[index++] = (game->m_team->m_pets[pet_ind]->m_name == game->m_shop->m_pets[shop_pos]->m_name);
                 continue;
             }
 
             // Buy new pet
-            mask[index++] = (game->team->pets.size() < 5);
+            mask[index++] = (game->m_team->m_pets.size() < 5);
 
         // Buy object
         } else if (shop_pos >= 5) {
-            size_t nb_objs = game->shop->objects.size();
+            size_t nb_objs = game->m_shop->m_objects.size();
             size_t obj_index = (shop_pos == 6 && nb_pets < 6) ? 1 : 0;
             if (obj_index >= nb_objs) {
                 mask[index++] = false;
                 continue;
             }
 
-            int cost = game->shop->objects[obj_index]->cost;
-            if (game->money < cost) {
+            int cost = game->m_shop->m_objects[obj_index]->m_cost;
+            if (game->m_money < cost) {
                 mask[index++] = false;
                 continue;
             }
 
-            mask[index++] = (game->shop->objects[obj_index]->target_all || game->team->has_pet(team_pos));
+            mask[index++] = (game->m_shop->m_objects[obj_index]->m_target_all || game->m_team->has_pet(team_pos));
 
         } else {
             mask[index++] = false;
@@ -207,7 +207,7 @@ Mask Environment::get_mask() const {
 
     // Sell
     for (size_t i=0; i<5; i++)
-        mask[index++] = game->team->has_pet(i);
+        mask[index++] = game->m_team->has_pet(i);
 
     // Combine
     for (size_t i=0; i<5*4; i++) {
@@ -215,14 +215,14 @@ Mask Environment::get_mask() const {
         size_t pos2 = i % 4;
         pos2 += (pos2 >= pos1);
 
-        if (!game->team->has_pet(pos1) || !game->team->has_pet(pos2)) {
+        if (!game->m_team->has_pet(pos1) || !game->m_team->has_pet(pos2)) {
             mask[index++] = false;
             continue;
         }
-        size_t ind1 = game->team->pos_to_index(pos1);
-        size_t ind2 = game->team->pos_to_index(pos2);
+        size_t ind1 = game->m_team->pos_to_index(pos1);
+        size_t ind2 = game->m_team->pos_to_index(pos2);
 
-        mask[index++] = (game->team->pets[ind1]->name == game->team->pets[ind2]->name);
+        mask[index++] = (game->m_team->m_pets[ind1]->m_name == game->m_team->m_pets[ind2]->m_name);
     }
 
     // Swap
@@ -231,12 +231,12 @@ Mask Environment::get_mask() const {
         int pet_pos_2 = i % 4;
         pet_pos_2 += (pet_pos_2 >= pet_pos_1);
 
-        mask[index++] = (game->team->has_pet(pet_pos_1) && game->team->has_pet(pet_pos_2));
+        mask[index++] = (game->m_team->has_pet(pet_pos_1) && game->m_team->has_pet(pet_pos_2));
     }
 
     // Freeze
-    size_t nb_pets = game->shop->pets.size();
-    size_t nb_objs = game->shop->objects.size();
+    size_t nb_pets = game->m_shop->m_pets.size();
+    size_t nb_objs = game->m_shop->m_objects.size();
     for (size_t i=0; i<5; i++)
         mask[index++] = (i < nb_pets);
 

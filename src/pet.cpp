@@ -51,11 +51,11 @@ Pet* Pet::unserialize(Team* team, Shop* shop, std::string pet_str) {
     object_name = utils::to_lower(object_name);
 
     Pet* pet = AllPets::create_new_pet(name, team, shop);
-    pet->attack = attack;
-    pet->attack_buff = attack_buff;
-    pet->life = life;
-    pet->life_buff = life_buff;
-    pet->xp = xp;
+    pet->m_attack = attack;
+    pet->m_attack_buff = attack_buff;
+    pet->m_life = life;
+    pet->m_life_buff = life_buff;
+    pet->m_xp = xp;
 
     Object* object = nullptr;
     if (object_name != "none")
@@ -66,143 +66,143 @@ Pet* Pet::unserialize(Team* team, Shop* shop, std::string pet_str) {
 }
 
 Pet* Pet::copy_pet(Pet const* pet, Team* team, Shop* shop) {
-    std::string name = utils::to_lower(pet->name);
+    std::string name = utils::to_lower(pet->m_name);
     Pet* new_pet = AllPets::create_new_pet(name, team, shop);
-    new_pet->attack = pet->attack;
-    new_pet->life = pet->life;
-    new_pet->xp = pet->xp;
-    if (pet->object) {
-        Object* new_obj = Object::create_new_object(pet->object->name, team, shop);
+    new_pet->m_attack = pet->m_attack;
+    new_pet->m_life = pet->m_life;
+    new_pet->m_xp = pet->m_xp;
+    if (pet->m_object) {
+        Object* new_obj = Object::create_new_object(pet->m_object->m_name, team, shop);
         new_obj->set_pet(new_pet);
-        new_pet->object = new_obj;
+        new_pet->m_object = new_obj;
     }
-    new_pet->attack_buff = pet->attack_buff;
-    new_pet->life_buff = pet->life_buff;
+    new_pet->m_attack_buff = pet->m_attack_buff;
+    new_pet->m_life_buff = pet->m_life_buff;
     return new_pet;
 }
 
 Pet::Pet(std::string name, Team* team, Shop* shop) :
-        name(name), team(team), adv_team(nullptr), shop(shop), xp(0), object(nullptr) {
+        m_name(name), m_team(team), m_adv_team(nullptr), m_shop(shop), m_xp(0), m_object(nullptr) {
     reset_stats();
 }
 
 Pet::~Pet() {
-    delete object;
+    delete m_object;
 }
 
 void Pet::bind(Team* adv_team) {
-    this->adv_team = adv_team;
+    m_adv_team = adv_team;
 }
 
 void Pet::bind(Shop* shop) {
-    this->shop = shop;
+    m_shop = shop;
 }
 
 Team* Pet::get_adv_team() const {
-    return adv_team;
+    return m_adv_team;
 }
 
 int Pet::get_attack() const {
-    return std::min(50, attack + attack_buff);
+    return std::min(50, m_attack + m_attack_buff);
 }
 
 int Pet::get_life() const {
-    return std::min(50, life + life_buff);
+    return std::min(50, m_life + m_life_buff);
 }
 
 int Pet::get_xp() const {
-    return xp;
+    return m_xp;
 }
 
 int Pet::get_level() const {
-    if (xp == 5)
+    if (m_xp == 5)
         return 3;
-    else if (xp >= 2)
+    else if (m_xp >= 2)
         return 2;
     return 1;
 }
 
 bool Pet::is_alive() const {
-    return (life + life_buff) > 0;
+    return (m_life + m_life_buff) > 0;
 }
 
-void Pet::set_stats(int new_attack, int new_life, int new_xp) {
-    attack = new_attack;
-    life = new_life;
-    xp = new_xp;
+void Pet::set_stats(int attack, int life, int xp) {
+    m_attack = attack;
+    m_life = life;
+    m_xp = xp;
 }
 
 void Pet::reset_stats() {
-    attack_buff = 0;
-    life_buff = 0;
+    m_attack_buff = 0;
+    m_life_buff = 0;
 }
 
-void Pet::equip_object(Object* obj) {
-    if (!obj)
+void Pet::equip_object(Object* object) {
+    if (!object)
         return;
-    utils::vector_logs.push_back("Giving " + obj->name + " to " + name);
+    utils::vector_logs.push_back("Giving " + object->m_name + " to " + m_name);
 
-    delete object;
-    object = Object::copy_object(obj, team, shop);
-    object->set_pet(this);
+    delete m_object;
+    m_object = Object::copy_object(object, m_team, m_shop);
+    m_object->set_pet(this);
 }
 
 void Pet::attacks(Pet* adv_pet) const {
-    utils::vector_logs.push_back(name + " attacks " + adv_pet->name + " for " + std::to_string(get_attack()) + " damages");
+    utils::vector_logs.push_back(m_name + " attacks " + adv_pet->m_name + " for " + std::to_string(get_attack()) + " damages");
 
     int value = get_attack();
-    if (object)
-        value = object->on_attack(value);
+    if (m_object)
+        value = m_object->on_attack(value);
     adv_pet->take_damage(value, false);
 }
 
 void Pet::take_damage(int value, bool activate_hurt) {
-    if (object)
-        value = object->on_damages(value);
+    if (m_object)
+        value = m_object->on_damages(value);
 
-    life -= std::max(0, value - life_buff);
-    life_buff = std::max(0, life_buff - value);
-    utils::vector_logs.push_back(name + " takes " + std::to_string(value) + " damages");
+    m_life -= std::max(0, value - m_life_buff);
+    m_life_buff = std::max(0, m_life_buff - value);
+    utils::vector_logs.push_back(m_name + " takes " + std::to_string(value) + " damages");
 
     if (activate_hurt && is_alive())
         on_hurt();
 }
 
 void Pet::buff(int buff_attack, int buff_life, bool is_tmp) {
-    utils::vector_logs.push_back(name + " is getting buffed (+" + std::to_string(buff_attack) + "/+" + std::to_string(buff_life) + ")");
+    utils::vector_logs.push_back(m_name + " is getting buffed (+" + std::to_string(buff_attack) + "/+" + std::to_string(buff_life) + ")");
     if (is_tmp) {
-        attack_buff += buff_attack;
-        life_buff += buff_life;
+        m_attack_buff += buff_attack;
+        m_life_buff += buff_life;
     } else {
-        attack = std::min(attack + buff_attack, 50);
-        life = std::min(life + buff_life, 50);
+        m_attack = std::min(m_attack + buff_attack, 50);
+        m_life = std::min(m_life + buff_life, 50);
     }
 }
 
 void Pet::gain_xp(int amount) {
-    utils::vector_logs.push_back(name + " gains " + std::to_string(amount) + " xp");
-    for (int x=0; x<amount && xp<5; x++) {
-        xp++;
-        if (xp == 5 || xp == 2) {
-            utils::vector_logs.push_back(name + " levels up !");
+    utils::vector_logs.push_back(m_name + " gains " + std::to_string(amount) + " xp");
+    for (int x=0; x<amount && m_xp<5; x++) {
+        m_xp++;
+        if (m_xp == 5 || m_xp == 2) {
+            utils::vector_logs.push_back(m_name + " levels up !");
             on_level_up();
-            shop->create_bonus_pet();
+            m_shop->create_bonus_pet();
         }
     }
 }
 
 void Pet::combine(Pet* const other) {
-    int min_xp = std::min(xp, other->xp);
-    int new_attack = std::max(attack, other->attack) + min_xp + 1;
-    int new_life = std::max(life, other->life) + min_xp + 1;
-    buff(new_attack - attack, new_life - life, false);
-    gain_xp(other->xp+1);
-    equip_object(other->object);
+    int min_xp = std::min(m_xp, other->m_xp);
+    int new_attack = std::max(m_attack, other->m_attack) + min_xp + 1;
+    int new_life = std::max(m_life, other->m_life) + min_xp + 1;
+    buff(new_attack - m_attack, new_life - m_life, false);
+    gain_xp(other->m_xp+1);
+    equip_object(other->m_object);
 }
 
 void Pet::kill() {
-    life = -100;
-    life_buff = -100;
+    m_life = -100;
+    m_life_buff = -100;
 }
 
 
@@ -211,23 +211,23 @@ void Pet::on_friend_bought(Pet* new_pet) {
 }
 
 void Pet::on_faint(size_t index) {
-    if (object)
-        object->on_faint(index);
+    if (m_object)
+        m_object->on_faint(index);
 }
 
 std::string Pet::serialize() const {
     std::string pet_str = "(";
-    pet_str += name + " ";
-    pet_str += std::to_string(attack);
-    if (attack_buff > 0)
-        pet_str += ":" + std::to_string(attack_buff);
+    pet_str += m_name + " ";
+    pet_str += std::to_string(m_attack);
+    if (m_attack_buff > 0)
+        pet_str += ":" + std::to_string(m_attack_buff);
     pet_str += " ";
-    pet_str += std::to_string(life);
-    if (life_buff > 0)
-        pet_str += ":" + std::to_string(life_buff);
+    pet_str += std::to_string(m_life);
+    if (m_life_buff > 0)
+        pet_str += ":" + std::to_string(m_life_buff);
     pet_str += " ";
-    pet_str += std::to_string(xp) + " ";
-    pet_str += (object ? object->name : "none") + ")";
+    pet_str += std::to_string(m_xp) + " ";
+    pet_str += (m_object ? m_object->m_name : "none") + ")";
     return pet_str;
 }
 

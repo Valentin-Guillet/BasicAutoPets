@@ -18,7 +18,7 @@ class Agent {
         virtual Action act(State state, Mask mask) = 0;
 
     protected:
-        std::mt19937 rng;
+        std::mt19937 m_rng;
 
         size_t choice(std::vector<size_t> vect);
         Action get_random_action(Mask mask);

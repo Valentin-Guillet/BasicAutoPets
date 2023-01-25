@@ -39,15 +39,15 @@ class Shop {
         std::string serialize() const;
 
     private:
-        Team* team;
+        Team* m_team;
 
-        int turn;
-        std::vector<Pet*> pets;
-        std::vector<Object*> objects;
-        std::vector<bool> frozen_pets;
-        std::vector<bool> frozen_objects;
-        int attack_buff;
-        int life_buff;
+        int m_turn;
+        std::vector<Pet*> m_pets;
+        std::vector<Object*> m_objects;
+        std::vector<bool> m_frozen_pets;
+        std::vector<bool> m_frozen_objects;
+        int m_attack_buff;
+        int m_life_buff;
 
         Pet* create_pet();
         Object* create_object();

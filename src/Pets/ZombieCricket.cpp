@@ -2,12 +2,12 @@
 #include "Pets/ZombieCricket.hpp"
 
 ZombieCricket::ZombieCricket(Team* team, Shop* shop, int lvl) : Pet("ZombieCricket", team, shop) {
-    repr = "Z🦗";
-    id = 82;
-    pack = PACK_STANDARD | PACK_DLC1;
-    tier = -1;
-    attack = lvl;
-    life = lvl;
+    m_repr = "Z🦗";
+    m_id = 82;
+    m_pack = PACK_STANDARD | PACK_DLC1;
+    m_tier = -1;
+    m_attack = lvl;
+    m_life = lvl;
     reset_stats();
 }
 

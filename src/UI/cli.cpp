@@ -13,8 +13,8 @@ const int SIZE = 75;
 const std::string CLEAR_SCREEN = "\x1B[2J\x1B[H";
 
 CLI::CLI(Game* game) : UserInterface(game) {
-    game->cheat();
-    prev_cmd = {"help"};
+    m_game->cheat();
+    m_prev_cmd = {"help"};
 }
 
 CLI::~CLI() {
@@ -48,28 +48,28 @@ void CLI::display_game() const {
 
 
 void CLI::get_curr_cmd(std::string line) {
-    curr_cmd.clear();
+    m_curr_cmd.clear();
     std::istringstream iss(line);
     std::string token;
 
     while (true) {
         if (!(iss >> token))
             break;
-        curr_cmd.push_back(token);
+        m_curr_cmd.push_back(token);
     }
 }
 
 std::vector<int> CLI::get_args(size_t n) const {
     std::vector<int> ans;
-    if (n >= curr_cmd.size())
-        throw InvalidAction("Not enough arguments provided, needs " + std::to_string(n) + " but " + std::to_string(curr_cmd.size()-1) + " were provided");
+    if (n >= m_curr_cmd.size())
+        throw InvalidAction("Not enough arguments provided, needs " + std::to_string(n) + " but " + std::to_string(m_curr_cmd.size()-1) + " were provided");
 
     size_t i;
     try {
         for (i=1; i<n+1; i++)
-            ans.push_back(std::stoi(curr_cmd[i]));
+            ans.push_back(std::stoi(m_curr_cmd[i]));
     } catch (std::exception& e) {
-        throw InvalidAction("Invalid arguments: " + curr_cmd[i] + " is not a digit.");
+        throw InvalidAction("Invalid arguments: " + m_curr_cmd[i] + " is not a digit.");
     }
 
     return ans;
@@ -95,13 +95,13 @@ bool CLI::act() {
     std::cout << "What do you want to do ?\n";
     std::getline(std::cin, line);
     if (line.empty() || line.find_first_not_of(' ') == std::string::npos) {
-        curr_cmd = prev_cmd;
+        m_curr_cmd = m_prev_cmd;
     } else {
         get_curr_cmd(line);
-        prev_cmd = curr_cmd;
+        m_prev_cmd = m_curr_cmd;
     }
 
-    std::string action = curr_cmd[0];
+    std::string action = m_curr_cmd[0];
     if (action == "h" || action == "help")
         help();
 
@@ -169,19 +169,19 @@ void CLI::buy() {
         Object const* obj = get_shop_object(ind_obj, true);
         bool target_all = false;
         if (obj)
-            target_all = obj->target_all;
+            target_all = obj->m_target_all;
 
         if (target_all) {
-            game->buy_object(ind_obj, 0);
+            m_game->buy_object(ind_obj, 0);
         } else {
             std::vector<int> args = get_args(2);
             int ind_target = args[1] - 1;
-            game->buy_object(ind_obj, ind_target);
+            m_game->buy_object(ind_obj, ind_target);
         }
     } else {
         std::vector<int> args = get_args(2);
         int ind_target = args[1] - 1;
-        game->buy_pet(index - 1, ind_target);
+        m_game->buy_pet(index - 1, ind_target);
     }
 }
 
@@ -189,24 +189,24 @@ void CLI::combine() {
     std::vector<int> args = get_args(2);
     int ind_team_1 = args[0] - 1;
     int ind_team_2 = args[1] - 1;
-    game->combine(ind_team_1, ind_team_2);
+    m_game->combine(ind_team_1, ind_team_2);
 }
 
 void CLI::sell() {
     int index = get_args(1)[0] - 1;
-    game->sell(index);
+    m_game->sell(index);
 }
 
 void CLI::roll() {
-    game->roll();
+    m_game->roll();
 }
 
 void CLI::freeze() {
     int index = get_args(1)[0];
     if (index == 9 || index == 0) {
-        game->freeze_object((index == 9 ? 0 : 1));
+        m_game->freeze_object((index == 9 ? 0 : 1));
     } else {
-        game->freeze_pet(index - 1);
+        m_game->freeze_pet(index - 1);
     }
 }
 
@@ -220,17 +220,17 @@ void CLI::move() {
     if (!(0 <= ind2 && ind2 < 5))
         throw InvalidAction("[ORDER]: Invalid index " + std::to_string(ind2+1));
 
-    game->move(ind1, ind2);
+    m_game->move(ind1, ind2);
 }
 
 void CLI::fight() {
-    game->start_fight();
+    m_game->start_fight();
     disp_fight();
 
     std::string action;
     getline(std::cin, action);
     bool skip = (!action.empty() && (action[0] == 'q' || action[0] == 's'));
-    while (game->fight_step()) {
+    while (m_game->fight_step()) {
         if (!skip) {
             disp_fight();
             disp_logs();
@@ -245,11 +245,11 @@ void CLI::fight() {
     getline(std::cin, action);
     std::cout << CLEAR_SCREEN;
 
-    game->end_fight();
+    m_game->end_fight();
 }
 
 bool CLI::end_turn() {
-    game->end_turn();
+    m_game->end_turn();
     std::cout << CLEAR_SCREEN;
     display_game();
     std::cout << "Press a key to continue..." << std::endl;
@@ -258,16 +258,16 @@ bool CLI::end_turn() {
     std::cout << CLEAR_SCREEN;
 
     fight();
-    return !game->is_over();
+    return !m_game->is_over();
 }
 
 void CLI::download() const {
-    game->save_state();
+    m_game->save_state();
     utils::vector_logs.push_back("Current game state saved");
 }
 
 void CLI::load() {
-    game->load_state();
+    m_game->load_state();
     utils::vector_logs.push_back("Loading game state");
 }
 

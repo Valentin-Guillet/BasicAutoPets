@@ -66,6 +66,6 @@ Action RuleBasedAgent::act(State state, Mask mask) {
 
 int RuleBasedAgent::randint(int limit) {
     std::uniform_int_distribution<> distrib(0, limit-1);
-    return distrib(rng);
+    return distrib(m_rng);
 }
 

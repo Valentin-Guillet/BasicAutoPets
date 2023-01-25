@@ -19,8 +19,8 @@ class CLI : public UserInterface {
         void display_game() const override;
 
     private:
-        std::vector<std::string> curr_cmd;
-        std::vector<std::string> prev_cmd;
+        std::vector<std::string> m_curr_cmd;
+        std::vector<std::string> m_prev_cmd;
 
         void get_curr_cmd(std::string line);
         std::vector<int> get_args(size_t n) const;

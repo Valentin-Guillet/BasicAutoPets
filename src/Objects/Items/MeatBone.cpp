@@ -5,14 +5,14 @@
 
 
 MeatBone::MeatBone(Team* team, Shop* shop) : Object("MeatBone", team, shop, ObjType::ITEM) {
-    repr = "🍖";
-    id = 6;
-    tier = 2;
+    m_repr = "🍖";
+    m_id = 6;
+    m_tier = 2;
 }
 
 MeatBone::~MeatBone() { }
 
 int MeatBone::on_attack(int value) {
-    utils::vector_logs.push_back(attached_pet->name + " has " + name + ", it deals 5 damages more");
+    utils::vector_logs.push_back(m_attached_pet->m_name + " has " + m_name + ", it deals 5 damages more");
     return value + 5;
 }

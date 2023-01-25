@@ -7,20 +7,20 @@
 
 
 Pill::Pill(Team* team, Shop* shop) : Object("Pill", team, shop, ObjType::FOOD) {
-    repr = "💊";
-    id = 5;
-    tier = 2;
-    cost = 1;
+    m_repr = "💊";
+    m_id = 5;
+    m_tier = 2;
+    m_cost = 1;
 }
 
 Pill::~Pill() { }
 
 void Pill::on_buy(size_t index) {
-    utils::vector_logs.push_back(name + " bought !");
+    utils::vector_logs.push_back(m_name + " bought !");
 
-    if (!team->has_pet(index))
+    if (!m_team->has_pet(index))
         return;
 
-    Pet* pet = team->get_pets()[team->pos_to_index(index)];
+    Pet* pet = m_team->get_pets()[m_team->pos_to_index(index)];
     pet->kill();
 }

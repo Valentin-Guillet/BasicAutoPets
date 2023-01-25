@@ -27,14 +27,14 @@ const std::unordered_map<UIState, std::string> MSGS = {
 };
 
 
-GUI::GUI(Game* game) : UserInterface(game), state(UIState::none) {
+GUI::GUI(Game* game) : UserInterface(game), m_state(UIState::none) {
     setlocale(LC_ALL, "");
     initscr();
     curs_set(0);
     cbreak();
     noecho();
     keypad(stdscr, TRUE);
-    game->cheat();
+    m_game->cheat();
 }
 
 GUI::~GUI() {
@@ -78,7 +78,7 @@ bool GUI::play_again() const {
 bool GUI::act() {
     bool continue_game = true;
     try {
-        switch (state) {
+        switch (m_state) {
             case UIState::none:
                 return take_action();
             case UIState::buy:
@@ -98,18 +98,18 @@ bool GUI::act() {
                 break;
             case UIState::fighting:
                 fight();
-                continue_game = !game->is_over();
+                continue_game = !m_game->is_over();
                 break;
         }
     } catch (InvalidAction& e) {
-        status = e.what_str();
+        m_status = e.what_str();
     }
     return continue_game;
 }
 
 bool GUI::take_action() {
     int c = std::tolower(getch());
-    status = "";
+    m_status = "";
 
     switch (c) {
         case KEY_RESIZE:
@@ -118,33 +118,33 @@ bool GUI::take_action() {
             break;
 
         case 'b':
-            state = UIState::buy;
+            m_state = UIState::buy;
             break;
 
         case 's':
-            state = UIState::sell;
+            m_state = UIState::sell;
             break;
 
         case 'f':
-            state = UIState::freeze;
+            m_state = UIState::freeze;
             break;
 
         case 'c':
-            state = UIState::combine;
+            m_state = UIState::combine;
             break;
 
         case 'r':
-            status = "Rolling...";
-            game->roll();
+            m_status = "Rolling...";
+            m_game->roll();
             break;
 
         case 'o':
-            state = UIState::order;
+            m_state = UIState::order;
             break;
 
         case 'e':
-            state = UIState::fighting;
-            game->end_turn();
+            m_state = UIState::fighting;
+            m_game->end_turn();
             disp_team();
             utils::vector_logs.push_back("Press a key to continue...");
             disp_logs();
@@ -152,14 +152,14 @@ bool GUI::take_action() {
             break;
 
         case 'd':
-            game->save_state();
-            status = "Current game state saved !";
+            m_game->save_state();
+            m_status = "Current game state saved !";
             disp_status();
             break;
 
         case 'l':
-            game->load_state();
-            status = "Loading saved game state";
+            m_game->load_state();
+            m_status = "Loading saved game state";
             disp_status();
             disp_logs(false);
             refresh();
@@ -173,8 +173,8 @@ bool GUI::take_action() {
 }
 
 void GUI::buy() {
-    state = UIState::none;
-    status = "[BUY]: Buying ...";
+    m_state = UIState::none;
+    m_status = "[BUY]: Buying ...";
     disp_status();
 
     int c = std::tolower(getch());
@@ -186,78 +186,78 @@ void GUI::buy() {
 }
 
 void GUI::sell() {
-    state = UIState::none;
-    status = "[SELL]: Selling pet ...";
+    m_state = UIState::none;
+    m_status = "[SELL]: Selling pet ...";
     size_t c = std::tolower(getch());
     if (!('1' <= c && c <= '5')) {
-        status = "[SELL]: Invalid pet index";
+        m_status = "[SELL]: Invalid pet index";
         return;
     }
     c = (c - '1');
-    std::string pet_name = get_team_pet(c)->name;
-    game->sell(c);
+    std::string pet_name = get_team_pet(c)->m_name;
+    m_game->sell(c);
 
     if (!pet_name.empty())
-        status = "[SELL]: Sold " + pet_name + " (index " + std::to_string(c+1) + ")";
+        m_status = "[SELL]: Sold " + pet_name + " (index " + std::to_string(c+1) + ")";
 }
 
 void GUI::freeze() {
-    state = UIState::none;
+    m_state = UIState::none;
     int c = std::tolower(getch());
 
     if ('1' <= c && c <= '5') {
-        game->freeze_pet(c - '1');
-        status = "[FREEZE]: Frozen pet " + std::to_string(c - '0');
+        m_game->freeze_pet(c - '1');
+        m_status = "[FREEZE]: Frozen pet " + std::to_string(c - '0');
     } else if (c == '9' || c == '0') {
-        game->freeze_object((c == '9' ? 0 : 1));
-        status = "[FREEZE]: Frozen object " + std::to_string(c == '9' ? 1 : 2);
+        m_game->freeze_object((c == '9' ? 0 : 1));
+        m_status = "[FREEZE]: Frozen object " + std::to_string(c == '9' ? 1 : 2);
     }
 }
 
 void GUI::combine() {
-    state = UIState::none;
-    status = "[COMBINE]: Combining pets ... and ...";
+    m_state = UIState::none;
+    m_status = "[COMBINE]: Combining pets ... and ...";
     disp_status();
 
     int c1 = std::tolower(getch());
     if (!('1' <= c1 && c1 <= '5')) {
-        status = "[COMBINE]: Invalid pet index";
+        m_status = "[COMBINE]: Invalid pet index";
         return;
     }
-    status = "[COMBINE]: Combining pets " + std::to_string(c1 - '0') + " and ...";
+    m_status = "[COMBINE]: Combining pets " + std::to_string(c1 - '0') + " and ...";
     disp_status();
 
     int c2 = std::tolower(getch());
     if (!('1' <= c2 && c2 <= '5')) {
-        status = "[COMBINE]: Invalid pet index";
+        m_status = "[COMBINE]: Invalid pet index";
         return;
     }
-    status = "[COMBINE]: Combining pets " + std::to_string(c1 - '0') + " and " + std::to_string(c2 - '0');
+    m_status = "[COMBINE]: Combining pets " + std::to_string(c1 - '0') + " and " + std::to_string(c2 - '0');
 
-    game->combine(c1 - '1', c2 - '1');
+    m_game->combine(c1 - '1', c2 - '1');
 }
 
 void GUI::move() {
-    state = UIState::none;
-    status = "[ORDER]: Switching ... and ...";
+    m_state = UIState::none;
+    m_status = "[ORDER]: Switching ... and ...";
     disp_status();
 
     int c1 = std::tolower(getch());
     if (!('1' <= c1 && c1 <= '5')) {
-        status = "[ORDER]: Invalid order index";
+        m_status = "[ORDER]: Invalid order index";
         return;
     }
-    status = "[ORDER]: Switching " + std::to_string(c1 - '0') + " and ...";
+    m_status = "[ORDER]: Switching " + std::to_string(c1 - '0') + " and ...";
     disp_status();
 
     int c2 = std::tolower(getch());
     if (!('1' <= c2 && c2 <= '5')) {
-        status = "[ORDER]: Invalid order index";
+        m_status = "[ORDER]: Invalid order index";
         return;
     }
-    status = "[ORDER]: Switching " + std::to_string(c1 - '0') + " and " + std::to_string(c2 - '0');
+    m_status = "[ORDER]: Switching " + std::to_string(c1 - '0') + " and " + std::to_string(c2 - '0');
 
-    game->move(c1 - '1', c2 - '1');
+    m_game->move(c1 - '1', c2 - '1');
 }
 
 void GUI::fight() {
@@ -265,10 +265,10 @@ void GUI::fight() {
     disp_frame();
     disp_action();
 
-    game->start_fight();
+    m_game->start_fight();
     disp_fight();
     int c = get_fighting_action();
-    while (game->fight_step()) {
+    while (m_game->fight_step()) {
         if (c == 's' || c == 'q')
             continue;
 
@@ -289,63 +289,63 @@ void GUI::fight() {
 
     utils::vector_logs.push_back("Press a key to continue...");
     disp_logs();
-    status = "";
+    m_status = "";
     getch();
 
-    game->end_fight();
-    state = UIState::none;
+    m_game->end_fight();
+    m_state = UIState::none;
 }
 
 
 void GUI::buy_pet(size_t index) {
     Pet const* pet = get_shop_pet(index);
     if (!pet) {
-        status = "[BUY] No pet in shop at index " + std::to_string(index + 1);
+        m_status = "[BUY] No pet in shop at index " + std::to_string(index + 1);
         return;
     }
 
-    std::string pet_name = pet->name;
-    status = "[BUY]: Buying " + pet_name + " in position ...";
+    std::string pet_name = pet->m_name;
+    m_status = "[BUY]: Buying " + pet_name + " in position ...";
     disp_status();
 
     size_t target = std::tolower(getch());
     if (!('1' <= target && target <= '5')) {
-        status = "[BUY]: Invalid dst index";
+        m_status = "[BUY]: Invalid dst index";
         return;
     }
     size_t target_index = target - '1';
-    game->buy_pet(index, target_index);
-    status = "[BUY]: Bought " + pet_name + " in position " + std::to_string(target_index + 1);
+    m_game->buy_pet(index, target_index);
+    m_status = "[BUY]: Bought " + pet_name + " in position " + std::to_string(target_index + 1);
 }
 
 void GUI::buy_object(size_t index) {
     Object const* obj = get_shop_object(index, true);
     if (!obj) {
-        status = "[BUY]: No object in shop at index " + std::to_string(index + 1);
+        m_status = "[BUY]: No object in shop at index " + std::to_string(index + 1);
         return;
     }
 
-    std::string obj_name = obj->name;
-    if (obj->target_all) {
-        game->buy_object(index, 0);
-        status = "[BUY]: Bought " + obj_name;
+    std::string obj_name = obj->m_name;
+    if (obj->m_target_all) {
+        m_game->buy_object(index, 0);
+        m_status = "[BUY]: Bought " + obj_name;
         return;
     }
 
-    status = "[BUY]: Buying " + obj_name + " for pet ...";
+    m_status = "[BUY]: Buying " + obj_name + " for pet ...";
     disp_status();
 
     size_t target = std::tolower(getch());
     if (!('1' <= target && target <= '5')) {
-        status = "[BUY]: Invalid target for " + obj_name;
+        m_status = "[BUY]: Invalid target for " + obj_name;
         return;
     }
     size_t target_index = target - '1';
-    std::string target_name = get_team_pet(target_index)->name;
+    std::string target_name = get_team_pet(target_index)->m_name;
 
-    game->buy_object(index, target_index);
+    m_game->buy_object(index, target_index);
     if (!target_name.empty())
-        status = "[BUY]: Giving " + obj_name + " to " + target_name;
+        m_status = "[BUY]: Giving " + obj_name + " to " + target_name;
 }
 
 int GUI::get_fighting_action() {
@@ -366,11 +366,11 @@ int GUI::get_fighting_action() {
 
         invalid = (valid_actions.count(c) == 0);
         if (invalid) {
-            status = "Invalid action !";
+            m_status = "Invalid action !";
             disp_status();
         }
     } while (invalid);
-    status = "";
+    m_status = "";
     disp_status();
 
     return c;
@@ -479,7 +479,7 @@ void GUI::disp_shop() const {
 void GUI::disp_action() const {
     std::string empty_msg(COLS-3, ' ');
     mvaddstr(20, 1, empty_msg.c_str());
-    mvaddstr(20, 1, MSGS.at(state).c_str());
+    mvaddstr(20, 1, MSGS.at(m_state).c_str());
 }
 
 void GUI::disp_fight() const {
@@ -512,7 +512,7 @@ void GUI::disp_fight() const {
 void GUI::disp_status() const {
     std::string empty_msg(COLS-3, ' ');
     mvaddstr(22, 1, empty_msg.c_str());
-    mvaddstr(22, 1, status.c_str());
+    mvaddstr(22, 1, m_status.c_str());
 }
 
 void GUI::disp_logs(bool clear) const {

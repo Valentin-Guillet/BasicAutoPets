@@ -26,9 +26,9 @@ class Object {
         Object(std::string name, Team* team, Shop* shop, ObjType type);
         virtual ~Object();
 
-        std::string name;
-        ObjType type;
-        bool target_all;
+        std::string m_name;
+        ObjType m_type;
+        bool m_target_all;
 
         int get_cost() const;
         void set_pet(Pet* pet);
@@ -39,15 +39,15 @@ class Object {
         virtual int on_damages(int value) { return value; };
 
     protected:
-        std::string repr;
+        std::string m_repr;
 
-        Team* team;
-        Shop* shop;
-        Pet* attached_pet;
+        Team* m_team;
+        Shop* m_shop;
+        Pet* m_attached_pet;
 
-        int id;
-        int tier;
-        int cost;
+        int m_id;
+        int m_tier;
+        int m_cost;
 
     private:
         static std::string get_random_name(int max_tier);

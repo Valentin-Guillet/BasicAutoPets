@@ -45,17 +45,17 @@ class Game {
         void cheat();
 
     private:
-        int money;
-        int life;
-        int victories;
-        int turn;
+        int m_money;
+        int m_life;
+        int m_victories;
+        int m_turn;
 
-        Team* team;
-        Shop* shop;
+        Team* m_team;
+        Shop* m_shop;
 
-        Team* fighting_team;
-        Team* adv_team;
-        FIGHT_STATUS fight_status;
+        Team* m_fighting_team;
+        Team* m_adv_team;
+        FIGHT_STATUS m_fight_status;
 
         void combine_from_shop(size_t shop_index, Pos pet_pos);
         void check_money(std::string action, int amount) const;

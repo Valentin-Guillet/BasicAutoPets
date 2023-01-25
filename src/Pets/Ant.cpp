@@ -9,21 +9,21 @@
 
 
 Ant::Ant(Team* team, Shop* shop) : Pet("Ant", team, shop) {
-    repr = "🐜";
-    id = 1;
-    pack = PACK_STANDARD | PACK_DLC1;
-    tier = 1;
-    attack = 2;
-    life = 1;
+    m_repr = "🐜";
+    m_id = 1;
+    m_pack = PACK_STANDARD | PACK_DLC1;
+    m_tier = 1;
+    m_attack = 2;
+    m_life = 1;
     reset_stats();
 };
 
 Ant::~Ant() { }
 
 void Ant::on_faint(Pos pos) {
-    utils::vector_logs.push_back(name + " fainting !");
+    utils::vector_logs.push_back(m_name + " fainting !");
 
-    std::vector<Pet*> team_pets = team->get_pets();
+    std::vector<Pet*> team_pets = m_team->get_pets();
     std::vector<Pet*> living_pets;
 
     std::copy_if(team_pets.begin(), team_pets.end(),

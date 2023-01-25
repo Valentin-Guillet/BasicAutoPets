@@ -7,12 +7,12 @@
 
 
 Swan::Swan(Team* team, Shop* shop) : Pet("Swan", team, shop) {
-    repr = "🦢";
-    id = 25;
-    pack = PACK_STANDARD | PACK_DLC1;
-    tier = 2;
-    attack = 1;
-    life = 3;
+    m_repr = "🦢";
+    m_id = 25;
+    m_pack = PACK_STANDARD | PACK_DLC1;
+    m_tier = 2;
+    m_attack = 1;
+    m_life = 3;
     reset_stats();
 }
 
@@ -20,7 +20,7 @@ Swan::~Swan() { }
 
 void Swan::on_start_turn() {
     int lvl = get_level();
-    utils::vector_logs.push_back("Start of turn: " + name + " earns " + std::to_string(lvl) + " gold");
+    utils::vector_logs.push_back("Start of turn: " + m_name + " earns " + std::to_string(lvl) + " gold");
 
-    team->earn_money(lvl);
+    m_team->earn_money(lvl);
 }

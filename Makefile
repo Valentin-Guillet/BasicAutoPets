@@ -4,7 +4,8 @@
 MAKEFLAGS := --jobs=$(shell nproc)
 
 CC := g++
-CFLAGS := -std=c++2a -Wall -Wextra -Werror -Wno-unused-parameter
+CFLAGS := -std=c++2a
+CFLAGS += -Wall -Wextra -Werror -Wshadow -Wno-unused-parameter -fsanitize=undefined
 CFLAGS += -I./src
 LFLAGS := -lncursesw
 

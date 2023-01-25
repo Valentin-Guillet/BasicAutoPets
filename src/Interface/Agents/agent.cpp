@@ -13,9 +13,9 @@ Agent* Agent::create_agent(std::string name) {
 
 Agent::Agent(int seed) {
     if (seed == -1)
-        rng.seed(std::random_device()());
+        m_rng.seed(std::random_device()());
     else
-        rng.seed(seed);
+        m_rng.seed(seed);
 }
 
 Agent::~Agent() { }
@@ -23,7 +23,7 @@ Agent::~Agent() { }
 
 size_t Agent::choice(std::vector<size_t> vect) {
     std::uniform_int_distribution<> distrib(0, vect.size()-1);
-    return vect[distrib(rng)];
+    return vect[distrib(m_rng)];
 }
 
 Action Agent::get_random_action(Mask mask) {

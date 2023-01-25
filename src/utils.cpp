@@ -9,10 +9,10 @@ int utils::randint(int min, int max) {
     }
 
     std::random_device rd;
-    std::mt19937 rng(rd());
+    std::mt19937 m_rng(rd());
     std::uniform_int_distribution<int> uniform_law(min, max);
 
-    return uniform_law(rng);
+    return uniform_law(m_rng);
 }
 
 std::string utils::pad(std::string str, size_t const num, char const padding_char) {
@@ -32,14 +32,14 @@ std::string utils::to_lower(std::string str) {
 std::vector<std::string> utils::vector_logs;
 
 
-InvalidAction::InvalidAction(std::string msg) : msg(msg) { }
+InvalidAction::InvalidAction(std::string msg) : m_msg(msg) { }
 
 InvalidAction::~InvalidAction() { }
 
 const char* InvalidAction::what() const throw() {
-    return msg.c_str();
+    return m_msg.c_str();
 }
 
 const std::string InvalidAction::what_str() const throw() {
-    return msg;
+    return m_msg;
 }

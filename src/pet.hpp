@@ -19,7 +19,7 @@ class Pet {
         static Pet* create_random_pet(Team* team, Shop* shop, int max_tier, bool strict_tier=false);
         static Pet* copy_pet(Pet const* pet, Team* team, Shop* shop);
 
-        std::string name;
+        std::string m_name;
 
         Pet(std::string name, Team* team, Shop* shop);
         virtual ~Pet();
@@ -34,7 +34,7 @@ class Pet {
         int get_level() const;
         bool is_alive() const;
 
-        void set_stats(int new_attack, int new_life, int new_xp);
+        void set_stats(int attack, int life, int xp);
         void reset_stats();
 
         void equip_object(Object* obj);
@@ -67,22 +67,22 @@ class Pet {
         std::string serialize() const;
 
     protected:
-        std::string repr;
+        std::string m_repr;
 
-        Team* team;
-        Team* adv_team;
-        Shop* shop;
+        Team* m_team;
+        Team* m_adv_team;
+        Shop* m_shop;
 
-        int id;
-        int pack;
-        int tier;
-        int attack;
-        int life;
-        int xp;
-        Object* object;
+        int m_id;
+        int m_pack;
+        int m_tier;
+        int m_attack;
+        int m_life;
+        int m_xp;
+        Object* m_object;
 
-        int attack_buff;
-        int life_buff;
+        int m_attack_buff;
+        int m_life_buff;
 
     private:
         static std::string get_random_name(int max_tier, bool strict_tier=false);

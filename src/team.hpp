@@ -72,13 +72,13 @@ class Team {
         static FIGHT_STATUS start_of_battle(Team* team, Team* adv_team);
         static FIGHT_STATUS check_end_of_battle(Team const* team, Team const* adv_team);
 
-        Game* game;
-        int turn;
-        bool in_fight = false;
-        std::vector<Pet*> pets;
-        std::vector<Pos> order;
+        Game* m_game;
+        int m_turn;
+        bool m_in_fight = false;
+        std::vector<Pet*> m_pets;
+        std::vector<Pos> m_order;
 
-        std::vector<std::pair<Pet*, Pos>> summoned_pets;
+        std::vector<std::pair<Pet*, Pos>> m_summoned_pets;
 
         void sort_team();
         void append_pet(Pet* new_pet, Pos pos);

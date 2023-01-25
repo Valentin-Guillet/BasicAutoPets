@@ -20,23 +20,23 @@ Object* Object::create_random_object(Team* team, Shop* shop, int max_tier) {
 }
 
 Object* Object::copy_object(Object const* obj, Team* team, Shop* shop) {
-    std::string name = utils::to_lower(obj->name);
+    std::string name = utils::to_lower(obj->m_name);
     return AllObjects::create_new_object(name, team, shop);
 }
 
 
 Object::Object(std::string name, Team* team, Shop* shop, ObjType type) :
-    name(name), type(type), target_all(false),
-    team(team), shop(shop), attached_pet(nullptr), cost(3) { }
+    m_name(name), m_type(type), m_target_all(false),
+    m_team(team), m_shop(shop), m_attached_pet(nullptr), m_cost(3) { }
 
 Object::~Object() { };
 
 int Object::get_cost() const {
-    return cost;
+    return m_cost;
 }
 
 void Object::set_pet(Pet* pet) {
-    attached_pet = pet;
+    m_attached_pet = pet;
 }
 
 

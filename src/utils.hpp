@@ -36,7 +36,7 @@ class InvalidAction : public std::exception {
         const std::string what_str() const throw();
 
     private:
-        std::string msg;
+        std::string m_msg;
 };
 
 

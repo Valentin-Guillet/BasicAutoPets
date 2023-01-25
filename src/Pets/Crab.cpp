@@ -5,25 +5,25 @@
 
 
 Crab::Crab(Team* team, Shop* shop) : Pet("Crab", team, shop) {
-    repr = "🦀";
-    id = 15;
-    pack = PACK_STANDARD;
-    tier = 2;
-    attack = 3;
-    life = 3;
+    m_repr = "🦀";
+    m_id = 15;
+    m_pack = PACK_STANDARD;
+    m_tier = 2;
+    m_attack = 3;
+    m_life = 3;
     reset_stats();
 }
 
 Crab::~Crab() { }
 
 void Crab::on_buy() {
-    utils::vector_logs.push_back("Buying " + name + ": copying health from most healthy pet");
-    std::vector<Pet*> team_pets = team->get_pets();
+    utils::vector_logs.push_back("Buying " + m_name + ": copying health from most healthy pet");
+    std::vector<Pet*> team_pets = m_team->get_pets();
 
-    int new_life = life;
-    for (Pet* pet : team->get_pets()) {
+    int new_life = m_life;
+    for (Pet* pet : m_team->get_pets()) {
         if (pet->get_life() > new_life)
             new_life = pet->get_life();
     }
-    life = new_life;
+    m_life = new_life;
 }
