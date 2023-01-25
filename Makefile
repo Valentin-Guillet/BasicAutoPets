@@ -3,10 +3,10 @@
 
 MAKEFLAGS := --jobs=$(shell nproc)
 
-CC := g++
-CFLAGS := -std=c++2a
-CFLAGS += -Wall -Wextra -Werror -Wshadow -Wno-unused-parameter -fsanitize=undefined
-CFLAGS += -I./src
+CXX := g++
+CXXFLAGS := -std=c++2a
+CXXFLAGS += -Wall -Wextra -Werror -Wshadow -Wno-unused-parameter -fsanitize=undefined
+CXXFLAGS += -I./src
 LFLAGS := -lncursesw
 
 HEADERS := $(shell find src/ -name *.hpp)
@@ -25,10 +25,10 @@ PETS_HEADERS := $(shell find src/Pets/ -name *.hpp)
 all: main
 
 main: $(OBJECTS)
-	$(CC) $(CFLAGS) $^ $(LFLAGS) -o $@
+	$(CXX) $(CXXFLAGS) $^ $(LFLAGS) -o $@
 
 agent: $(AGENT_OBJS)
-	$(CC) $(CFLAGS) $^ $(LFLAGS) -o $@
+	$(CXX) $(CXXFLAGS) $^ $(LFLAGS) -o $@
 
 
 memory_leak: main
@@ -41,17 +41,17 @@ memory_leak_input: main
 test_battles: test/main_test
 
 test/main_test: $(TEST_OBJ)
-	$(CC) $(CFLAGS) $^ $(LFLAGS) $@
+	$(CXX) $(CXXFLAGS) $^ $(LFLAGS) $@
 
 
 build/%.o: src/%.cpp src/Pets/all_pets.cpp src/Objects/all_objects.cpp $(HEADERS)
-	@ mkdir -p build/Pets/
-	@ mkdir -p build/Objects/Foods
-	@ mkdir -p build/Objects/Items
-	@ mkdir -p build/UI/
 	@ mkdir -p build/Interface/
 	@ mkdir -p build/Interface/Agents
-	$(CC) -c $(CFLAGS) -o $@ $<
+	@ mkdir -p build/Objects/Foods
+	@ mkdir -p build/Objects/Items
+	@ mkdir -p build/Pets/
+	@ mkdir -p build/UI/
+	$(CXX) -c $(CXXFLAGS) -o $@ $<
 
 
 # Dependency is here to update file each time a pet file is modified
@@ -64,6 +64,6 @@ src/Objects/all_objects.cpp: src/Objects/*/*.hpp
 
 clean:
 	rm -rf build/
-	rm -f main
+	rm -f agent main
 	rm -f src/Pets/all_pets.*
 	rm -f src/Objects/all_objects.*
