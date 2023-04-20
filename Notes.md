@@ -1,4 +1,7 @@
 
+
+- Can `Team::get_pets()` return std::vector<Pet const*> ???
+
 # Questions
 
 - Does Crab copy less than its own life (i.e. 3) ? [Here: no]
