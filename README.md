@@ -20,5 +20,5 @@ A team is represented using the format :
 `turn_number (Name1 Attack1 Life1 XP1 Status1) (Name2 Attack2 Life2 XP2 Status2) ...`
 
 This file can simply be modified by hand, or generated using automatic tools.
-A team extractor using videos of streamers can be found on https://github.com/Val95240/SAPTeamExtractor .
+A team extractor using videos of streamers can be found on https://github.com/Valentin-Guillet/SAPTeamExtractor .
 
